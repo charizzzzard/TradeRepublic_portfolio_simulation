@@ -182,7 +182,7 @@
       },
       {
         "check": "handchecks_and_regression_suite",
-        "detail": "40 passed in 1.55s",
+        "detail": "........................................                                 [100%]",
         "result": "PASS"
       },
       {
@@ -307,7 +307,7 @@
       "pretax_regression": "PASS_EXACT required (invariant form; v2 absent)"
     }
   },
-  "git_sha": "UNCOMMITTED",
+  "git_sha": "95e927fa568f8dd757b9cb866db56df659ef39fe",
   "human_final_decision": true,
   "inflation_config": {
     "model": "Ornstein-Uhlenbeck, monthly, coupled to the short rate",
@@ -455,6 +455,6 @@
       "status": "NOT_IN_DECISION_PATH"
     }
   },
-  "timestamp_utc": "2026-08-21T10:16:21+00:00",
+  "timestamp_utc": "2026-08-21T10:18:34+00:00",
   "unmodelled_boundary_conditions": "Emergency fund, human capital, statutory/occupational pension, liquidity events and interim withdrawals are NOT modelled (B.6). This is a partial analysis of portfolio allocation, not financial planning."
 }
