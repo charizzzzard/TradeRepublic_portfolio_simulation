@@ -1,0 +1,30 @@
+{
+  "_spec_ref": "PROJECT_META v3, Teil B.4 - own parameter class. Rationale: a 0.20 pp TER delta runs directly against a 0.124 pp portfolio-CAGR materiality gate (G1).",
+  "schema_version": "1.0.0",
+  "gate_reference": {
+    "portfolio_cagr_materiality_pp_per_year": 0.124,
+    "note": "Cost deltas are reported in the same unit as the G1 gate so they can be compared directly."
+  },
+  "cost_components": {
+    "ter": {"required": true, "unit": "annual_fraction", "accrual": "monthly_pro_rata"},
+    "tracking_difference": {"required": true, "unit": "annual_fraction", "accrual": "monthly_pro_rata", "fallback_legal_status": "TO_BE_VERIFIED"},
+    "spread": {"required": true, "unit": "fraction_of_notional", "applied": "on_buy_and_on_sell"},
+    "savings_plan_execution": {"required": true, "unit": "eur_per_execution"},
+    "fx_conversion": {"required": true, "unit": "fraction_of_notional", "applied": "per_trade_if_applicable"}
+  },
+  "instruments": {
+    "CORE":     {"ter": 0.0020, "tracking_difference": 0.0000, "spread": 0.0010, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"},
+    "SP500":    {"ter": 0.0007, "tracking_difference": 0.0000, "spread": 0.0005, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"},
+    "NASDAQ":   {"ter": 0.0033, "tracking_difference": 0.0000, "spread": 0.0007, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"},
+    "DIVIDEND": {"ter": 0.0038, "tracking_difference": 0.0000, "spread": 0.0015, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"},
+    "EUROPE":   {"ter": 0.0020, "tracking_difference": 0.0000, "spread": 0.0010, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"},
+    "DAX":      {"ter": 0.0016, "tracking_difference": 0.0000, "spread": 0.0008, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"},
+    "JAPAN":    {"ter": 0.0012, "tracking_difference": 0.0000, "spread": 0.0012, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"},
+    "EM":       {"ter": 0.0018, "tracking_difference": 0.0000, "spread": 0.0015, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"},
+    "GOLD":     {"ter": 0.0012, "tracking_difference": 0.0000, "spread": 0.0012, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"},
+    "COMMOD":   {"ter": 0.0019, "tracking_difference": 0.0000, "spread": 0.0020, "savings_plan_execution_eur": 0.0, "fx_conversion": 0.0, "td_legal_status": "TO_BE_VERIFIED", "source": "PLACEHOLDER"}
+  },
+  "data_status": "PLACEHOLDER_NOT_SOURCED",
+  "blocking_note": "Every value above is an UNSOURCED PLACEHOLDER of the right order of magnitude. It exists so the cost machinery is exercised and hash-tracked, NOT so cost numbers can be quoted. Because a 0.20 pp TER delta alone exceeds the 0.124 pp G1 gate, no cost-sensitive claim may be promoted until these are replaced with sourced values (KIID/PRIIPs for TER, provider factsheets for tracking difference, venue data for spreads). Phase 3 (R2E) must therefore treat TER as a SWEPT DIMENSION (0/10/20/30 bp) rather than reading these point values.",
+  "ter_delta_sweep_bp": [0, 10, 20, 30]
+}

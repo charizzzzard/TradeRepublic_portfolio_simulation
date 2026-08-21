@@ -1,0 +1,113 @@
+{
+  "_spec_ref": "PROJECT_META v3, Teil B.1-B.3. Every assumption carries an explicit legal_status.",
+  "schema_version": "1.0.0",
+  "legal_status_vocabulary": {
+    "VERIFIED": "Checked against primary legal source; citation recorded.",
+    "TO_BE_VERIFIED": "Modelled assumption, plausible, NOT yet checked against primary source. Blocks promotion above MODEL_CONSISTENT_FINDING for any claim it materially drives.",
+    "NOT_IN_DECISION_PATH": "Implemented and tested, but not exercised by any decision-path run. Must not gate."
+  },
+
+  "abgeltungsteuer": {
+    "est_rate": 0.25,
+    "soli_rate_on_est": 0.055,
+    "effective_rate_no_church": 0.26375,
+    "legal_status": "TO_BE_VERIFIED",
+    "assumption_note": "25% Abgeltungsteuer (§32d Abs.1 EStG) plus 5.5% Solidaritaetszuschlag on the tax amount. Soli is modelled as fully applicable to Kapitalertragsteuer (the 2021 Soli reduction does not extend to Abgeltungsteuer)."
+  },
+
+  "church_tax": {
+    "baseline": "none",
+    "sensitivity_only": true,
+    "rates": {"none": 0.0, "bw_bay": 0.08, "other": 0.09},
+    "formula": "est = (kapitalertrag - 4*q) / (4 + k_percent); total = est * (1 + soli + k)",
+    "legal_status": "TO_BE_VERIFIED",
+    "assumption_note": "§32d Abs.1 S.4-5 EStG. With q=0 and k=9%: effective 27.9951%. Sensitivity only per A.4; baseline is none."
+  },
+
+  "teilfreistellung": {
+    "equity_fund": 0.30,
+    "mixed_fund": 0.15,
+    "bond_fund": 0.0,
+    "etc_debt_security": 0.0,
+    "legal_status": "TO_BE_VERIFIED",
+    "assumption_note": "§20 InvStG: 30% partial exemption for private investors in equity funds (>=51% equity). Applied to both Vorabpauschale and realised gains."
+  },
+
+  "vorabpauschale": {
+    "applies_to": ["equity_fund", "mixed_fund", "bond_fund"],
+    "does_not_apply_to": ["etc_debt_security"],
+    "basisertrag_factor": 0.7,
+    "capped_by_wertsteigerung": true,
+    "floor_zero": true,
+    "acquisition_year_proration": "twelfths: factor = (13 - acquisition_month) / 12",
+    "deemed_accrual": "first_working_day_of_following_calendar_year",
+    "increases_cost_basis": true,
+    "legal_status": "TO_BE_VERIFIED",
+    "assumption_note": "§18 InvStG (Basisertrag = NAV_start_of_year * 0.7 * Basiszins, capped at the Wertsteigerung of the year, floored at 0, reduced by 1/12 per full month preceding the acquisition month) and §19 InvStG (accumulated Vorabpauschalen reduce the gain on disposal, preventing double taxation). An ETC is a debt security, not an Investmentfonds, so no Vorabpauschale applies to GOLD under either tax variant."
+  },
+
+  "basiszins": {
+    "_spec_ref": "Teil B.2 - stochastic coupling REQUIRED",
+    "model": "max(0, a + b * modelled_short_rate)",
+    "a": 0.0,
+    "b": 1.0,
+    "term_premium": 0.0,
+    "floor": 0.0,
+    "set_at": "start_of_calendar_year",
+    "legal_status": "TO_BE_VERIFIED",
+    "assumption_note": "Assumption, to be checked against the annual BMF-Schreiben: 2023 ~2.55%, 2024 ~2.29%, 2025 ~2.53%, 2021/2022 negative -> floored to 0. The Basiszins is derived from the yield of long-dated German government bonds and is published at the start of each calendar year. Coupled to the modelled short rate so that an inflation regime cannot occur without a corresponding rise in the Basiszins (B.2 rationale: a deterministic Basiszins systematically understates the tax burden in inflationary worlds).",
+    "historical_reference": {"2021": 0.0, "2022": 0.0, "2023": 0.0255, "2024": 0.0229, "2025": 0.0253}
+  },
+
+  "freistellungsauftrag": {
+    "baseline_eur": 1000,
+    "sensitivities_eur": [0, 2000],
+    "cap_tolerance_eur": 1e-8,
+    "reset": "annual",
+    "consumption_order": "chronological_within_year",
+    "legal_status": "TO_BE_VERIFIED",
+    "assumption_note": "Sparer-Pauschbetrag §20 Abs.9 EStG, 1000 EUR since 2023 (single filer). Modelled as nominally constant over the whole horizon - NOT indexed to inflation. This is a conservative, explicitly stated modelling choice: in a high-inflation world the real value of the FSA decays."
+  },
+
+  "withholding_tax_credit": {
+    "_spec_ref": "Teil B.1",
+    "status": "NOT_IN_DECISION_PATH",
+    "legal_status": "NOT_IN_DECISION_PATH",
+    "rationale": "Accumulating Irish funds suffer foreign withholding tax at fund level; it is not creditable for the German private investor, and the Teilfreistellung is the statutory compensation mechanism. After DIVIDEND was reclassified to equity_fund, the universe contains no direct_stocks instrument, so no decision-path run exercises this branch.",
+    "action": "Code and hand-checks are retained and still execute in the test suite, but are DECOUPLED from every gate. No gate may depend on this branch.",
+    "known_v2_defect": "The v2 implementation applied credit = min(swht, dt) against 26.375% rather than against 25% Einkommensteuer with Solidaritaetszuschlag applied afterwards. This is the defect that held R2 at FAIL_LEGAL_EXACTNESS. It is corrected in the retained code, but the correction is NOT a decision-path claim.",
+    "gates_depending_on_this_branch": []
+  },
+
+  "assets_tax_classes": {
+    "equity_fund": {
+      "teilfreistellung": 0.30,
+      "vorabpauschale": true,
+      "taxable_on_disposal": true
+    },
+    "etc_debt_security_B3_assumed": {
+      "_spec_ref": "Teil B.3 primary variant",
+      "teilfreistellung": 0.0,
+      "vorabpauschale": false,
+      "taxable_on_disposal": true,
+      "holding_period_exemption_years": null,
+      "legal_status": "TO_BE_VERIFIED",
+      "assumption_note": "IE00B4ND3602 is an Irish debt security (ETC) without a physical delivery claim. Assumed fully taxable under §20 EStG: no Teilfreistellung, no holding-period exemption. Effective ~26.375% on the gain."
+    },
+    "etc_debt_security_B3_alternative": {
+      "_spec_ref": "Teil B.3 contrast variant",
+      "teilfreistellung": 0.0,
+      "vorabpauschale": false,
+      "taxable_on_disposal": true,
+      "holding_period_exemption_years": 1,
+      "legal_status": "TO_BE_VERIFIED",
+      "assumption_note": "Contrast variant reflecting BFH case law on §23 EStG private disposal transactions: tax-free after a one-year holding period. That case law concerns deliverable domestic constructions (Xetra-Gold), NOT this product. Computed only because B.3 requires both variants to be reported while legal_status != VERIFIED."
+    }
+  },
+
+  "b3_dual_reporting": {
+    "required": true,
+    "rule": "While assets_tax_classes.etc_debt_security_B3_assumed.legal_status != VERIFIED, every GOLD claim MUST be computed and reported under BOTH variants. A single-variant GOLD result is not a valid deliverable.",
+    "materiality": "~26% on the gain versus 0% (alternative) - decides the GOLD claim on its own."
+  }
+}

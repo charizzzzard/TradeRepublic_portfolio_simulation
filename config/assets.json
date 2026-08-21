@@ -1,0 +1,25 @@
+{
+  "_spec_ref": "PROJECT_META v3, Teil A.5 asset mapping and A.6 Trade-Republic gate.",
+  "schema_version": "1.0.0",
+  "tr_gate": {
+    "role": "IMPLEMENTATION_CHECK_ONLY",
+    "runs_in_phase": "PHASE_7_FINAL_ONLY",
+    "note": "Per A.6, Trade Republic tradability is NOT a research filter. Research defines instruments by index + fund structure + tax class. A TRADABILITY_BLOCKED result blocks implementation, never the analysis.",
+    "checked": false
+  },
+  "instruments": {
+    "CORE":     {"isin": "IE00BK5BQT80", "mapping_status": "CONFIRMED",   "tax_class": "equity_fund", "role": "core"},
+    "SP500":    {"isin": "IE00B5BMR087", "mapping_status": "CONFIRMED",   "tax_class": "equity_fund", "role": "satellite"},
+    "NASDAQ":   {"isin": "IE00B53SZB19", "mapping_status": "CONFIRMED",   "tax_class": "equity_fund", "role": "satellite"},
+    "DIVIDEND": {"isin": "IE00BK5BR626", "mapping_status": "CONFIRMED",   "tax_class": "equity_fund", "role": "satellite",
+                 "note": "Reclassified from direct_stocks to equity_fund. This reclassification is what removes the last direct_stocks instrument from the universe and thereby makes B.1 (withholding tax credit) NOT_IN_DECISION_PATH."},
+    "EUROPE":   {"isin": "LU0328475792", "mapping_status": "UNCONFIRMED", "tax_class": "equity_fund", "role": "satellite"},
+    "DAX":      {"isin": "DE0005933931", "mapping_status": "UNCONFIRMED", "tax_class": "equity_fund", "role": "satellite"},
+    "JAPAN":    {"isin": "IE00B4L5YX21", "mapping_status": "UNCONFIRMED", "tax_class": "equity_fund", "role": "satellite"},
+    "EM":       {"isin": "IE00BKM4GZ66", "mapping_status": "UNCONFIRMED", "tax_class": "equity_fund", "role": "satellite"},
+    "GOLD":     {"isin": "IE00B4ND3602", "mapping_status": "UNCONFIRMED", "tax_class": "etc_debt_security", "role": "satellite",
+                 "note": "Tax treatment is a first-class assumption per B.3 and MUST be reported under both variants."},
+    "COMMOD":   {"isin": "IE00BDFL4P12", "mapping_status": "UNCONFIRMED", "tax_class": "equity_fund", "role": "satellite",
+                 "note": "tax_class is a PLACEHOLDER. A broad commodity vehicle is very unlikely to qualify as an equity fund; correct classification is required before COMMOD is ever quantified. COMMOD is INDETERMINATE_BY_CONSTRUCTION under G1 in any case."}
+  }
+}

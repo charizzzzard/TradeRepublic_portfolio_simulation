@@ -1,0 +1,39 @@
+{
+  "_spec_ref": "PROJECT_META v3, Teil A.5 - FROZEN. Changing any value here invalidates the baseline.",
+  "schema_version": "1.0.0",
+  "baseline_id": "r0_baseline_20260821_v3",
+  "supersedes": {
+    "baseline_id": "r0_baseline_20260816_v2",
+    "package_sha256": "f88d542fbc48ec4ff99c688b6158ed48c1ca0916dc0e9f5c8c313aad4e2d0d71",
+    "tax_engine_sha256": "ffd89ab2fdf45b7e8b35f8025dd537552df29ecfe10b30874716817cd8c9a59c",
+    "status": "UNREPRODUCIBLE_IN_REPO",
+    "note": "The v2 package referenced by A.5 is not present in this repository (zero commits at bootstrap). Its hashes cannot be reproduced or regressed against. Baseline v3 is a fresh, self-declared baseline. Any comparison of v3 numbers against v2 numbers quoted in PROJECT_META (199000 EUR median, 222 EUR / 554 EUR convention spreads, the G3 rank ordering) is NOT a validated regression."
+  },
+  "seed": 20260815,
+  "return_convention": {
+    "id": "geometric_target",
+    "formula": "monthly_factor = exp(log1p(g_annual)/12 + (vol_annual/sqrt(12)) * z)",
+    "no_ito_correction": true,
+    "note": "No additional -sigma^2/2 term. Consequence: g_annual is the MEDIAN annual log growth; the arithmetic mean of the simulated return exceeds g_annual by sigma^2/2. This is the frozen convention and must not be 'corrected'."
+  },
+  "funding_convention": {
+    "baseline": "D3",
+    "options": {
+      "D1": "pro_rata_sale",
+      "D2": "external_cash",
+      "D3": "reduce_next_contribution"
+    }
+  },
+  "terminal_sale_timing": {
+    "baseline": "first_business_day_y_plus_1",
+    "options": ["last_trading_day_y", "first_business_day_y_plus_1"],
+    "note": "first_business_day_y_plus_1 falls AFTER the deemed accrual of the final Vorabpauschale (first working day of the following calendar year), so the terminal Vorabpauschale is triggered. last_trading_day_y avoids it. This is the mechanical source of the G7 terminal-timing spread."
+  },
+  "fsa_cap_tolerance_eur": 1e-8,
+  "crn": "mandatory",
+  "rebalancing": {
+    "baseline": "annual_calendar",
+    "band_pp": null,
+    "note": "Rebalancing is funded per funding_convention. Phase 1 runs 100% CORE, where rebalancing is a no-op."
+  }
+}

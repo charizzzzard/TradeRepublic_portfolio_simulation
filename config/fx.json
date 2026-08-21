@@ -1,0 +1,11 @@
+{
+  "_spec_ref": "PROJECT_META v3, Teil B.5 - an explicit decision is MANDATORY; silent omission is disallowed.",
+  "schema_version": "1.0.0",
+  "decision": "option_b",
+  "status": "EXCLUDED_BY_DESIGN",
+  "decided_by": "human_operator",
+  "decided_at": "2026-08-21",
+  "rationale": "No FX process is modelled. The only claim this project still tests (Phase 6, GOLD downside) is mu-neutral by pre-registration and rests exclusively on second moments and tax mechanics. An FX process would require a correlation structure between currency and asset returns that is subject to the same underdetermination as G6, and would therefore add model uncertainty without making the claim more decidable.",
+  "cost_borne": "The EUR investor's unhedged USD / JPY / EM currency exposure is OUT OF SCOPE. Asset processes are interpreted as EUR-denominated total returns with the FX component folded into their volatility rather than modelled as a separate correlated factor. Any statement about the currency risk of a satellite is therefore NOT SUPPORTED by this model.",
+  "mandatory_disclosure": "This decision MUST be restated verbatim in every result report, per B.5."
+}

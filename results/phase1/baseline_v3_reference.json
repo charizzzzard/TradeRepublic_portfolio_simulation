@@ -1,0 +1,74 @@
+{
+  "P_model_real_terminal_below_real_contributions": {
+    "P_model": 0.2349,
+    "n_parameter_worlds": 40,
+    "n_paths_per_world": 250,
+    "note": "G4: P_model(X) = P(X | model, parameter prior), not a statement about the world. G5: effective n for parameter claims is 40."
+  },
+  "contributions_nominal": {
+    "mean": 156881.93438039382,
+    "median": 157666.73950111354,
+    "p10": 154077.54150235662,
+    "p5": 152318.73454053854,
+    "p50": 157666.73950111354,
+    "p90": 158749.32282976853,
+    "p95": 158784.21879350633
+  },
+  "contributions_real": {
+    "mean": 130767.27276727573,
+    "median": 130561.14300898853,
+    "p10": 120358.6952998779,
+    "p5": 117736.68592717765,
+    "p50": 130561.14300898853,
+    "p90": 141585.61490950896,
+    "p95": 144893.60753619354
+  },
+  "horizon_years": 20,
+  "n_parameter_worlds": 40,
+  "n_paths_per_world": 250,
+  "parameter_prior": {
+    "core_g_mean": 0.055,
+    "core_g_sd": 0.01,
+    "core_vol_mean": 0.16,
+    "core_vol_sd": 0.02,
+    "note": "Phase 4 (R3_DATA_ACQUISITION) has not run. No empirical calibration exists. These values exercise the engine; they support no claim.",
+    "status": "UNCALIBRATED_ASSUMPTION"
+  },
+  "result_hash": "07564f5013f334ebd0b1d48762d2d7f7bfb76ea547c429cc02c4472bb1d2ba49",
+  "tax_paid_nominal": {
+    "mean": 31010.854421175318,
+    "median": 21361.03648091264,
+    "p10": 749.5874838995475,
+    "p5": 186.3464376402135,
+    "p50": 21361.03648091264,
+    "p90": 71145.43980527119,
+    "p95": 96391.30284589031
+  },
+  "terminal_real_after_tax": {
+    "mean": 204742.12108292955,
+    "median": 178261.87391918435,
+    "p10": 102894.93937341533,
+    "p5": 86684.04363773171,
+    "p50": 178261.87391918435,
+    "p90": 335496.76378796273,
+    "p95": 412630.1054871935
+  },
+  "terminal_real_pretax": {
+    "mean": 224737.510121056,
+    "median": 191166.36402818153,
+    "p10": 103395.88623701959,
+    "p5": 86878.02466195461,
+    "p50": 191166.36402818153,
+    "p90": 381237.71942309814,
+    "p95": 475431.8573612642
+  },
+  "xirr_money_weighted": {
+    "mean": 0.04791580892673101,
+    "median": 0.04747281497223521,
+    "p10": -0.0011249842813957124,
+    "p5": -0.01724328482539756,
+    "p50": 0.04747281497223521,
+    "p90": 0.09838553364939227,
+    "p95": 0.1146799603675869
+  }
+}

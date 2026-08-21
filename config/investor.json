@@ -1,0 +1,22 @@
+{
+  "_spec_ref": "PROJECT_META v3, Teil A.4 - frozen, do not edit",
+  "schema_version": "1.0.0",
+  "investor": {
+    "jurisdiction": "Germany",
+    "base_currency": "EUR"
+  },
+  "capital": {
+    "initial_eur": 13000,
+    "monthly_contribution_eur": 500
+  },
+  "horizons_years": [10, 20],
+  "contribution_growth": {
+    "baseline": 0.02,
+    "sensitivities": [0.0, 0.03, 0.05]
+  },
+  "reporting": ["nominal", "real", "before_tax", "after_tax"],
+  "freistellungsauftrag": {
+    "baseline_eur": 1000,
+    "sensitivities_eur": [0, 2000]
+  }
+}

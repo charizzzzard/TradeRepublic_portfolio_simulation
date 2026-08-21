@@ -1,0 +1,460 @@
+{
+  "b1_withholding_credit_status": "NOT_IN_DECISION_PATH",
+  "b5_fx_disclosure": "The EUR investor's unhedged USD / JPY / EM currency exposure is OUT OF SCOPE. Asset processes are interpreted as EUR-denominated total returns with the FX component folded into their volatility rather than modelled as a separate correlated factor. Any statement about the currency risk of a satellite is therefore NOT SUPPORTED by this model.",
+  "baseline_id": "r0_baseline_20260821_v3",
+  "code_hash": "5660b25e9d1f48de1cf45c384241964e93085cd43de4aead07ce0ee7d62bd0f1",
+  "costs_config": {
+    "_spec_ref": "PROJECT_META v3, Teil B.4 - own parameter class. Rationale: a 0.20 pp TER delta runs directly against a 0.124 pp portfolio-CAGR materiality gate (G1).",
+    "blocking_note": "Every value above is an UNSOURCED PLACEHOLDER of the right order of magnitude. It exists so the cost machinery is exercised and hash-tracked, NOT so cost numbers can be quoted. Because a 0.20 pp TER delta alone exceeds the 0.124 pp G1 gate, no cost-sensitive claim may be promoted until these are replaced with sourced values (KIID/PRIIPs for TER, provider factsheets for tracking difference, venue data for spreads). Phase 3 (R2E) must therefore treat TER as a SWEPT DIMENSION (0/10/20/30 bp) rather than reading these point values.",
+    "cost_components": {
+      "fx_conversion": {
+        "applied": "per_trade_if_applicable",
+        "required": true,
+        "unit": "fraction_of_notional"
+      },
+      "savings_plan_execution": {
+        "required": true,
+        "unit": "eur_per_execution"
+      },
+      "spread": {
+        "applied": "on_buy_and_on_sell",
+        "required": true,
+        "unit": "fraction_of_notional"
+      },
+      "ter": {
+        "accrual": "monthly_pro_rata",
+        "required": true,
+        "unit": "annual_fraction"
+      },
+      "tracking_difference": {
+        "accrual": "monthly_pro_rata",
+        "fallback_legal_status": "TO_BE_VERIFIED",
+        "required": true,
+        "unit": "annual_fraction"
+      }
+    },
+    "data_status": "PLACEHOLDER_NOT_SOURCED",
+    "gate_reference": {
+      "note": "Cost deltas are reported in the same unit as the G1 gate so they can be compared directly.",
+      "portfolio_cagr_materiality_pp_per_year": 0.124
+    },
+    "instruments": {
+      "COMMOD": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.002,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.0019,
+        "tracking_difference": 0.0
+      },
+      "CORE": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.001,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.002,
+        "tracking_difference": 0.0
+      },
+      "DAX": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.0008,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.0016,
+        "tracking_difference": 0.0
+      },
+      "DIVIDEND": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.0015,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.0038,
+        "tracking_difference": 0.0
+      },
+      "EM": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.0015,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.0018,
+        "tracking_difference": 0.0
+      },
+      "EUROPE": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.001,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.002,
+        "tracking_difference": 0.0
+      },
+      "GOLD": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.0012,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.0012,
+        "tracking_difference": 0.0
+      },
+      "JAPAN": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.0012,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.0012,
+        "tracking_difference": 0.0
+      },
+      "NASDAQ": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.0007,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.0033,
+        "tracking_difference": 0.0
+      },
+      "SP500": {
+        "fx_conversion": 0.0,
+        "savings_plan_execution_eur": 0.0,
+        "source": "PLACEHOLDER",
+        "spread": 0.0005,
+        "td_legal_status": "TO_BE_VERIFIED",
+        "ter": 0.0007,
+        "tracking_difference": 0.0
+      }
+    },
+    "schema_version": "1.0.0",
+    "ter_delta_sweep_bp": [
+      0,
+      10,
+      20,
+      30
+    ]
+  },
+  "data_hash": "NO_EMPIRICAL_DATA_LOADED",
+  "effective_n_for_parameter_claims": 40,
+  "engine": "C",
+  "engine_status_ceiling": "MODEL_CONSISTENT_FINDING",
+  "environment_hash": "9706facffd06133fbb9feb82c3e39d5ba8bc9aef200794b9a9e59d31dae0495f",
+  "epistemic_limits_ack": [
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6",
+    "G7"
+  ],
+  "extra": {
+    "acceptance": "PASS",
+    "acceptance_checks": [
+      {
+        "check": "B5_fx_decision_recorded",
+        "detail": "option_b / EXCLUDED_BY_DESIGN (recorded in manifest)",
+        "result": "PASS"
+      },
+      {
+        "check": "B1_withholding_credit_not_in_decision_path",
+        "detail": "status=NOT_IN_DECISION_PATH, no gate depends on it, no direct_stocks instrument in the universe",
+        "result": "PASS"
+      },
+      {
+        "check": "B2_basiszins_coupled_to_short_rate_floor_zero",
+        "detail": "max(0, a + b * modelled_short_rate)",
+        "result": "PASS"
+      },
+      {
+        "check": "B3_gold_dual_variant_required",
+        "detail": "both variants present, both TO_BE_VERIFIED, dual reporting enforced",
+        "result": "PASS"
+      },
+      {
+        "check": "B4_cost_model_present_and_flagged",
+        "detail": "config/costs.json present; all values flagged PLACEHOLDER_NOT_SOURCED - no cost claim may be promoted",
+        "result": "PASS"
+      },
+      {
+        "check": "handchecks_and_regression_suite",
+        "detail": "40 passed in 1.55s",
+        "result": "PASS"
+      },
+      {
+        "check": "determinism_PASS_EXACT",
+        "detail": "two independent runs bit-identical on every reported array",
+        "result": "PASS"
+      },
+      {
+        "check": "pretax_invariant_PASS_EXACT",
+        "detail": "no tax parameter perturbs the pre-tax path under D2 (NOT a regression against baseline v2, which is absent)",
+        "result": "PASS"
+      }
+    ],
+    "assumption_echo_notice": "G3: Phase 1 produces NO ranking of assets. Any rank ordering reproduced elsewhere is an echo of the input mu vectors, not a simulation result.",
+    "g1_verification": {
+      "portfolio_cagr_gap_pp_per_year": 0.1242,
+      "required_satellite_excess_pp_per_year": {
+        "sleeve_15pct": 0.828,
+        "sleeve_5pct": 2.483
+      },
+      "requirement_lies_inside_estimation_error": true,
+      "se_of_return_difference_pp_per_year": {
+        "rho_0.70": 1.972,
+        "rho_0.95": 0.805
+      },
+      "verdict": "CONFIRMED: the smallest required satellite excess (0.83 pp/yr, 15% sleeve) is smaller than the largest standard error of the underlying return difference (1.97 pp/yr). Expected-value satellite claims are undecidable with the available data -> INDETERMINATE_BY_CONSTRUCTION."
+    },
+    "reference_run": {
+      "P_model_real_terminal_below_real_contributions": {
+        "P_model": 0.2349,
+        "n_parameter_worlds": 40,
+        "n_paths_per_world": 250,
+        "note": "G4: P_model(X) = P(X | model, parameter prior), not a statement about the world. G5: effective n for parameter claims is 40."
+      },
+      "contributions_nominal": {
+        "mean": 156881.93438039382,
+        "median": 157666.73950111354,
+        "p10": 154077.54150235662,
+        "p5": 152318.73454053854,
+        "p50": 157666.73950111354,
+        "p90": 158749.32282976853,
+        "p95": 158784.21879350633
+      },
+      "contributions_real": {
+        "mean": 130767.27276727573,
+        "median": 130561.14300898853,
+        "p10": 120358.6952998779,
+        "p5": 117736.68592717765,
+        "p50": 130561.14300898853,
+        "p90": 141585.61490950896,
+        "p95": 144893.60753619354
+      },
+      "horizon_years": 20,
+      "n_parameter_worlds": 40,
+      "n_paths_per_world": 250,
+      "parameter_prior": {
+        "core_g_mean": 0.055,
+        "core_g_sd": 0.01,
+        "core_vol_mean": 0.16,
+        "core_vol_sd": 0.02,
+        "note": "Phase 4 (R3_DATA_ACQUISITION) has not run. No empirical calibration exists. These values exercise the engine; they support no claim.",
+        "status": "UNCALIBRATED_ASSUMPTION"
+      },
+      "result_hash": "07564f5013f334ebd0b1d48762d2d7f7bfb76ea547c429cc02c4472bb1d2ba49",
+      "tax_paid_nominal": {
+        "mean": 31010.854421175318,
+        "median": 21361.03648091264,
+        "p10": 749.5874838995475,
+        "p5": 186.3464376402135,
+        "p50": 21361.03648091264,
+        "p90": 71145.43980527119,
+        "p95": 96391.30284589031
+      },
+      "terminal_real_after_tax": {
+        "mean": 204742.12108292955,
+        "median": 178261.87391918435,
+        "p10": 102894.93937341533,
+        "p5": 86684.04363773171,
+        "p50": 178261.87391918435,
+        "p90": 335496.76378796273,
+        "p95": 412630.1054871935
+      },
+      "terminal_real_pretax": {
+        "mean": 224737.510121056,
+        "median": 191166.36402818153,
+        "p10": 103395.88623701959,
+        "p5": 86878.02466195461,
+        "p50": 191166.36402818153,
+        "p90": 381237.71942309814,
+        "p95": 475431.8573612642
+      },
+      "xirr_money_weighted": {
+        "mean": 0.04791580892673101,
+        "median": 0.04747281497223521,
+        "p10": -0.0011249842813957124,
+        "p5": -0.01724328482539756,
+        "p50": 0.04747281497223521,
+        "p90": 0.09838553364939227,
+        "p95": 0.1146799603675869
+      }
+    },
+    "rescoping_notice": "Phase 1 as written requires PASS_EXACT against baseline v2. Baseline v2 is absent from this repository, so that regression was NOT performed and is NOT claimed. The invariant form was checked instead. This run ESTABLISHES baseline v3."
+  },
+  "fx_config": {
+    "_spec_ref": "PROJECT_META v3, Teil B.5 - an explicit decision is MANDATORY; silent omission is disallowed.",
+    "cost_borne": "The EUR investor's unhedged USD / JPY / EM currency exposure is OUT OF SCOPE. Asset processes are interpreted as EUR-denominated total returns with the FX component folded into their volatility rather than modelled as a separate correlated factor. Any statement about the currency risk of a satellite is therefore NOT SUPPORTED by this model.",
+    "decided_at": "2026-08-21",
+    "decided_by": "human_operator",
+    "decision": "option_b",
+    "mandatory_disclosure": "This decision MUST be restated verbatim in every result report, per B.5.",
+    "rationale": "No FX process is modelled. The only claim this project still tests (Phase 6, GOLD downside) is mu-neutral by pre-registration and rests exclusively on second moments and tax mechanics. An FX process would require a correlation structure between currency and asset returns that is subject to the same underdetermination as G6, and would therefore add model uncertainty without making the claim more decidable.",
+    "schema_version": "1.0.0",
+    "status": "EXCLUDED_BY_DESIGN"
+  },
+  "gate_freeze_hash": "c5da6742c248b3a59f5ac3b96399993119f3c4a3a8dda0ae0066a1751474142b",
+  "gates": {
+    "phase1_acceptance": {
+      "configs_complete_with_legal_status": "required",
+      "determinism": "PASS_EXACT required",
+      "handchecks_in_decision_path": "PASS required",
+      "no_gate_depends_on_NOT_IN_DECISION_PATH": "required",
+      "pretax_regression": "PASS_EXACT required (invariant form; v2 absent)"
+    }
+  },
+  "git_sha": "UNCOMMITTED",
+  "human_final_decision": true,
+  "inflation_config": {
+    "model": "Ornstein-Uhlenbeck, monthly, coupled to the short rate",
+    "note": "B.2: the Basiszins is a function of the modelled short rate, floored at 0."
+  },
+  "n_parameter_worlds": 40,
+  "n_paths_per_world": 250,
+  "package_version": "3.0.0",
+  "parameter_hash": "c9888051ba6c1402c32c58a90d7f4fee9f6ed1aca2ebf92a4e947a3cf4464d06",
+  "phase": "PHASE_1_R2F_DECISION_PATH_CLEANUP",
+  "portfolio_definitions": {
+    "CORE_100": {
+      "CORE": 1.0
+    }
+  },
+  "promotion_allowed": false,
+  "rebalancing_config": {
+    "band_pp": null,
+    "baseline": "annual_calendar",
+    "note": "Rebalancing is funded per funding_convention. Phase 1 runs 100% CORE, where rebalancing is a no-op."
+  },
+  "run_id": "phase1_r2f_decision_path_cleanup",
+  "seed": 20260815,
+  "status": "DISCOVERY",
+  "tax_config": {
+    "_spec_ref": "PROJECT_META v3, Teil B.1-B.3. Every assumption carries an explicit legal_status.",
+    "abgeltungsteuer": {
+      "assumption_note": "25% Abgeltungsteuer (§32d Abs.1 EStG) plus 5.5% Solidaritaetszuschlag on the tax amount. Soli is modelled as fully applicable to Kapitalertragsteuer (the 2021 Soli reduction does not extend to Abgeltungsteuer).",
+      "effective_rate_no_church": 0.26375,
+      "est_rate": 0.25,
+      "legal_status": "TO_BE_VERIFIED",
+      "soli_rate_on_est": 0.055
+    },
+    "assets_tax_classes": {
+      "equity_fund": {
+        "taxable_on_disposal": true,
+        "teilfreistellung": 0.3,
+        "vorabpauschale": true
+      },
+      "etc_debt_security_B3_alternative": {
+        "_spec_ref": "Teil B.3 contrast variant",
+        "assumption_note": "Contrast variant reflecting BFH case law on §23 EStG private disposal transactions: tax-free after a one-year holding period. That case law concerns deliverable domestic constructions (Xetra-Gold), NOT this product. Computed only because B.3 requires both variants to be reported while legal_status != VERIFIED.",
+        "holding_period_exemption_years": 1,
+        "legal_status": "TO_BE_VERIFIED",
+        "taxable_on_disposal": true,
+        "teilfreistellung": 0.0,
+        "vorabpauschale": false
+      },
+      "etc_debt_security_B3_assumed": {
+        "_spec_ref": "Teil B.3 primary variant",
+        "assumption_note": "IE00B4ND3602 is an Irish debt security (ETC) without a physical delivery claim. Assumed fully taxable under §20 EStG: no Teilfreistellung, no holding-period exemption. Effective ~26.375% on the gain.",
+        "holding_period_exemption_years": null,
+        "legal_status": "TO_BE_VERIFIED",
+        "taxable_on_disposal": true,
+        "teilfreistellung": 0.0,
+        "vorabpauschale": false
+      }
+    },
+    "b3_dual_reporting": {
+      "materiality": "~26% on the gain versus 0% (alternative) - decides the GOLD claim on its own.",
+      "required": true,
+      "rule": "While assets_tax_classes.etc_debt_security_B3_assumed.legal_status != VERIFIED, every GOLD claim MUST be computed and reported under BOTH variants. A single-variant GOLD result is not a valid deliverable."
+    },
+    "basiszins": {
+      "_spec_ref": "Teil B.2 - stochastic coupling REQUIRED",
+      "a": 0.0,
+      "assumption_note": "Assumption, to be checked against the annual BMF-Schreiben: 2023 ~2.55%, 2024 ~2.29%, 2025 ~2.53%, 2021/2022 negative -> floored to 0. The Basiszins is derived from the yield of long-dated German government bonds and is published at the start of each calendar year. Coupled to the modelled short rate so that an inflation regime cannot occur without a corresponding rise in the Basiszins (B.2 rationale: a deterministic Basiszins systematically understates the tax burden in inflationary worlds).",
+      "b": 1.0,
+      "floor": 0.0,
+      "historical_reference": {
+        "2021": 0.0,
+        "2022": 0.0,
+        "2023": 0.0255,
+        "2024": 0.0229,
+        "2025": 0.0253
+      },
+      "legal_status": "TO_BE_VERIFIED",
+      "model": "max(0, a + b * modelled_short_rate)",
+      "set_at": "start_of_calendar_year",
+      "term_premium": 0.0
+    },
+    "church_tax": {
+      "assumption_note": "§32d Abs.1 S.4-5 EStG. With q=0 and k=9%: effective 27.9951%. Sensitivity only per A.4; baseline is none.",
+      "baseline": "none",
+      "formula": "est = (kapitalertrag - 4*q) / (4 + k_percent); total = est * (1 + soli + k)",
+      "legal_status": "TO_BE_VERIFIED",
+      "rates": {
+        "bw_bay": 0.08,
+        "none": 0.0,
+        "other": 0.09
+      },
+      "sensitivity_only": true
+    },
+    "freistellungsauftrag": {
+      "assumption_note": "Sparer-Pauschbetrag §20 Abs.9 EStG, 1000 EUR since 2023 (single filer). Modelled as nominally constant over the whole horizon - NOT indexed to inflation. This is a conservative, explicitly stated modelling choice: in a high-inflation world the real value of the FSA decays.",
+      "baseline_eur": 1000,
+      "cap_tolerance_eur": 1e-08,
+      "consumption_order": "chronological_within_year",
+      "legal_status": "TO_BE_VERIFIED",
+      "reset": "annual",
+      "sensitivities_eur": [
+        0,
+        2000
+      ]
+    },
+    "legal_status_vocabulary": {
+      "NOT_IN_DECISION_PATH": "Implemented and tested, but not exercised by any decision-path run. Must not gate.",
+      "TO_BE_VERIFIED": "Modelled assumption, plausible, NOT yet checked against primary source. Blocks promotion above MODEL_CONSISTENT_FINDING for any claim it materially drives.",
+      "VERIFIED": "Checked against primary legal source; citation recorded."
+    },
+    "schema_version": "1.0.0",
+    "teilfreistellung": {
+      "assumption_note": "§20 InvStG: 30% partial exemption for private investors in equity funds (>=51% equity). Applied to both Vorabpauschale and realised gains.",
+      "bond_fund": 0.0,
+      "equity_fund": 0.3,
+      "etc_debt_security": 0.0,
+      "legal_status": "TO_BE_VERIFIED",
+      "mixed_fund": 0.15
+    },
+    "vorabpauschale": {
+      "acquisition_year_proration": "twelfths: factor = (13 - acquisition_month) / 12",
+      "applies_to": [
+        "equity_fund",
+        "mixed_fund",
+        "bond_fund"
+      ],
+      "assumption_note": "§18 InvStG (Basisertrag = NAV_start_of_year * 0.7 * Basiszins, capped at the Wertsteigerung of the year, floored at 0, reduced by 1/12 per full month preceding the acquisition month) and §19 InvStG (accumulated Vorabpauschalen reduce the gain on disposal, preventing double taxation). An ETC is a debt security, not an Investmentfonds, so no Vorabpauschale applies to GOLD under either tax variant.",
+      "basisertrag_factor": 0.7,
+      "capped_by_wertsteigerung": true,
+      "deemed_accrual": "first_working_day_of_following_calendar_year",
+      "does_not_apply_to": [
+        "etc_debt_security"
+      ],
+      "floor_zero": true,
+      "increases_cost_basis": true,
+      "legal_status": "TO_BE_VERIFIED"
+    },
+    "withholding_tax_credit": {
+      "_spec_ref": "Teil B.1",
+      "action": "Code and hand-checks are retained and still execute in the test suite, but are DECOUPLED from every gate. No gate may depend on this branch.",
+      "gates_depending_on_this_branch": [],
+      "known_v2_defect": "The v2 implementation applied credit = min(swht, dt) against 26.375% rather than against 25% Einkommensteuer with Solidaritaetszuschlag applied afterwards. This is the defect that held R2 at FAIL_LEGAL_EXACTNESS. It is corrected in the retained code, but the correction is NOT a decision-path claim.",
+      "legal_status": "NOT_IN_DECISION_PATH",
+      "rationale": "Accumulating Irish funds suffer foreign withholding tax at fund level; it is not creditable for the German private investor, and the Teilfreistellung is the statutory compensation mechanism. After DIVIDEND was reclassified to equity_fund, the universe contains no direct_stocks instrument, so no decision-path run exercises this branch.",
+      "status": "NOT_IN_DECISION_PATH"
+    }
+  },
+  "timestamp_utc": "2026-08-21T10:16:21+00:00",
+  "unmodelled_boundary_conditions": "Emergency fund, human capital, statutory/occupational pension, liquidity events and interim withdrawals are NOT modelled (B.6). This is a partial analysis of portfolio allocation, not financial planning."
+}
