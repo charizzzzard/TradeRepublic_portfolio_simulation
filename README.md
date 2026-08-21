@@ -18,13 +18,13 @@ system, and it does not derive an optimal portfolio from point forecasts.
 | | |
 |---|---|
 | Baseline | `r0_baseline_20260821_v3` |
-| Phases completed | **Phase 1 — `R2F_DECISION_PATH_CLEANUP`** (bootstrap variant)<br>**Phase 2 — `R11_SAVINGS_DYNAMICS`**<br>**Phase 3 — `R2E_CONVENTION_AND_COST_SENSITIVITY`** |
+| Phases completed | **Phase 1 — `R2F_DECISION_PATH_CLEANUP`** (bootstrap variant)<br>**Phase 2 — `R11_SAVINGS_DYNAMICS`**<br>**Phase 3 — `R2E_CONVENTION_AND_COST_SENSITIVITY`**<br>Phase 4 — `R3_DATA_ACQUISITION` → `BLOCKED_NETWORK` |
 | Governance status | `DISCOVERY` |
 | `promotion_allowed` | `false` |
 | Highest stage reachable today | `MODEL_CONSISTENT_FINDING` (Engine C only) |
 | Human final decision | required |
 
-Phases 4–7 have **not** run. Teil D forbids starting a phase whose predecessor
+Phases 5–7 have **not** run. Teil D forbids starting a phase whose predecessor
 gate is not `PASS`, and that is now enforced in code (`src/portfolio_sim/gates.py`),
 not merely documented.
 
@@ -124,19 +124,40 @@ POLICY`. Engine B/C can never award more than `MODEL_CONSISTENT_FINDING`; only
 Engine A, on real historical data, can award `EMPIRICAL_SUPPORT`. Both rules are
 enforced in code (`src/portfolio_sim/manifest.py`), not merely documented.
 
+## Phase 4 is blocked, not failed
+
+`R3_DATA_ACQUISITION` ran and returned **`BLOCKED_NETWORK`**: this environment
+has no egress to any host, confirmed against canary hosts that are not data
+sources. That is a fact about the container, not a finding about the data, so no
+`PASS`/`PARTIAL`/`FAIL` was issued — `FAIL` would mean "CORE is not obtainable",
+which nothing here evidences. The separation is enforced in code, not by
+convention. See [`docs/PHASE4_R3.md`](docs/PHASE4_R3.md).
+
+The specification is complete and ready to execute the moment egress exists: 14
+series with provider, tier, endpoint, licence status and transformation, plus
+PRIIPs KID sources for all 10 TERs. All endpoints are marked `UNVERIFIED`
+because none could be confirmed to resolve.
+
+**No empirical data is loaded.** Every result in this repository still rests on
+an `UNCALIBRATED_ASSUMPTION` prior, and `EMPIRICAL_SUPPORT` remains unreachable.
+
 ## Next phase
 
-**Phase 4 — `R3_DATA_ACQUISITION`**, a standalone work package with its own
-abort criterion. Nothing above `DISCOVERY` is reachable until it runs: every
-result so far rests on an `UNCALIBRATED_ASSUMPTION` prior, and `EMPIRICAL_SUPPORT`
-can only be awarded by Engine A on real historical data.
+Two options, and the choice is the operator's:
 
-Its acceptance is three-valued — `PASS` (all series available), `PARTIAL`
-(CORE + GOLD only, everything else stays `INDETERMINATE_BY_CONSTRUCTION`), or
-`FAIL` (CORE missing → STOP, no substitute data). Known blockers: JAPAN, EM,
-COMMOD and DIVIDEND have no source mapping; CORE and GOLD history is short or
-licence-encumbered.
+**Re-run Phase 4 with network access.** The only path to `CALIBRATED_DISCOVERY`
+or `EMPIRICAL_SUPPORT`. `python3 scripts/run_phase4.py` in an environment with
+egress will acquire what it can and classify the rest with source-level outcomes
+that *are* admissible as findings.
 
-Phase 3 also sharpened a separate priority: a 30 bp TER difference alone exceeds
-the G1 materiality gate, so sourcing `config/costs.json` is no longer a tidiness
-item but a precondition for any cost-sensitive claim.
+**Or proceed to Phase 5 (`R6_NULL_TESTS`) on the uncalibrated prior.** The null
+tests and the µ-neutral gold claim are constructed to need no empirical µ, and
+their ceiling is `MODEL_CONSISTENT_FINDING` either way. But `gates.require_phase_pass`
+refuses any phase whose predecessor acceptance is not `PASS`, so this requires an
+explicit decision to override — `BLOCKED_NETWORK` is not `PARTIAL`, and the code
+will not treat it as such on its own.
+
+Phase 5 would isolate how much of any measured satellite advantage is pure
+rebalancing mechanics with no return assumption at all
+(`REBALANCING_REFERENCE_SCALE`), and Null C1 (`delta == 0` exactly) is a
+STOP-level implementation check.
