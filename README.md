@@ -18,21 +18,31 @@ system, and it does not derive an optimal portfolio from point forecasts.
 | | |
 |---|---|
 | Baseline | `r0_baseline_20260821_v3` |
-| Phases completed | **Phase 1 — `R2F_DECISION_PATH_CLEANUP`** (bootstrap variant)<br>**Phase 2 — `R11_SAVINGS_DYNAMICS`** |
+| Phases completed | **Phase 1 — `R2F_DECISION_PATH_CLEANUP`** (bootstrap variant)<br>**Phase 2 — `R11_SAVINGS_DYNAMICS`**<br>**Phase 3 — `R2E_CONVENTION_AND_COST_SENSITIVITY`** |
 | Governance status | `DISCOVERY` |
 | `promotion_allowed` | `false` |
 | Highest stage reachable today | `MODEL_CONSISTENT_FINDING` (Engine C only) |
 | Human final decision | required |
 
-Phases 3–7 have **not** run. Teil D forbids starting a phase whose predecessor
+Phases 4–7 have **not** run. Teil D forbids starting a phase whose predecessor
 gate is not `PASS`, and that is now enforced in code (`src/portfolio_sim/gates.py`),
 not merely documented.
 
-**Frozen R11 comparator** — every admissible satellite finding must later be
-reported against it: +1 pp contribution growth is worth a paired median
-**2,923 EUR (3.45 % of core median) at 10 years** and **13,973 EUR (7.79 %) at
-20 years**, both with `P_model(delta > 0) = 100 %`. See
-[`docs/PHASE2_R11.md`](docs/PHASE2_R11.md).
+**Frozen comparators.** Every admissible satellite finding must later be
+reported against these:
+
+| Comparator | 10 y | 20 y |
+|---|---|---|
+| `R11` — +1 pp contribution growth | 2,923 EUR (3.45 %) | **13,973 EUR (7.79 %)** |
+| `R2E_CONVENTION_SPREAD` — funding × timing × FSA | 1,078 EUR (1.27 %) | 2,864 EUR (1.60 %) |
+| `R2E_FULL_GRID_SPREAD` — incl. TER sensitivity sweep | 2,362 EUR (2.79 %) | 8,322 EUR (4.66 %) |
+
+The savings lever dominates every convention and cost effect measured: at 20
+years the entire 72-cell spread, *including* a hypothetical 30 bp TER penalty,
+is 0.60× the value of one extra percentage point of contribution growth. A
+30 bp TER difference alone (5,600 EUR) exceeds the 5,000 EUR G1 materiality
+gate. See [`docs/PHASE2_R11.md`](docs/PHASE2_R11.md) and
+[`docs/PHASE3_R2E.md`](docs/PHASE3_R2E.md).
 
 ## Read this before any number
 
@@ -83,19 +93,20 @@ All cost values are **unsourced placeholders**. All tax assumptions are
 ```
 config/       investor, conventions, tax, costs, fx, assets — data, hashed as data
 src/          engine, tax engine, lot ledger, CRN, macro, metrics, manifest, ledger
-tests/        28 hand checks + determinism + pre-tax regression + gates (49 tests)
-scripts/      run_phase1.py, run_phase2.py, verify_g1.py
+tests/        hand checks + determinism + pre-tax regression + gates + grid (58 tests)
+scripts/      run_phase1.py, run_phase2.py, run_phase3.py, verify_g1.py
 results/      per-phase run_manifest.json, baseline reference, falsification ledger
-docs/         BASELINE_V3.md, PHASE2_R11.md
+docs/         BASELINE_V3.md, PHASE2_R11.md, PHASE3_R2E.md
 ```
 
 ## Run it
 
 ```bash
 pip install -r requirements.txt
-python3 -m pytest tests/ -q      # 49 tests
+python3 -m pytest tests/ -q      # 58 tests
 python3 scripts/run_phase1.py    # acceptance checks + run_manifest.json
 python3 scripts/run_phase2.py    # R11 savings dynamics (~5 min)
+python3 scripts/run_phase3.py    # R2E convention/cost grid (~25 min)
 python3 scripts/verify_g1.py     # recompute the G1 arithmetic
 ```
 
@@ -115,13 +126,17 @@ enforced in code (`src/portfolio_sim/manifest.py`), not merely documented.
 
 ## Next phase
 
-**Phase 3 — `R2E_CONVENTION_AND_COST_SENSITIVITY`**: cross-tabulate funding
-convention (D1/D2/D3), terminal timing, TER delta (0/10/20/30 bp) and FSA
-(0/1000/2000 EUR) on 100 % CORE, on shared worlds under CRN. If the largest
-convention spread meets or exceeds the best satellite median delta, the
-`CONVENTION_DOMINANCE_CONFIRMED` flag fires and the satellite question is
-reported as subordinate (G7).
+**Phase 4 — `R3_DATA_ACQUISITION`**, a standalone work package with its own
+abort criterion. Nothing above `DISCOVERY` is reachable until it runs: every
+result so far rests on an `UNCALIBRATED_ASSUMPTION` prior, and `EMPIRICAL_SUPPORT`
+can only be awarded by Engine A on real historical data.
 
-Note that TER must be *swept*, not read from `config/costs.json`: every value
-there is an unsourced placeholder, and a 0.20 pp TER delta alone exceeds the
-0.124 pp G1 materiality gate.
+Its acceptance is three-valued — `PASS` (all series available), `PARTIAL`
+(CORE + GOLD only, everything else stays `INDETERMINATE_BY_CONSTRUCTION`), or
+`FAIL` (CORE missing → STOP, no substitute data). Known blockers: JAPAN, EM,
+COMMOD and DIVIDEND have no source mapping; CORE and GOLD history is short or
+licence-encumbered.
+
+Phase 3 also sharpened a separate priority: a 30 bp TER difference alone exceeds
+the G1 materiality gate, so sourcing `config/costs.json` is no longer a tidiness
+item but a precondition for any cost-sensitive claim.
