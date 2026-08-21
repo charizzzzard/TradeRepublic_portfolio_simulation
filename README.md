@@ -141,8 +141,16 @@ findings are recorded as `EXTERNALLY_REPORTED` with `verified_locally: false`,
 because nothing was downloaded, counted or hashed here — and because the CORE
 question was asked about MSCI ACWI when `IE00BK5BQT80` actually tracks **FTSE
 All-World**. That registry defect is fixed; the decisive question is now open and
-unanswered. Candidate verdict, recorded but not issued:
-`FAIL_OR_PARTIAL_PENDING_VERIFICATION`.
+unanswered. A second round then answered the CORE question for the correct index: FTSE
+All-World long history is a licensed LSEG product (public Historic Index Values
+give ~2 years), and the Vanguard NAV fallback has only ~7 years. Candidate
+verdict, recorded but **not issued**: `FAIL_PENDING_LOCAL_VERIFICATION`.
+
+Round 2 also found a **second** registry error of mine — `IE00BK5BQT80`
+benchmarks **FTSE All-World NR USD**, not EUR — which puts the B.5 decision
+`fx: EXCLUDED_BY_DESIGN` in conflict with calibration and must be resolved by the
+operator before any calibrated run. Recorded as
+`SPECIFICATION_CONFLICTS["B5_FX_VS_USD_BENCHMARK"]`, status `OPEN`.
 
 **No empirical data is loaded.** Every result in this repository still rests on
 an `UNCALIBRATED_ASSUMPTION` prior, and `EMPIRICAL_SUPPORT` remains unreachable.

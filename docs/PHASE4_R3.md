@@ -247,3 +247,116 @@ One distinction to carry into whichever verdict is finally issued:
 obtainable commercially. What is unavailable is a version this repository may
 redistribute. A `FAIL` on those grounds is a statement about this project's
 open-reproducibility constraint, not about the data's existence.
+
+---
+
+# Addendum 2 — external findings round 2, 2026-08-21
+
+Recorded at `data/external/findings_round2_20260821.json` (hashed, ingested by
+`run_phase4.py`). **Acceptance is still `BLOCKED_NETWORK`; Phase 5 is still
+gated.** But the candidate verdict has firmed from
+`FAIL_OR_PARTIAL_PENDING_VERIFICATION` to **`FAIL_PENDING_LOCAL_VERIFICATION`**.
+
+## CORE — the question is now materially answered
+
+Round 1 asked about the wrong index. Round 2 asked about **FTSE All-World**, the
+actual benchmark, and answered it:
+
+* LSEG's freely accessible **Historic Index Values give roughly two years** of
+  month-end values. Longer history is a licensed subscription product, and LSEG
+  requires a licence for use *and distribution* of index data.
+* The Vanguard NAV fallback is **`INSUFFICIENT_HISTORY`**: share class inception
+  **2019-07-23**, so ~7 years exist against the 360 required — and fund NAV is
+  net of fees and tracking difference, so it is not the benchmark series anyway.
+
+No ≥360-month CORE series is redistributable under this project's
+open-reproducibility condition.
+
+## A second specification error — also mine
+
+`IE00BK5BQT80`'s official benchmark is **FTSE All-World NR USD**. The fund's base
+currency is USD; **EUR is a listing/trading currency only.** My registry had
+recorded EUR, inferred from the fact that the ETF trades in EUR.
+
+So the registry was wrong twice about the same series: first the index, then the
+currency. Both are now corrected, and a test asserts `currency == "USD"`.
+
+## The consequence neither dossier drew: B.5 is now in conflict
+
+This is the most decision-relevant thing to come out of round 2, and it reaches
+beyond Phase 4.
+
+`config/fx.json` records B.5 as `option_b: EXCLUDED_BY_DESIGN`, with the
+rationale that asset processes are *"interpreted as EUR-denominated total returns
+with the FX component folded into their volatility"*. That rationale is only
+true for a natively EUR-denominated series. **The CORE benchmark is USD.**
+
+Calibrating CORE from a USD series leaves two options, and both break the
+recorded rationale:
+
+1. **Convert USD → EUR with an FX series.** That *is* an FX process — precisely
+   what `option_b` excludes.
+2. **Treat USD returns as EUR returns.** That does not "fold FX into volatility";
+   it **omits FX entirely**, misstating both the mean and the variance faced by a
+   EUR investor.
+
+**Scope:** Phases 1–3 are *not* invalidated — they run on an assumed prior, not
+on calibrated data, and the conflict bites only at calibration. But B.5 must be
+revisited **before any calibrated run**, and the rationale text in
+`config/fx.json` is inaccurate as written once a USD benchmark is in play.
+
+Recorded as `SPECIFICATION_CONFLICTS["B5_FX_VS_USD_BENCHMARK"]`, status `OPEN`,
+`decision_owner: human operator` — it is a Teil B first-class assumption, not an
+implementation detail, so `config/fx.json` was **not** changed unilaterally.
+Three resolution options are recorded there.
+
+## GOLD — an admissible open proxy now exists
+
+Unlike the CORE situation, this one has a real answer. **World Bank Pink Sheet**,
+monthly since 1960, **CC BY 4.0**, redistribution permitted with attribution,
+from an institutional primary provider.
+
+But it is *not* a silent substitute: the target is the **LBMA PM month-end**
+fixing; the proxy is the **monthly average of daily London afternoon fixings**.
+Averaging suppresses month-end volatility — which matters directly for a claim
+resting on second moments (G2). Registered with the difference stated and a
+requirement for a documented substitution rule and its own `data_status`.
+
+## `WT3230` — a specification error, not a rename
+
+Round 2 is sharper than round 1: the official Bundesbank migration catalogue
+contains **no entry** for `BBK01.WT3230`. The candidate series is documented as
+the successor of **`WU9555` / `WU0115`**, not of `WT3230`. So the key I recorded
+was almost certainly invented rather than superseded.
+
+Mapping stays blocked. The same Bundesbank table also carries maturity-band
+series (3–5, 5–8, 8–15, 15–30 years), and which is correct depends on the
+Basiszins *concept* — the very thing B.2 lists as `TO_BE_VERIFIED`.
+
+## TER — still not adopted, and round 2 shows why
+
+Round 2 found that **at least two round-1 document dates were wrong** (COMMOD is
+2026-06-16, not 2026-04-09; NASDAQ differs too), and that **KID versions are
+locale- and jurisdiction-dependent**. Provenance must therefore carry
+`isin, provider, locale, document_date, source_url, sha256, retrieval_date` —
+not just ISIN and URL.
+
+That is a direct vindication of hashing before adoption: two of ten dates moved
+between rounds, from the same reporter, within a day.
+
+## What would settle the verdict
+
+A single run with egress that fetches the LSEG Historic Index Values page and the
+FTSE All-World licence terms *itself* and records the observed coverage. That is
+cheap — **it does not require obtaining the data, only confirming it is not
+obtainable openly.**
+
+And the distinction to carry into the verdict: `LICENCE_REQUIRED` is not "the
+data does not exist". It exists and is commercially obtainable. What does not
+exist is a version this repository may redistribute. A `FAIL` here is a statement
+about a condition **this project imposed on itself**.
+
+If that condition were relaxed — licensed data held outside the repo, or a
+documented open proxy with its own `data_status` — `PARTIAL` becomes reachable:
+GOLD now has an admissible open proxy, HICP and €STR are open. **CORE is the
+binding constraint either way.**

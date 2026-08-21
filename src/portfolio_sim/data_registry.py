@@ -65,48 +65,58 @@ class SeriesSpec:
 SERIES: tuple[SeriesSpec, ...] = (
     SeriesSpec(
         key="CORE",
-        description="Global all-country equity total return, EUR - the benchmark the "
-                    "whole study is defined against. The tracked index is FTSE All-World, "
-                    "NOT MSCI ACWI: IE00BK5BQT80 is the Vanguard FTSE All-World UCITS ETF "
-                    "(Acc). An earlier version of this registry specified MSCI ACWI, which "
-                    "is a different index with a different constituent methodology.",
+        description="Global all-country equity net total return - the benchmark the whole "
+                    "study is defined against. The tracked index is FTSE All-World "
+                    "NET RETURN, denominated in USD. IE00BK5BQT80 is the Vanguard FTSE "
+                    "All-World UCITS ETF (Acc); its base currency is USD and EUR is a "
+                    "listing/trading currency only. Two earlier versions of this registry "
+                    "were wrong: first the index (MSCI ACWI, a different index), then the "
+                    "currency (NR EUR, asserted merely because the ETF trades in EUR).",
         required_for="PHASE_5, PHASE_6, and every calibrated statement. CORE missing "
                      "is the one condition that forces STOP.",
-        frequency="monthly", currency="EUR", return_convention="total_return",
-        transformation="net total return index -> monthly log returns; EUR series taken "
-                       "directly, never converted from USD without an FX series (FX is "
-                       "EXCLUDED_BY_DESIGN per B.5)",
+        frequency="monthly", currency="USD", return_convention="total_return",
+        transformation="FTSE All-World NR USD -> monthly log returns, then an EXPLICIT "
+                       "USD->EUR conversion for the EUR investor. That conversion is a "
+                       "required transformation, not an optional one, and it collides "
+                       "with the B.5 decision fx=EXCLUDED_BY_DESIGN - see "
+                       "SPECIFICATION_CONFLICTS below.",
         sources=(
-            SourceSpec("FTSE Russell", 1,
-                       "https://www.lseg.com/en/ftse-russell/indices/all-world",
-                       "LICENCE_UNKNOWN",
-                       note="THE CORRECT TARGET INDEX. FTSE All-World Net Total Return "
-                            "EUR is the benchmark of IE00BK5BQT80. Availability and "
-                            "redistribution terms have NOT been established - this is the "
-                            "open question that must be answered before any FAIL verdict "
-                            "on CORE."),
+            SourceSpec("FTSE Russell / LSEG", 1,
+                       "https://www.lseg.com/en/ftse-russell/index-resources/"
+                       "historic-index-values", "LICENCE_REQUIRED",
+                       note="THE CORRECT TARGET INDEX. Externally reported 2026-08-21 "
+                            "(round 2): LSEG's freely accessible Historic Index Values "
+                            "typically give only about TWO YEARS of month-end values; "
+                            "longer history is a licensed subscription product and LSEG "
+                            "requires a licence for use and distribution. A >=360-month "
+                            "redistributable series could NOT be verified."),
+            SourceSpec("Vanguard (fund NAV)", 5,
+                       "https://www.vanguard.co.uk/professional/product/etf/equity/9679/"
+                       "ftse-all-world-ucits-etf-usd-accumulating", "LICENCE_UNKNOWN",
+                       note="INSUFFICIENT_HISTORY and a proxy in any case. Share class "
+                            "inception 2019-07-23, so at most ~7 years exist against the "
+                            "360 required. Fund NAV is also net of fund fees and tracking "
+                            "difference, so it is not the benchmark series."),
             SourceSpec("MSCI", 1, "https://www.msci.com/end-of-day-data-search",
                        "LICENCE_REQUIRED",
-                       note="MSCI ACWI. Externally reported 2026-08-21: no >=360-month "
-                            "EUR net-total-return raw series verifiable for redistribution; "
-                            "MSCI forbids reproduction without prior written consent. NOTE "
-                            "this is NOT the index the CORE instrument tracks, so this "
-                            "finding does not settle CORE."),
+                       note="MSCI ACWI - NOT the index the CORE instrument tracks. "
+                            "Retained only because round 1 assessed it. Reported "
+                            "LICENCE_REQUIRED; does not settle CORE."),
             SourceSpec("Kenneth R. French Data Library (Dartmouth)", 4,
                        "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/"
                        "Developed_3_Factors_CSV.zip", "LICENCE_UNKNOWN",
-                       note="CANDIDATE PROXY ONLY - REJECTED as of 2026-08-21. NOT ACWI "
-                            "and not FTSE All-World: developed markets only, USD not EUR, "
-                            "no MSCI-style net-of-withholding-tax concept, no explicit "
+                       note="CANDIDATE PROXY ONLY - REJECTED. NOT ACWI and not FTSE "
+                            "All-World: developed markets only, USD not EUR, no "
+                            "net-of-withholding-tax concept, no explicit "
                             "open-redistribution licence, and its international portfolios "
                             "use MSCI raw data to 2006 and Bloomberg thereafter, so the "
-                            "licence problem is inherited rather than avoided. Using it "
-                            "would require an explicit SPLICE rule and its own data_status; "
-                            "it may not silently stand in for CORE."),
+                            "licence problem is inherited rather than avoided. Would "
+                            "require an explicit SPLICE rule and its own data_status."),
         ),
-        blocker="Authoritative EUR net-total-return global equity history is "
-                "licence-encumbered. MSCI ACWI confirmed LICENCE_REQUIRED (externally "
-                "reported); FTSE All-World, the actually relevant index, NOT YET ASSESSED.",
+        blocker="CONFIRMED LICENCE_REQUIRED for the correct index. FTSE All-World long "
+                "history is a licensed LSEG product and is not redistributable in a public "
+                "repository. The data exists commercially; what is unavailable is a "
+                "version this project may redistribute.",
     ),
     SeriesSpec(
         key="GOLD",
@@ -124,6 +134,18 @@ SERIES: tuple[SeriesSpec, ...] = (
                             "an IBA licence, otherwise LBMA directs users to purchase from "
                             "ICE. The former open JSON endpoint "
                             "(prices.lbma.org.uk/json/gold_pm.json) is superseded."),
+            SourceSpec("World Bank (Pink Sheet)", 5,
+                       "https://thedocs.worldbank.org/en/doc/"
+                       "74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/"
+                       "CMO-Historical-Data-Monthly.xlsx", "OPEN",
+                       note="ADMISSIBLE OPEN PROXY CANDIDATE, CC BY 4.0, redistribution "
+                            "permitted with attribution. Monthly from 1960. Definition: "
+                            "Gold (UK), 99.5% fine, London afternoon fixing, AVERAGE OF "
+                            "DAILY RATES. DIFFERS FROM TARGET: the target is the LBMA PM "
+                            "MONTH-END fixing; averaging suppresses month-end volatility, "
+                            "which matters directly for a claim resting on second moments "
+                            "(G2). Requires a documented substitution rule and its own "
+                            "data_status before use - it may not stand in silently."),
             SourceSpec("Deutsche Bundesbank", 2,
                        "https://api.statistiken.bundesbank.de/rest/download/BBEX3/"
                        "D.USD.EUR.BB.AC.000", "OPEN",
@@ -281,16 +303,24 @@ SERIES: tuple[SeriesSpec, ...] = (
                             "https://api.statistiken.bundesbank.de/rest/data/BBSIS/"
                             "M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A?format=csv&lang=de",
                             "OPEN",
-                            note="CANDIDATE ONLY - EQUIVALENCE NOT ESTABLISHED. "
+                            note="CANDIDATE ONLY - MAPPING FROM WT3230 NOT SUPPORTED. "
                                  "Umlaufsrenditen inländischer Inhaberschuldverschreibungen "
                                  "/ börsennotierte Bundeswertpapiere, monthly. The legacy "
-                                 "key BBK01.WT3230 that this registry previously specified "
-                                 "could not be mapped onto the current Bundesbank database "
-                                 "structure (externally reported 2026-08-21). This series "
-                                 "may NOT be mapped to BUND_LONG_YIELD until the yield "
-                                 "concept originally meant by WT3230 is established."),),
-        blocker="Legacy key BBK01.WT3230 not resolvable; candidate exists but equivalence "
-                "is unproven.",
+                                 "Externally reported 2026-08-21 (round 2): the official "
+                                 "Bundesbank migration catalogue contains NO entry for "
+                                 "BBK01.WT3230, so that key is almost certainly a "
+                                 "SPECIFICATION ERROR in this registry rather than a "
+                                 "renamed series. This candidate is documented as the "
+                                 "successor of WU9555 / WU0115, NOT of WT3230. Concept: "
+                                 "Umlaufsrenditen inlaendischer Inhaberschuldverschreibungen "
+                                 "/ boersennotierte Bundeswertpapiere / monthly. The same "
+                                 "Bundesbank table also carries maturity-band series "
+                                 "(3-5, 5-8, 8-15, 15-30 years), and which one is correct "
+                                 "depends on the Basiszins concept, not on the label."),),
+        blocker="BBK01.WT3230 has no entry in the official migration catalogue: "
+                "SPECIFICATION_ERROR_SUSPECTED. The candidate succeeds WU9555/WU0115, not "
+                "WT3230, and may not be mapped until the intended economic concept is "
+                "decided.",
     ),
 )
 
@@ -364,3 +394,50 @@ def registry_payload() -> dict:
                                  "specification. None has been confirmed to resolve, "
                                  "because this environment has no network path.",
     }
+
+
+# --------------------------------------------------------------------------
+# Specification conflicts surfaced by acquisition
+# --------------------------------------------------------------------------
+# Acquisition is not only about whether data exists. Establishing what the data
+# actually IS can invalidate a decision taken earlier on an assumption about it.
+SPECIFICATION_CONFLICTS: tuple[dict, ...] = (
+    {
+        "id": "B5_FX_VS_USD_BENCHMARK",
+        "severity": "DECISION_RELEVANT",
+        "status": "OPEN",
+        "conflict": (
+            "B.5 was decided as option_b, fx=EXCLUDED_BY_DESIGN. The rationale recorded "
+            "in config/fx.json is that asset processes are 'interpreted as EUR-denominated "
+            "total returns with the FX component folded into their volatility'. Round 2 "
+            "establishes that the CORE benchmark is FTSE All-World NET RETURN in USD, and "
+            "that the fund's base currency is USD. A EUR-denominated CORE series is "
+            "therefore not what would be calibrated from."
+        ),
+        "why_it_matters": (
+            "Calibrating CORE from a USD series leaves two options and both break the "
+            "recorded B.5 rationale. (a) Convert USD->EUR with an FX series: that IS an FX "
+            "process, which option_b excludes. (b) Treat USD returns as if they were EUR "
+            "returns: that does not 'fold FX into volatility', it OMITS FX entirely, "
+            "misstating both the mean and the variance faced by a EUR investor. The "
+            "recorded rationale would only have been accurate for a natively "
+            "EUR-denominated series."
+        ),
+        "scope_of_damage": (
+            "Phases 1-3 are NOT invalidated: they run on an assumed prior, not on "
+            "calibrated data, and the conflict bites only at calibration. But B.5 must be "
+            "revisited BEFORE any calibrated run, and the rationale text in config/fx.json "
+            "is inaccurate as written once a USD benchmark is in play."
+        ),
+        "resolution_options": [
+            "Switch B.5 to option_a and model an explicit EUR/USD process (adds the "
+            "parameter uncertainty option_b was chosen to avoid).",
+            "Keep option_b but rewrite the rationale honestly: FX risk is OMITTED, not "
+            "absorbed, and every CORE-derived number is a USD-investor number relabelled.",
+            "Source a natively EUR-denominated net-return series, which would make the "
+            "original rationale true - but round 2 could not verify one exists openly.",
+        ],
+        "decision_owner": "human operator - this is a B.5 first-class assumption, not an "
+                          "implementation detail",
+    },
+)

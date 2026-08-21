@@ -1,0 +1,119 @@
+{
+  "_what_this_is": "Verbatim record of the ROUND 2 external data-acquisition report, 2026-08-21, relayed by the operator. This session has no egress and could NOT verify any statement here.",
+  "round": 2,
+  "supersedes_partially": "findings_20260821.json (round 1)",
+  "verification": {
+    "verified_locally": false,
+    "reason": "No network egress; every claim is second-hand.",
+    "artifacts_materialised": false,
+    "artifact_note": "The reporter located the official CSV/XLSX endpoints but could not materialise the bytes into a hashing runtime (Bundesbank MIME type application/vnd.bbk.data+csv; World Bank binary XLSX). It therefore supplied NO SHA-256 and NO row counts rather than fabricating them. That is an interface limitation, not data unavailability."
+  },
+  "reported_at_utc": "2026-08-21T00:00:00Z",
+
+  "CORE": {
+    "reported_status": "LICENCE_REQUIRED",
+    "question_answered": "Is a FTSE All-World Net Total Return monthly history of >=360 months obtainable AND redistributable in a public repository?",
+    "answer": "No. LSEG's freely accessible Historic Index Values typically provide only about TWO YEARS of month-end values and returns. Longer historical index data is a licensed subscription product, and LSEG expressly requires a licence for use and distribution of index data.",
+    "citations": [
+      "https://www.lseg.com/en/ftse-russell/index-resources/historic-index-values",
+      "https://www.lseg.com/en/ftse-russell/indices/ftseall-world"
+    ],
+    "licence_status": "LICENCE_REQUIRED",
+    "redistribution_in_public_repo": "not permitted without an LSEG/FTSE Russell licence",
+    "SECOND_SPECIFICATION_CORRECTION": {
+      "finding": "IE00BK5BQT80's official benchmark is FTSE All-World NR USD, not NR EUR. The fund's base currency is USD; EUR is a listing/trading currency only. LSEG's own FTSE All-World page maps the Vanguard ETF to 'FTSE All-World NR USD'.",
+      "share_class_inception": "2019-07-23",
+      "correct_model": {
+        "benchmark_index": "FTSE All-World",
+        "benchmark_convention": "net_return",
+        "benchmark_currency": "USD",
+        "simulation_currency": "EUR",
+        "currency_transform": "USD -> EUR, an EXPLICIT transformation"
+      },
+      "incorrect_model": "benchmark = FTSE All-World NR EUR, asserted merely because the ETF trades in EUR",
+      "note": "LSEG does display a FTSE All-World EUR total-return variant publicly, but it is not established that this is the required NET-of-tax variant."
+    },
+    "vanguard_nav_fallback": {
+      "status": "INSUFFICIENT_HISTORY",
+      "is_proxy": true,
+      "reason": "Share class inception 2019-07-23, so at most ~7 years exist - far short of 360 months. Fund NAV is also net of fund fees and tracking, so it is not the benchmark series."
+    }
+  },
+
+  "GOLD": {
+    "exact_source": {
+      "reported_status": "LICENCE_REQUIRED",
+      "detail": "LBMA month-end PM fixing path remains licence-gated (MyLBMA / IBA)."
+    },
+    "open_proxy_found": {
+      "series_key_suggested": "GOLD_WB_PROXY",
+      "reported_status": "ACQUIRED_OPEN",
+      "is_proxy": true,
+      "provider": "World Bank",
+      "dataset": "Commodity Price Data (the Pink Sheet)",
+      "endpoint": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx",
+      "definition": "Gold (UK), 99.5% fine, London afternoon fixing, average of daily rates",
+      "frequency": "monthly",
+      "currency": "USD",
+      "period_start": "1960",
+      "licence_status": "OPEN / CC BY 4.0",
+      "redistribution_in_public_repo": "permitted with attribution",
+      "difference_to_target": "Target is LBMA PM MONTH-END. This proxy is the monthly AVERAGE of daily London afternoon fixings. Averaging suppresses month-end volatility and is not a substitute without a documented rule.",
+      "assessment": "Unlike the Kenneth French candidate for CORE, this series genuinely meets the open-data requirement: institutional primary provider, long history, monthly, explicit licence, redistribution permitted."
+    }
+  },
+
+  "HICP_EA": {
+    "reported_status": "SOURCE_CONFIRMED",
+    "artifact_status": "NOT_MATERIALIZED_IN_THIS_SESSION",
+    "series_key": "HICP.M.U2.N.000000.4D0.ANR",
+    "coverage_reported": "1996-12 to 2026-05",
+    "endpoint": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata",
+    "licence_status": "OPEN",
+    "sha256": "NOT_COMPUTED",
+    "n_observations": "NOT_ARTIFACT_VERIFIED",
+    "reporter_note": "Do NOT extrapolate n_observations from start and end month. Parse and count the actual CSV."
+  },
+
+  "SHORT_RATE_EA": {
+    "reported_status": "SOURCE_CONFIRMED",
+    "artifact_status": "NOT_MATERIALIZED_IN_THIS_SESSION",
+    "series_key": "BBMMB.M.EU000A2X2A25.WT",
+    "description": "Euro Short-Term Rate, monthly average; CSV and SDMX-ML both linked",
+    "endpoint": "https://api.statistiken.bundesbank.de/rest/data/BBMMB/M.EU000A2X2A25.WT?format=csv&lang=de",
+    "licence_status": "OPEN",
+    "sha256": "NOT_COMPUTED",
+    "eonia_rule_confirmed": "From 2019-10-02 EONIA was computed as €STR + 8.5 bp; EONIA publication ended 2022-01-03.",
+    "critical_caveat": "This does NOT create a €STR history before October 2019. Back-extension via legacy EONIA is a separate proxy/splice and must stay explicitly flagged."
+  },
+
+  "BUND_LONG_YIELD": {
+    "reported_status": "NOT_FOUND",
+    "substatus": "SPECIFICATION_ERROR_SUSPECTED",
+    "finding": "The official Bundesbank migration catalogue contains NO entry for BBK01.WT3230. The candidate series is documented as the successor of WU9555 / WU0115, not of WT3230.",
+    "citation": "https://www.bundesbank.de/resource/blob/842610/fdd1e67ec4ce206db5254498faf5c97e/mL/gegenueberstellung-frueherer-und-aktueller-zeitreihenschluessel-data.pdf",
+    "candidate_current": "BBSIS.M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A",
+    "candidate_old_keys": ["WU9555", "WU0115"],
+    "candidate_concept": "Umlaufsrenditen inländischer Inhaberschuldverschreibungen / börsennotierte Bundeswertpapiere / Monatswerte",
+    "mapping_WT3230_to_candidate": "NOT_SUPPORTED",
+    "open_question": "Should BUND_LONG_YIELD measure the aggregate Umlaufsrendite of all listed federal securities? The same Bundesbank table also carries maturity-band series (3-5, 5-8, 8-15, 15-30 years), and the Basiszins concept determines which is correct."
+  },
+
+  "ter_kid": {
+    "recommendation": "Do NOT change config/costs.json yet. The repository's decision was correct.",
+    "new_finding": "KID document versions are locale- and jurisdiction-dependent, so provenance must record isin, provider, locale, document_date, source_url, sha256 and retrieval_date - not just isin and URL.",
+    "round1_dates_to_correct": {
+      "NASDAQ": "official BlackRock KID endpoint shows a different document version than the round-1 date 2026-08-11",
+      "COMMOD": "official German BlackRock KID endpoint shows 2026-06-16, not the round-1 date 2026-04-09"
+    },
+    "values_reconfirmed": "S&P 500 0.07% and DAX 0.16% reconfirmed against current official product data.",
+    "sha256": "NOT_COMPUTED_IN_THIS_SESSION"
+  },
+
+  "reporter_conclusion": {
+    "expected_verdict_after_local_reproduction": "FAIL",
+    "reason": "CORE exact benchmark history requires licensed FTSE Russell/LSEG data and cannot be redistributed as the public-repo policy requires.",
+    "caveat": "LICENCE_REQUIRED still does not mean the data does not exist. It means the project set itself an open-reproducibility condition that the exact dataset does not satisfy.",
+    "recommendation": "Do not start Phase 5. Ingest round 2 as a second external dossier. Once egress exists, R3 must download the official files itself, compute SHA-256, and promote only locally reproduced findings."
+  }
+}

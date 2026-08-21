@@ -193,55 +193,94 @@ def _load_runner():
 
 
 def test_external_findings_are_recorded_as_unverified():
-    """A dossier produced somewhere this session cannot reach is evidence, not a
-    result. It must carry verified_locally=False and a file hash."""
+    """Dossiers produced somewhere this session cannot reach are evidence, not
+    results. Each must carry verified_locally=False and a file hash."""
     p4 = _load_runner()
     ext = p4.load_external_findings()
-    assert ext is not None, "external findings dossier should be present"
-    assert ext["verified_locally"] is False
-    assert len(ext["file_sha256"]) == 64
+    assert ext, "external findings dossiers should be present"
+    assert len(ext) >= 2, "both acquisition rounds should be recorded"
+    for d in ext:
+        assert d["verified_locally"] is False
+        assert len(d["file_sha256"]) == 64
+    assert sorted(d["round"] for d in ext) == [1, 2]
+
+
+def test_no_dossier_claims_materialised_artifacts():
+    """No hash or row count was produced externally, so nothing may claim one."""
+    p4 = _load_runner()
+    for d in p4.load_external_findings():
+        assert d["artifacts_materialised"] is False
 
 
 def test_candidate_verdict_is_never_the_acceptance_value():
     """The projection must be structurally distinguishable from the finding."""
     p4 = _load_runner()
     cv = p4.candidate_verdict(p4.load_external_findings())
-    assert cv["candidate"] not in ("PASS", "PARTIAL", "FAIL")
+    assert cv["candidate"] not in ("PASS", "PARTIAL", "FAIL", "BLOCKED_NETWORK")
     assert cv["blocked_by"], "a candidate verdict must state what blocks issuing it"
 
 
-def test_candidate_verdict_records_the_index_mismatch_as_a_blocker():
-    """The CORE licence finding concerns MSCI ACWI; the instrument tracks FTSE
-    All-World. That mismatch must block any FAIL resting on it."""
+def test_candidate_verdict_preserves_licence_vs_nonexistence():
+    """A FAIL on licence grounds is a statement about this project's own
+    open-reproducibility condition, not about whether the data exists."""
     p4 = _load_runner()
-    blockers = " ".join(p4.candidate_verdict(p4.load_external_findings())["blocked_by"])
-    assert "FTSE All-World" in blockers and "MSCI ACWI" in blockers
+    cv = p4.candidate_verdict(p4.load_external_findings())
+    d = cv["critical_distinction"].lower()
+    assert "does not exist" in d and "redistribute" in d
 
 
-def test_core_registry_target_is_ftse_all_world_not_msci_acwi():
-    """IE00BK5BQT80 is the Vanguard FTSE All-World UCITS ETF. The calibration
-    series must target the index the instrument actually tracks."""
+def test_core_registry_target_is_ftse_all_world_net_return_usd():
+    """IE00BK5BQT80 tracks FTSE All-World NR USD. Two earlier registry errors:
+    the wrong index (MSCI ACWI) and the wrong currency (EUR, taken from the
+    trading currency rather than the benchmark)."""
     core = reg.SERIES_BY_KEY["CORE"]
     assert "FTSE All-World" in core.description
-    providers = [s.provider for s in core.sources]
-    assert "FTSE Russell" in providers
-    ftse = next(s for s in core.sources if s.provider == "FTSE Russell")
-    assert ftse.tier == 1
+    assert core.currency == "USD", "benchmark currency is USD, not the trading currency"
+    ftse = next(s for s in core.sources if "FTSE Russell" in s.provider)
+    assert ftse.tier == 1 and ftse.licence_status == "LICENCE_REQUIRED"
     msci = next(s for s in core.sources if s.provider == "MSCI")
-    assert "not the index the core instrument tracks" in msci.note.lower()
+    assert "not the index" in msci.note.lower()
+
+
+def test_vanguard_nav_fallback_is_marked_insufficient():
+    core = reg.SERIES_BY_KEY["CORE"]
+    nav = next(s for s in core.sources if "Vanguard" in s.provider)
+    assert "INSUFFICIENT_HISTORY" in nav.note
+    assert "2019" in nav.note, "share class inception must be recorded"
+
+
+def test_gold_open_proxy_is_registered_with_its_difference_stated():
+    """The World Bank series is admissible but is a monthly AVERAGE, not a
+    month-end value - which matters for a claim resting on second moments."""
+    gold = reg.SERIES_BY_KEY["GOLD"]
+    wb = next(s for s in gold.sources if "World Bank" in s.provider)
+    assert wb.licence_status == "OPEN"
+    note = wb.note
+    assert "CC BY 4.0" in note
+    assert "AVERAGE" in note and "MONTH-END" in note
+    assert "may not stand in silently" in note.lower()
+
+
+def test_gold_exact_source_remains_licence_required():
+    gold = reg.SERIES_BY_KEY["GOLD"]
+    lbma = next(s for s in gold.sources if "LBMA" in s.provider)
+    assert lbma.licence_status == "LICENCE_REQUIRED"
+
+
+def test_wt3230_is_recorded_as_a_specification_error_not_a_rename():
+    """The official migration catalogue has no entry for BBK01.WT3230, and the
+    candidate succeeds WU9555/WU0115 instead."""
+    spec = reg.SERIES_BY_KEY["BUND_LONG_YIELD"]
+    assert "SPECIFICATION_ERROR_SUSPECTED" in spec.blocker
+    note = spec.sources[0].note
+    assert "WU9555" in note and "NOT of WT3230" in note
+    assert "MAPPING FROM WT3230 NOT SUPPORTED" in note
 
 
 def test_eonia_splice_rule_is_documented_and_not_silent():
     """PROJECT_META forbids spliced series without a documented splice rule."""
-    spec = reg.SERIES_BY_KEY["SHORT_RATE_EA"]
-    t = spec.transformation
+    t = reg.SERIES_BY_KEY["SHORT_RATE_EA"].transformation
     assert "SPLICE" in t and "8.5 bp" in t and "never" in t.lower()
-
-
-def test_bund_long_yield_candidate_is_blocked_until_equivalence_is_shown():
-    spec = reg.SERIES_BY_KEY["BUND_LONG_YIELD"]
-    assert "equivalence" in spec.blocker.lower()
-    assert "CANDIDATE ONLY" in spec.sources[0].note
 
 
 def test_hicp_key_migrated_off_the_discontinued_series():
@@ -249,6 +288,27 @@ def test_hicp_key_migrated_off_the_discontinued_series():
     urls = " ".join(s.url for s in spec.sources)
     assert "4D0.ANR" in urls, "must use the current HICP key"
     assert "ICP/M.U2.N.000000.4.ANR" not in urls, "discontinued key must be gone"
+
+
+def test_fx_specification_conflict_is_surfaced_and_unresolved():
+    """Round 2 established the CORE benchmark is USD. That collides with the
+    B.5 decision fx=EXCLUDED_BY_DESIGN, whose recorded rationale assumes an
+    EUR-denominated series. The conflict must be visible and OPEN, not silently
+    resolved."""
+    conflict = next(c for c in reg.SPECIFICATION_CONFLICTS
+                    if c["id"] == "B5_FX_VS_USD_BENCHMARK")
+    assert conflict["status"] == "OPEN"
+    assert conflict["severity"] == "DECISION_RELEVANT"
+    assert "operator" in conflict["decision_owner"]
+    assert len(conflict["resolution_options"]) >= 2
+    assert "Phases 1-3 are NOT invalidated" in conflict["scope_of_damage"]
+
+
+def test_fx_config_still_says_excluded_by_design():
+    """The conflict is recorded but config/fx.json is NOT unilaterally changed:
+    B.5 is a first-class assumption and the decision belongs to the operator."""
+    from portfolio_sim import config
+    assert config.load("fx")["status"] == "EXCLUDED_BY_DESIGN"
 
 
 def test_costs_config_still_flags_placeholders_until_ter_is_verified():
