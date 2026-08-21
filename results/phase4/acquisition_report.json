@@ -1,0 +1,1205 @@
+{
+  "acceptance": "BLOCKED_NETWORK",
+  "cost_sourcing": {
+    "attempts": [
+      {
+        "authority": "issuer (State Street / SPDR)",
+        "document_type": "PRIIPs KID + factsheet",
+        "http_status": null,
+        "instrument": "CORE",
+        "isin": "IE00BK5BQT80",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "http_status": null,
+        "instrument": "SP500",
+        "isin": "IE00B5BMR087",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "http_status": null,
+        "instrument": "NASDAQ",
+        "isin": "IE00B53SZB19",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (State Street / SPDR)",
+        "document_type": "PRIIPs KID + factsheet",
+        "http_status": null,
+        "instrument": "DIVIDEND",
+        "isin": "IE00BK5BR626",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+      },
+      {
+        "authority": "issuer (DWS / Xtrackers)",
+        "document_type": "PRIIPs KID + factsheet",
+        "http_status": null,
+        "instrument": "EUROPE",
+        "isin": "LU0328475792",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://etf.dws.com/"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "http_status": null,
+        "instrument": "DAX",
+        "isin": "DE0005933931",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "http_status": null,
+        "instrument": "JAPAN",
+        "isin": "IE00B4L5YX21",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "http_status": null,
+        "instrument": "EM",
+        "isin": "IE00BKM4GZ66",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (Invesco)",
+        "document_type": "PRIIPs KID + prospectus",
+        "http_status": null,
+        "instrument": "GOLD",
+        "isin": "IE00B4ND3602",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://www.invesco.com/"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "http_status": null,
+        "instrument": "COMMOD",
+        "isin": "IE00BDFL4P12",
+        "outcome": "NETWORK_BLOCKED",
+        "url": "https://www.ishares.com/de"
+      }
+    ],
+    "config_costs_json_modified": false,
+    "n_sourced": 0,
+    "phase3_urgency": "Phase 3 measured a 30 bp TER difference at 5,600 EUR of real terminal wealth over 20 years, exceeding the 5,000 EUR G1 materiality gate on its own. Sourcing these values is therefore a precondition for any cost-sensitive claim, not housekeeping.",
+    "reason_unmodified": "No TER value could be retrieved from an authoritative document, so config/costs.json is unchanged and remains PLACEHOLDER_NOT_SOURCED. Writing TER values recalled from model training rather than read from a PRIIPs KID would produce numbers with no source URL, no retrieval date and no content hash - indistinguishable from the placeholders already there, but falsely dressed as sourced. PROJECT_META forbids exactly that.",
+    "tracking_difference_note": "Tracking difference is not disclosed in a PRIIPs KID. It must be derived from published fund NAV history against the licensed index series, or taken from an issuer TD disclosure. Deriving it requires the index history, which is the same licence blocker as CORE."
+  },
+  "coverage": {
+    "common_months": 0,
+    "missing_series": [
+      "CORE",
+      "GOLD"
+    ],
+    "required_months": 360,
+    "result": "INSUFFICIENT"
+  },
+  "effective_sample_size": {
+    "independent_increments_T_minus_h_over_h": 1.5,
+    "non_overlapping_windows_exact": 2.5,
+    "non_overlapping_windows_floor": 2,
+    "overlapping_monthly_windows": 361,
+    "project_meta_convention": "(T - h) / h",
+    "reporting_rule": "P10/P90 of overlapping rolling windows MUST NOT be presented as a distribution. Effective sample size must be stated alongside any such figure.",
+    "total_years": 50,
+    "window_years": 20
+  },
+  "egress_probe": {
+    "attempts": [
+      {
+        "bytes_received": 0,
+        "content_sha256": null,
+        "error": "Tunnel connection failed: 403 Forbidden",
+        "http_status": null,
+        "outcome": "NETWORK_BLOCKED",
+        "retrieved_at_utc": "2026-08-21T12:39:50+00:00",
+        "url": "https://example.com/"
+      },
+      {
+        "bytes_received": 0,
+        "content_sha256": null,
+        "error": "Tunnel connection failed: 403 Forbidden",
+        "http_status": null,
+        "outcome": "NETWORK_BLOCKED",
+        "retrieved_at_utc": "2026-08-21T12:39:51+00:00",
+        "url": "https://www.iana.org/domains/reserved"
+      }
+    ],
+    "detail": "no canary host reachable; egress is blocked at the environment level, so NO source-level conclusion about data availability is admissible",
+    "egress_available": false,
+    "proxy_env": {
+      "HTTPS_PROXY": "http://127.0.0.1:45369",
+      "HTTP_PROXY": "",
+      "NO_PROXY": "localhost,127.0.0.1,::1,127.0.0.0/8,0.0.0.0/8,::,169.254.0.0/16,anthropic.com,.anthropic.com,*.anthropic.com,registry.npmjs.org,jsr.io,npm.jsr.io,pypi.org,files.pythonhosted.org,index.crates.io,proxy.golang.org,host.docker.internal,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,.svc.cluster.local,*.svc.cluster.local",
+      "http_proxy": "",
+      "https_proxy": "http://127.0.0.1:45369"
+    }
+  },
+  "manifest_rows": [
+    {
+      "currency": "EUR",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_REQUIRED",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:51+00:00",
+      "return_convention": "total_return",
+      "series_key": "CORE",
+      "sha256": "",
+      "source_provider": "MSCI",
+      "source_tier": 1,
+      "source_url": "https://www.msci.com/end-of-day-data-search",
+      "transformations": "net total return index -> monthly log returns; EUR series taken directly, never converted from USD without an FX series (FX is EXCLUDED_BY_DESIGN per B.5)"
+    },
+    {
+      "currency": "EUR",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:51+00:00",
+      "return_convention": "total_return",
+      "series_key": "CORE",
+      "sha256": "",
+      "source_provider": "Kenneth R. French Data Library (Dartmouth)",
+      "source_tier": 4,
+      "source_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Developed_3_Factors_CSV.zip",
+      "transformations": "net total return index -> monthly log returns; EUR series taken directly, never converted from USD without an FX series (FX is EXCLUDED_BY_DESIGN per B.5)"
+    },
+    {
+      "currency": "EUR",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:51+00:00",
+      "return_convention": "price_only",
+      "series_key": "GOLD",
+      "sha256": "",
+      "source_provider": "LBMA",
+      "source_tier": 1,
+      "source_url": "https://prices.lbma.org.uk/json/gold_pm.json",
+      "transformations": "LBMA PM auction price, month-end; EUR series or USD with a documented FX treatment (currently out of scope per B.5)"
+    },
+    {
+      "currency": "EUR",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:52+00:00",
+      "return_convention": "price_only",
+      "series_key": "GOLD",
+      "sha256": "",
+      "source_provider": "Deutsche Bundesbank",
+      "source_tier": 2,
+      "source_url": "https://api.statistiken.bundesbank.de/rest/download/BBEX3/D.USD.EUR.BB.AC.000",
+      "transformations": "LBMA PM auction price, month-end; EUR series or USD with a documented FX treatment (currently out of scope per B.5)"
+    },
+    {
+      "currency": "USD",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_REQUIRED",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:52+00:00",
+      "return_convention": "total_return",
+      "series_key": "SP500",
+      "sha256": "",
+      "source_provider": "S&P Dow Jones Indices",
+      "source_tier": 1,
+      "source_url": "https://www.spglobal.com/spdji/",
+      "transformations": "total return index -> monthly log returns"
+    },
+    {
+      "currency": "USD",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:52+00:00",
+      "return_convention": "total_return",
+      "series_key": "SP500",
+      "sha256": "",
+      "source_provider": "Robert Shiller (Yale) online data",
+      "source_tier": 4,
+      "source_url": "http://www.econ.yale.edu/~shiller/data/ie_data.xls",
+      "transformations": "total return index -> monthly log returns"
+    },
+    {
+      "currency": "USD",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_UNKNOWN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:53+00:00",
+      "return_convention": "price_only",
+      "series_key": "NASDAQ",
+      "sha256": "",
+      "source_provider": "Nasdaq",
+      "source_tier": 1,
+      "source_url": "https://www.nasdaq.com/market-activity/index/ndx",
+      "transformations": "index level -> monthly log returns"
+    },
+    {
+      "currency": "EUR",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_REQUIRED",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:53+00:00",
+      "return_convention": "total_return",
+      "series_key": "DAX",
+      "sha256": "",
+      "source_provider": "Deutsche Boerse / STOXX",
+      "source_tier": 1,
+      "source_url": "https://www.stoxx.com/index-details?symbol=DAX",
+      "transformations": "performance index level -> monthly log returns"
+    },
+    {
+      "currency": "EUR",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_REQUIRED",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:53+00:00",
+      "return_convention": "total_return",
+      "series_key": "EUROPE",
+      "sha256": "",
+      "source_provider": "STOXX",
+      "source_tier": 1,
+      "source_url": "https://www.stoxx.com/",
+      "transformations": "net total return index -> monthly log returns"
+    },
+    {
+      "currency": "JPY",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_UNKNOWN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:54+00:00",
+      "return_convention": "total_return",
+      "series_key": "JAPAN",
+      "sha256": "",
+      "source_provider": "Japan Exchange Group",
+      "source_tier": 1,
+      "source_url": "https://www.jpx.co.jp/english/markets/indices/topix/",
+      "transformations": "TOPIX total return -> monthly log returns"
+    },
+    {
+      "currency": "USD",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_REQUIRED",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:54+00:00",
+      "return_convention": "total_return",
+      "series_key": "EM",
+      "sha256": "",
+      "source_provider": "MSCI",
+      "source_tier": 1,
+      "source_url": "https://www.msci.com/",
+      "transformations": "net total return index -> monthly log returns"
+    },
+    {
+      "currency": "USD",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:54+00:00",
+      "return_convention": "total_return",
+      "series_key": "EM",
+      "sha256": "",
+      "source_provider": "Kenneth R. French Data Library",
+      "source_tier": 4,
+      "source_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Emerging_5_Factors_CSV.zip",
+      "transformations": "net total return index -> monthly log returns"
+    },
+    {
+      "currency": "EUR",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_REQUIRED",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:55+00:00",
+      "return_convention": "total_return",
+      "series_key": "DIVIDEND",
+      "sha256": "",
+      "source_provider": "MSCI",
+      "source_tier": 1,
+      "source_url": "https://www.msci.com/",
+      "transformations": "net total return index -> monthly log returns"
+    },
+    {
+      "currency": "USD",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_REQUIRED",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:55+00:00",
+      "return_convention": "total_return",
+      "series_key": "COMMOD",
+      "sha256": "",
+      "source_provider": "Bloomberg",
+      "source_tier": 5,
+      "source_url": "https://www.bloomberg.com/professional/product/indices/bloomberg-commodity-index-family/",
+      "transformations": "index level -> monthly log returns"
+    },
+    {
+      "currency": "index",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:55+00:00",
+      "return_convention": "rate",
+      "series_key": "HICP_EA",
+      "sha256": "",
+      "source_provider": "European Central Bank (SDW)",
+      "source_tier": 2,
+      "source_url": "https://data-api.ecb.europa.eu/service/data/ICP/M.U2.N.000000.4.ANR?format=csvdata",
+      "transformations": "annual rate of change -> monthly inflation for the OU calibration"
+    },
+    {
+      "currency": "index",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:56+00:00",
+      "return_convention": "rate",
+      "series_key": "HICP_EA",
+      "sha256": "",
+      "source_provider": "Eurostat",
+      "source_tier": 3,
+      "source_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr",
+      "transformations": "annual rate of change -> monthly inflation for the OU calibration"
+    },
+    {
+      "currency": "index",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:56+00:00",
+      "return_convention": "rate",
+      "series_key": "CPI_DE",
+      "sha256": "",
+      "source_provider": "Statistisches Bundesamt (Destatis)",
+      "source_tier": 3,
+      "source_url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/table?name=61111-0001",
+      "transformations": "index -> monthly inflation"
+    },
+    {
+      "currency": "rate",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:56+00:00",
+      "return_convention": "rate",
+      "series_key": "SHORT_RATE_EA",
+      "sha256": "",
+      "source_provider": "European Central Bank",
+      "source_tier": 2,
+      "source_url": "https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT",
+      "transformations": "EONIA spliced to euro short-term rate; splice rule must be documented explicitly with its own data_status"
+    },
+    {
+      "currency": "rate",
+      "data_status": "NETWORK_BLOCKED",
+      "frequency": "monthly",
+      "licence_status": "OPEN",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-21T12:39:57+00:00",
+      "return_convention": "rate",
+      "series_key": "BUND_LONG_YIELD",
+      "sha256": "",
+      "source_provider": "Deutsche Bundesbank",
+      "source_tier": 2,
+      "source_url": "https://api.statistiken.bundesbank.de/rest/download/BBK01/WT3230?format=csv",
+      "transformations": "monthly average yield; compare against the published BMF Basiszins values to validate the B.2 coupling"
+    }
+  ],
+  "outcome_vocabulary": {
+    "environment_level": [
+      "NETWORK_BLOCKED",
+      "NETWORK_DNS_FAILURE",
+      "NETWORK_TIMEOUT"
+    ],
+    "rule": "Environment-level outcomes are NEVER research findings. A source-level outcome may only be recorded when egress is confirmed.",
+    "source_level": [
+      "ACQUIRED",
+      "DATA_INVALID",
+      "LICENCE_OR_AUTH_REQUIRED",
+      "SOURCE_NOT_FOUND"
+    ]
+  },
+  "per_series": {
+    "BUND_LONG_YIELD": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Deutsche Bundesbank",
+          "tier": 2,
+          "url": "https://api.statistiken.bundesbank.de/rest/download/BBK01/WT3230?format=csv"
+        }
+      ],
+      "blocker": "",
+      "required_for": "B.2 Basiszins, currently legal_status TO_BE_VERIFIED"
+    },
+    "COMMOD": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "LICENCE_REQUIRED",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Bloomberg",
+          "tier": 5,
+          "url": "https://www.bloomberg.com/professional/product/indices/bloomberg-commodity-index-family/"
+        }
+      ],
+      "blocker": "No confirmed source mapping (known blocker); tax class also unresolved.",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+    },
+    "CORE": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "LICENCE_REQUIRED",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "MSCI",
+          "tier": 1,
+          "url": "https://www.msci.com/end-of-day-data-search"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Kenneth R. French Data Library (Dartmouth)",
+          "tier": 4,
+          "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Developed_3_Factors_CSV.zip"
+        }
+      ],
+      "blocker": "Authoritative EUR net-total-return ACWI history is licence-encumbered.",
+      "required_for": "PHASE_5, PHASE_6, and every calibrated statement. CORE missing is the one condition that forces STOP."
+    },
+    "CPI_DE": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Statistisches Bundesamt (Destatis)",
+          "tier": 3,
+          "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/table?name=61111-0001"
+        }
+      ],
+      "blocker": "",
+      "required_for": "real-terms reporting sensitivity"
+    },
+    "DAX": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "LICENCE_REQUIRED",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Deutsche Boerse / STOXX",
+          "tier": 1,
+          "url": "https://www.stoxx.com/index-details?symbol=DAX"
+        }
+      ],
+      "blocker": "",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+    },
+    "DIVIDEND": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "LICENCE_REQUIRED",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "MSCI",
+          "tier": 1,
+          "url": "https://www.msci.com/"
+        }
+      ],
+      "blocker": "No confirmed source mapping (known blocker).",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+    },
+    "EM": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "LICENCE_REQUIRED",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "MSCI",
+          "tier": 1,
+          "url": "https://www.msci.com/"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Kenneth R. French Data Library",
+          "tier": 4,
+          "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Emerging_5_Factors_CSV.zip"
+        }
+      ],
+      "blocker": "No confirmed source mapping (known blocker).",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+    },
+    "EUROPE": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "LICENCE_REQUIRED",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "STOXX",
+          "tier": 1,
+          "url": "https://www.stoxx.com/"
+        }
+      ],
+      "blocker": "",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+    },
+    "GOLD": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "LBMA",
+          "tier": 1,
+          "url": "https://prices.lbma.org.uk/json/gold_pm.json"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Deutsche Bundesbank",
+          "tier": 2,
+          "url": "https://api.statistiken.bundesbank.de/rest/download/BBEX3/D.USD.EUR.BB.AC.000"
+        }
+      ],
+      "blocker": "",
+      "required_for": "PHASE_6 gold downside claim"
+    },
+    "HICP_EA": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "European Central Bank (SDW)",
+          "tier": 2,
+          "url": "https://data-api.ecb.europa.eu/service/data/ICP/M.U2.N.000000.4.ANR?format=csvdata"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Eurostat",
+          "tier": 3,
+          "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr"
+        }
+      ],
+      "blocker": "",
+      "required_for": "every real-terms number in every phase"
+    },
+    "JAPAN": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "LICENCE_UNKNOWN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Japan Exchange Group",
+          "tier": 1,
+          "url": "https://www.jpx.co.jp/english/markets/indices/topix/"
+        }
+      ],
+      "blocker": "No confirmed source mapping (known blocker in PROJECT_META Phase 4).",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+    },
+    "NASDAQ": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "LICENCE_UNKNOWN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Nasdaq",
+          "tier": 1,
+          "url": "https://www.nasdaq.com/market-activity/index/ndx"
+        }
+      ],
+      "blocker": "",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+    },
+    "SHORT_RATE_EA": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "European Central Bank",
+          "tier": 2,
+          "url": "https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT"
+        }
+      ],
+      "blocker": "",
+      "required_for": "B.2 - the Basiszins is a function of the modelled short rate"
+    },
+    "SP500": {
+      "acquired": false,
+      "attempts": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "http_status": null,
+          "licence_status": "LICENCE_REQUIRED",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "S&P Dow Jones Indices",
+          "tier": 1,
+          "url": "https://www.spglobal.com/spdji/"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "HTTPError 403: Forbidden",
+          "http_status": 403,
+          "licence_status": "OPEN",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "Robert Shiller (Yale) online data",
+          "tier": 4,
+          "url": "http://www.econ.yale.edu/~shiller/data/ie_data.xls"
+        }
+      ],
+      "blocker": "",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1 - not required for any tested claim"
+    }
+  },
+  "registry": {
+    "cost_sources": [
+      {
+        "authority": "issuer (State Street / SPDR)",
+        "document_type": "PRIIPs KID + factsheet",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "CORE",
+        "isin": "IE00BK5BQT80",
+        "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "SP500",
+        "isin": "IE00B5BMR087",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "NASDAQ",
+        "isin": "IE00B53SZB19",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (State Street / SPDR)",
+        "document_type": "PRIIPs KID + factsheet",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "DIVIDEND",
+        "isin": "IE00BK5BR626",
+        "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+      },
+      {
+        "authority": "issuer (DWS / Xtrackers)",
+        "document_type": "PRIIPs KID + factsheet",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "EUROPE",
+        "isin": "LU0328475792",
+        "url": "https://etf.dws.com/"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "DAX",
+        "isin": "DE0005933931",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "JAPAN",
+        "isin": "IE00B4L5YX21",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "EM",
+        "isin": "IE00BKM4GZ66",
+        "url": "https://www.ishares.com/de"
+      },
+      {
+        "authority": "issuer (Invesco)",
+        "document_type": "PRIIPs KID + prospectus",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "GOLD",
+        "isin": "IE00B4ND3602",
+        "url": "https://www.invesco.com/"
+      },
+      {
+        "authority": "issuer (BlackRock / iShares)",
+        "document_type": "PRIIPs KID + factsheet",
+        "endpoint_status": "UNVERIFIED",
+        "instrument": "COMMOD",
+        "isin": "IE00BDFL4P12",
+        "url": "https://www.ishares.com/de"
+      }
+    ],
+    "endpoint_verification": "Every url is an INTENDED endpoint recorded from specification. None has been confirmed to resolve, because this environment has no network path.",
+    "macro_series": [
+      "HICP_EA",
+      "SHORT_RATE_EA",
+      "BUND_LONG_YIELD"
+    ],
+    "reduced_universe": [
+      "CORE",
+      "GOLD"
+    ],
+    "required_common_months": 360,
+    "series": [
+      {
+        "blocker": "Authoritative EUR net-total-return ACWI history is licence-encumbered.",
+        "currency": "EUR",
+        "description": "Global all-country equity total return, EUR, the benchmark the whole study is defined against (MSCI ACWI family).",
+        "frequency": "monthly",
+        "key": "CORE",
+        "required_for": "PHASE_5, PHASE_6, and every calibrated statement. CORE missing is the one condition that forces STOP.",
+        "return_convention": "total_return",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "LICENCE_REQUIRED",
+            "note": "MSCI publishes limited end-of-day levels; full history for net total return in EUR is a licensed product.",
+            "provider": "MSCI",
+            "tier": 1,
+            "url": "https://www.msci.com/end-of-day-data-search"
+          },
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "CANDIDATE PROXY ONLY. Developed-markets factors exclude emerging markets, so this is NOT ACWI. Using it requires an explicit splice rule with Emerging_3_Factors and a data_status flag; it may not silently stand in for CORE.",
+            "provider": "Kenneth R. French Data Library (Dartmouth)",
+            "tier": 4,
+            "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Developed_3_Factors_CSV.zip"
+          }
+        ],
+        "transformation": "net total return index -> monthly log returns; EUR series taken directly, never converted from USD without an FX series (FX is EXCLUDED_BY_DESIGN per B.5)"
+      },
+      {
+        "blocker": "",
+        "currency": "EUR",
+        "description": "Gold spot price, the only satellite with a testable claim (Phase 6).",
+        "frequency": "monthly",
+        "key": "GOLD",
+        "required_for": "PHASE_6 gold downside claim",
+        "return_convention": "price_only",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "LBMA publishes the auction price series; redistribution terms must be recorded.",
+            "provider": "LBMA",
+            "tier": 1,
+            "url": "https://prices.lbma.org.uk/json/gold_pm.json"
+          },
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "For the EUR/USD leg if a USD gold series is used.",
+            "provider": "Deutsche Bundesbank",
+            "tier": 2,
+            "url": "https://api.statistiken.bundesbank.de/rest/download/BBEX3/D.USD.EUR.BB.AC.000"
+          }
+        ],
+        "transformation": "LBMA PM auction price, month-end; EUR series or USD with a documented FX treatment (currently out of scope per B.5)"
+      },
+      {
+        "blocker": "",
+        "currency": "USD",
+        "description": "US large cap total return.",
+        "frequency": "monthly",
+        "key": "SP500",
+        "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1 - not required for any tested claim",
+        "return_convention": "total_return",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "LICENCE_REQUIRED",
+            "note": "Total return history is a licensed product.",
+            "provider": "S&P Dow Jones Indices",
+            "tier": 1,
+            "url": "https://www.spglobal.com/spdji/"
+          },
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "Monthly S&P with dividends since 1871; academic dataset.",
+            "provider": "Robert Shiller (Yale) online data",
+            "tier": 4,
+            "url": "http://www.econ.yale.edu/~shiller/data/ie_data.xls"
+          }
+        ],
+        "transformation": "total return index -> monthly log returns"
+      },
+      {
+        "blocker": "",
+        "currency": "USD",
+        "description": "US technology-heavy large cap.",
+        "frequency": "monthly",
+        "key": "NASDAQ",
+        "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+        "return_convention": "price_only",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "LICENCE_UNKNOWN",
+            "note": "",
+            "provider": "Nasdaq",
+            "tier": 1,
+            "url": "https://www.nasdaq.com/market-activity/index/ndx"
+          }
+        ],
+        "transformation": "index level -> monthly log returns"
+      },
+      {
+        "blocker": "",
+        "currency": "EUR",
+        "description": "German large cap performance index (total return by construction).",
+        "frequency": "monthly",
+        "key": "DAX",
+        "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+        "return_convention": "total_return",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "LICENCE_REQUIRED",
+            "note": "",
+            "provider": "Deutsche Boerse / STOXX",
+            "tier": 1,
+            "url": "https://www.stoxx.com/index-details?symbol=DAX"
+          }
+        ],
+        "transformation": "performance index level -> monthly log returns"
+      },
+      {
+        "blocker": "",
+        "currency": "EUR",
+        "description": "Developed Europe equity.",
+        "frequency": "monthly",
+        "key": "EUROPE",
+        "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+        "return_convention": "total_return",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "LICENCE_REQUIRED",
+            "note": "",
+            "provider": "STOXX",
+            "tier": 1,
+            "url": "https://www.stoxx.com/"
+          }
+        ],
+        "transformation": "net total return index -> monthly log returns"
+      },
+      {
+        "blocker": "No confirmed source mapping (known blocker in PROJECT_META Phase 4).",
+        "currency": "JPY",
+        "description": "Japanese equity.",
+        "frequency": "monthly",
+        "key": "JAPAN",
+        "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+        "return_convention": "total_return",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "LICENCE_UNKNOWN",
+            "note": "",
+            "provider": "Japan Exchange Group",
+            "tier": 1,
+            "url": "https://www.jpx.co.jp/english/markets/indices/topix/"
+          }
+        ],
+        "transformation": "TOPIX total return -> monthly log returns"
+      },
+      {
+        "blocker": "No confirmed source mapping (known blocker).",
+        "currency": "USD",
+        "description": "Emerging markets equity.",
+        "frequency": "monthly",
+        "key": "EM",
+        "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+        "return_convention": "total_return",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "LICENCE_REQUIRED",
+            "note": "",
+            "provider": "MSCI",
+            "tier": 1,
+            "url": "https://www.msci.com/"
+          },
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "Shorter history than the developed set.",
+            "provider": "Kenneth R. French Data Library",
+            "tier": 4,
+            "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Emerging_5_Factors_CSV.zip"
+          }
+        ],
+        "transformation": "net total return index -> monthly log returns"
+      },
+      {
+        "blocker": "No confirmed source mapping (known blocker).",
+        "currency": "EUR",
+        "description": "High dividend yield equity.",
+        "frequency": "monthly",
+        "key": "DIVIDEND",
+        "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+        "return_convention": "total_return",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "LICENCE_REQUIRED",
+            "note": "",
+            "provider": "MSCI",
+            "tier": 1,
+            "url": "https://www.msci.com/"
+          }
+        ],
+        "transformation": "net total return index -> monthly log returns"
+      },
+      {
+        "blocker": "No confirmed source mapping (known blocker); tax class also unresolved.",
+        "currency": "USD",
+        "description": "Broad commodity index.",
+        "frequency": "monthly",
+        "key": "COMMOD",
+        "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+        "return_convention": "total_return",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "LICENCE_REQUIRED",
+            "note": "",
+            "provider": "Bloomberg",
+            "tier": 5,
+            "url": "https://www.bloomberg.com/professional/product/indices/bloomberg-commodity-index-family/"
+          }
+        ],
+        "transformation": "index level -> monthly log returns"
+      },
+      {
+        "blocker": "",
+        "currency": "index",
+        "description": "Euro-area HICP, all items, annual rate of change. Calibrates the inflation process used for all real-terms reporting.",
+        "frequency": "monthly",
+        "key": "HICP_EA",
+        "required_for": "every real-terms number in every phase",
+        "return_convention": "rate",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "",
+            "provider": "European Central Bank (SDW)",
+            "tier": 2,
+            "url": "https://data-api.ecb.europa.eu/service/data/ICP/M.U2.N.000000.4.ANR?format=csvdata"
+          },
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "",
+            "provider": "Eurostat",
+            "tier": 3,
+            "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr"
+          }
+        ],
+        "transformation": "annual rate of change -> monthly inflation for the OU calibration"
+      },
+      {
+        "blocker": "",
+        "currency": "index",
+        "description": "German consumer price index. The investor is German, so the domestic deflator is the more faithful one.",
+        "frequency": "monthly",
+        "key": "CPI_DE",
+        "required_for": "real-terms reporting sensitivity",
+        "return_convention": "rate",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "GENESIS REST API requires free registration.",
+            "provider": "Statistisches Bundesamt (Destatis)",
+            "tier": 3,
+            "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/table?name=61111-0001"
+          }
+        ],
+        "transformation": "index -> monthly inflation"
+      },
+      {
+        "blocker": "",
+        "currency": "rate",
+        "description": "Euro-area short-term interest rate.",
+        "frequency": "monthly",
+        "key": "SHORT_RATE_EA",
+        "required_for": "B.2 - the Basiszins is a function of the modelled short rate",
+        "return_convention": "rate",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "",
+            "provider": "European Central Bank",
+            "tier": 2,
+            "url": "https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT"
+          }
+        ],
+        "transformation": "EONIA spliced to euro short-term rate; splice rule must be documented explicitly with its own data_status"
+      },
+      {
+        "blocker": "",
+        "currency": "rate",
+        "description": "Yield on long-dated German government bonds - the reference the statutory Basiszins is actually derived from.",
+        "frequency": "monthly",
+        "key": "BUND_LONG_YIELD",
+        "required_for": "B.2 Basiszins, currently legal_status TO_BE_VERIFIED",
+        "return_convention": "rate",
+        "sources": [
+          {
+            "endpoint_status": "UNVERIFIED",
+            "licence_status": "OPEN",
+            "note": "Umlaufrendite. Validating the modelled Basiszins against the published BMF values is what would move B.2 from TO_BE_VERIFIED to VERIFIED.",
+            "provider": "Deutsche Bundesbank",
+            "tier": 2,
+            "url": "https://api.statistiken.bundesbank.de/rest/download/BBK01/WT3230?format=csv"
+          }
+        ],
+        "transformation": "monthly average yield; compare against the published BMF Basiszins values to validate the B.2 coupling"
+      }
+    ],
+    "stop_if_missing": [
+      "CORE"
+    ],
+    "tracking_difference_note": "Tracking difference is not disclosed in a PRIIPs KID. It must be derived from published fund NAV history against the licensed index series, or taken from an issuer TD disclosure. Deriving it requires the index history, which is the same licence blocker as CORE."
+  },
+  "report_hash": "24dcbfe60e9d7e5c2d8a33784f36d158613d6bbf8b92225eaccafa0742d49ec6",
+  "research_verdict_admissible": false,
+  "verdict_detail": "No canary host was reachable, so this environment has no egress. No source-level conclusion is admissible: nothing observed here is evidence about whether CORE, GOLD or any other series is obtainable. In particular this is NOT the Teil D 'CORE-Daten nicht verfuegbar -> STOP' outcome, which is a finding about the world and requires evidence."
+}
