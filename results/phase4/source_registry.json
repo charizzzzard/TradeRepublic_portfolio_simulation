@@ -1,0 +1,445 @@
+{
+  "cost_sources": [
+    {
+      "authority": "issuer (State Street / SPDR)",
+      "document_type": "PRIIPs KID + factsheet",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "CORE",
+      "isin": "IE00BK5BQT80",
+      "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+    },
+    {
+      "authority": "issuer (BlackRock / iShares)",
+      "document_type": "PRIIPs KID + factsheet",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "SP500",
+      "isin": "IE00B5BMR087",
+      "url": "https://www.ishares.com/de"
+    },
+    {
+      "authority": "issuer (BlackRock / iShares)",
+      "document_type": "PRIIPs KID + factsheet",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "NASDAQ",
+      "isin": "IE00B53SZB19",
+      "url": "https://www.ishares.com/de"
+    },
+    {
+      "authority": "issuer (State Street / SPDR)",
+      "document_type": "PRIIPs KID + factsheet",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "DIVIDEND",
+      "isin": "IE00BK5BR626",
+      "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+    },
+    {
+      "authority": "issuer (DWS / Xtrackers)",
+      "document_type": "PRIIPs KID + factsheet",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "EUROPE",
+      "isin": "LU0328475792",
+      "url": "https://etf.dws.com/"
+    },
+    {
+      "authority": "issuer (BlackRock / iShares)",
+      "document_type": "PRIIPs KID + factsheet",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "DAX",
+      "isin": "DE0005933931",
+      "url": "https://www.ishares.com/de"
+    },
+    {
+      "authority": "issuer (BlackRock / iShares)",
+      "document_type": "PRIIPs KID + factsheet",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "JAPAN",
+      "isin": "IE00B4L5YX21",
+      "url": "https://www.ishares.com/de"
+    },
+    {
+      "authority": "issuer (BlackRock / iShares)",
+      "document_type": "PRIIPs KID + factsheet",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "EM",
+      "isin": "IE00BKM4GZ66",
+      "url": "https://www.ishares.com/de"
+    },
+    {
+      "authority": "issuer (Invesco)",
+      "document_type": "PRIIPs KID + prospectus",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "GOLD",
+      "isin": "IE00B4ND3602",
+      "url": "https://www.invesco.com/"
+    },
+    {
+      "authority": "issuer (BlackRock / iShares)",
+      "document_type": "PRIIPs KID + factsheet",
+      "endpoint_status": "UNVERIFIED",
+      "instrument": "COMMOD",
+      "isin": "IE00BDFL4P12",
+      "url": "https://www.ishares.com/de"
+    }
+  ],
+  "endpoint_verification": "Every url is an INTENDED endpoint recorded from specification. None has been confirmed to resolve, because this environment has no network path.",
+  "macro_series": [
+    "HICP_EA",
+    "SHORT_RATE_EA",
+    "BUND_LONG_YIELD"
+  ],
+  "reduced_universe": [
+    "CORE",
+    "GOLD"
+  ],
+  "required_common_months": 360,
+  "series": [
+    {
+      "blocker": "CONFIRMED LICENCE_REQUIRED for the correct index. FTSE All-World long history is a licensed LSEG product and is not redistributable in a public repository. The data exists commercially; what is unavailable is a version this project may redistribute.",
+      "currency": "USD",
+      "description": "Global all-country equity net total return - the benchmark the whole study is defined against. The tracked index is FTSE All-World NET RETURN, denominated in USD. IE00BK5BQT80 is the Vanguard FTSE All-World UCITS ETF (Acc); its base currency is USD and EUR is a listing/trading currency only. Two earlier versions of this registry were wrong: first the index (MSCI ACWI, a different index), then the currency (NR EUR, asserted merely because the ETF trades in EUR).",
+      "frequency": "monthly",
+      "key": "CORE",
+      "required_for": "PHASE_5, PHASE_6, and every calibrated statement. CORE missing is the one condition that forces STOP.",
+      "return_convention": "total_return",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_REQUIRED",
+          "note": "THE CORRECT TARGET INDEX. Externally reported 2026-08-21 (round 2): LSEG's freely accessible Historic Index Values typically give only about TWO YEARS of month-end values; longer history is a licensed subscription product and LSEG requires a licence for use and distribution. A >=360-month redistributable series could NOT be verified.",
+          "provider": "FTSE Russell / LSEG",
+          "tier": 1,
+          "url": "https://www.lseg.com/en/ftse-russell/index-resources/historic-index-values"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_UNKNOWN",
+          "note": "INSUFFICIENT_HISTORY and a proxy in any case. Share class inception 2019-07-23, so at most ~7 years exist against the 360 required. Fund NAV is also net of fund fees and tracking difference, so it is not the benchmark series.",
+          "provider": "Vanguard (fund NAV)",
+          "tier": 5,
+          "url": "https://www.vanguard.co.uk/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_REQUIRED",
+          "note": "MSCI ACWI - NOT the index the CORE instrument tracks. Retained only because round 1 assessed it. Reported LICENCE_REQUIRED; does not settle CORE.",
+          "provider": "MSCI",
+          "tier": 1,
+          "url": "https://www.msci.com/end-of-day-data-search"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_UNKNOWN",
+          "note": "CANDIDATE PROXY ONLY - REJECTED. NOT ACWI and not FTSE All-World: developed markets only, USD not EUR, no net-of-withholding-tax concept, no explicit open-redistribution licence, and its international portfolios use MSCI raw data to 2006 and Bloomberg thereafter, so the licence problem is inherited rather than avoided. Would require an explicit SPLICE rule and its own data_status.",
+          "provider": "Kenneth R. French Data Library (Dartmouth)",
+          "tier": 4,
+          "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Developed_3_Factors_CSV.zip"
+        }
+      ],
+      "transformation": "FTSE All-World NR USD -> monthly log returns, then an EXPLICIT USD->EUR conversion for the EUR investor. That conversion is a required transformation, not an optional one, and it collides with the B.5 decision fx=EXCLUDED_BY_DESIGN - see SPECIFICATION_CONFLICTS below."
+    },
+    {
+      "blocker": "",
+      "currency": "EUR",
+      "description": "Gold spot price, the only satellite with a testable claim (Phase 6).",
+      "frequency": "monthly",
+      "key": "GOLD",
+      "required_for": "PHASE_6 gold downside claim",
+      "return_convention": "price_only",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_REQUIRED",
+          "note": "Externally reported 2026-08-21: LBMA moved historical tabular precious-metal prices into the MyLBMA portal; access requires an IBA licence, otherwise LBMA directs users to purchase from ICE. The former open JSON endpoint (prices.lbma.org.uk/json/gold_pm.json) is superseded.",
+          "provider": "LBMA / ICE Benchmark Administration",
+          "tier": 1,
+          "url": "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "OPEN",
+          "note": "ADMISSIBLE OPEN PROXY CANDIDATE, CC BY 4.0, redistribution permitted with attribution. Monthly from 1960. Definition: Gold (UK), 99.5% fine, London afternoon fixing, AVERAGE OF DAILY RATES. DIFFERS FROM TARGET: the target is the LBMA PM MONTH-END fixing; averaging suppresses month-end volatility, which matters directly for a claim resting on second moments (G2). Requires a documented substitution rule and its own data_status before use - it may not stand in silently.",
+          "provider": "World Bank (Pink Sheet)",
+          "tier": 5,
+          "url": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "OPEN",
+          "note": "For the EUR/USD leg if a USD gold series is used.",
+          "provider": "Deutsche Bundesbank",
+          "tier": 2,
+          "url": "https://api.statistiken.bundesbank.de/rest/download/BBEX3/D.USD.EUR.BB.AC.000"
+        }
+      ],
+      "transformation": "LBMA PM auction price, month-end; EUR series or USD with a documented FX treatment (currently out of scope per B.5)"
+    },
+    {
+      "blocker": "",
+      "currency": "USD",
+      "description": "US large cap total return.",
+      "frequency": "monthly",
+      "key": "SP500",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1 - not required for any tested claim",
+      "return_convention": "total_return",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_REQUIRED",
+          "note": "Total return history is a licensed product.",
+          "provider": "S&P Dow Jones Indices",
+          "tier": 1,
+          "url": "https://www.spglobal.com/spdji/"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "OPEN",
+          "note": "Monthly S&P with dividends since 1871; academic dataset.",
+          "provider": "Robert Shiller (Yale) online data",
+          "tier": 4,
+          "url": "http://www.econ.yale.edu/~shiller/data/ie_data.xls"
+        }
+      ],
+      "transformation": "total return index -> monthly log returns"
+    },
+    {
+      "blocker": "",
+      "currency": "USD",
+      "description": "US technology-heavy large cap.",
+      "frequency": "monthly",
+      "key": "NASDAQ",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "return_convention": "price_only",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_UNKNOWN",
+          "note": "",
+          "provider": "Nasdaq",
+          "tier": 1,
+          "url": "https://www.nasdaq.com/market-activity/index/ndx"
+        }
+      ],
+      "transformation": "index level -> monthly log returns"
+    },
+    {
+      "blocker": "",
+      "currency": "EUR",
+      "description": "German large cap performance index (total return by construction).",
+      "frequency": "monthly",
+      "key": "DAX",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "return_convention": "total_return",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_REQUIRED",
+          "note": "",
+          "provider": "Deutsche Boerse / STOXX",
+          "tier": 1,
+          "url": "https://www.stoxx.com/index-details?symbol=DAX"
+        }
+      ],
+      "transformation": "performance index level -> monthly log returns"
+    },
+    {
+      "blocker": "",
+      "currency": "EUR",
+      "description": "Developed Europe equity.",
+      "frequency": "monthly",
+      "key": "EUROPE",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "return_convention": "total_return",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_REQUIRED",
+          "note": "",
+          "provider": "STOXX",
+          "tier": 1,
+          "url": "https://www.stoxx.com/"
+        }
+      ],
+      "transformation": "net total return index -> monthly log returns"
+    },
+    {
+      "blocker": "No confirmed source mapping (known blocker in PROJECT_META Phase 4).",
+      "currency": "JPY",
+      "description": "Japanese equity.",
+      "frequency": "monthly",
+      "key": "JAPAN",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "return_convention": "total_return",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_UNKNOWN",
+          "note": "",
+          "provider": "Japan Exchange Group",
+          "tier": 1,
+          "url": "https://www.jpx.co.jp/english/markets/indices/topix/"
+        }
+      ],
+      "transformation": "TOPIX total return -> monthly log returns"
+    },
+    {
+      "blocker": "No confirmed source mapping (known blocker).",
+      "currency": "USD",
+      "description": "Emerging markets equity.",
+      "frequency": "monthly",
+      "key": "EM",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "return_convention": "total_return",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_REQUIRED",
+          "note": "",
+          "provider": "MSCI",
+          "tier": 1,
+          "url": "https://www.msci.com/"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "OPEN",
+          "note": "Shorter history than the developed set.",
+          "provider": "Kenneth R. French Data Library",
+          "tier": 4,
+          "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Emerging_5_Factors_CSV.zip"
+        }
+      ],
+      "transformation": "net total return index -> monthly log returns"
+    },
+    {
+      "blocker": "No confirmed source mapping (known blocker).",
+      "currency": "EUR",
+      "description": "High dividend yield equity.",
+      "frequency": "monthly",
+      "key": "DIVIDEND",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "return_convention": "total_return",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_REQUIRED",
+          "note": "",
+          "provider": "MSCI",
+          "tier": 1,
+          "url": "https://www.msci.com/"
+        }
+      ],
+      "transformation": "net total return index -> monthly log returns"
+    },
+    {
+      "blocker": "No confirmed source mapping (known blocker); tax class also unresolved.",
+      "currency": "USD",
+      "description": "Broad commodity index.",
+      "frequency": "monthly",
+      "key": "COMMOD",
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "return_convention": "total_return",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "LICENCE_REQUIRED",
+          "note": "",
+          "provider": "Bloomberg",
+          "tier": 5,
+          "url": "https://www.bloomberg.com/professional/product/indices/bloomberg-commodity-index-family/"
+        }
+      ],
+      "transformation": "index level -> monthly log returns"
+    },
+    {
+      "blocker": "",
+      "currency": "index",
+      "description": "Euro-area HICP, all items, annual rate of change. Calibrates the inflation process used for all real-terms reporting.",
+      "frequency": "monthly",
+      "key": "HICP_EA",
+      "required_for": "every real-terms number in every phase",
+      "return_convention": "rate",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "OPEN",
+          "note": "KEY MIGRATED. The previous key ICP.M.U2.N.000000.4.ANR was discontinued 2026-02-04 after a methodological change and replaced by HICP.M.U2.N.000000.4D0.ANR. Externally reported coverage 1996-12 to 2026-05. Eurostat reuse permitted with attribution.",
+          "provider": "European Central Bank Data Portal (source: Eurostat)",
+          "tier": 2,
+          "url": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "OPEN",
+          "note": "",
+          "provider": "Eurostat",
+          "tier": 3,
+          "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr"
+        }
+      ],
+      "transformation": "annual rate of change -> monthly inflation for the OU calibration"
+    },
+    {
+      "blocker": "",
+      "currency": "index",
+      "description": "German consumer price index. The investor is German, so the domestic deflator is the more faithful one.",
+      "frequency": "monthly",
+      "key": "CPI_DE",
+      "required_for": "real-terms reporting sensitivity",
+      "return_convention": "rate",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "OPEN",
+          "note": "GENESIS REST API requires free registration.",
+          "provider": "Statistisches Bundesamt (Destatis)",
+          "tier": 3,
+          "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/table?name=61111-0001"
+        }
+      ],
+      "transformation": "index -> monthly inflation"
+    },
+    {
+      "blocker": "",
+      "currency": "rate",
+      "description": "Euro-area short-term interest rate.",
+      "frequency": "monthly",
+      "key": "SHORT_RATE_EA",
+      "required_for": "B.2 - the Basiszins is a function of the modelled short rate",
+      "return_convention": "rate",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "OPEN",
+          "note": "Euro Short-Term Rate, monthly average. Externally reported as the official monthly series with CSV download; native coverage begins 2019-10. Reuse permitted with attribution, statistics and metadata not to be altered.",
+          "provider": "Deutsche Bundesbank",
+          "tier": 2,
+          "url": "https://api.statistiken.bundesbank.de/rest/data/BBMMB/M.EU000A2X2A25.WT?format=csv&lang=de"
+        }
+      ],
+      "transformation": "Native \u20acSTR from 2019-10 requires NO transformation. Extending backwards with EONIA is a SPLICE: EONIA ran under its own methodology to 2019-09-30, then was mechanically \u20acSTR + 8.5 bp from 2019-10-02 until discontinuation on 2022-01-03. The splice must carry its own documented rule and data_status and must never be applied silently."
+    },
+    {
+      "blocker": "BBK01.WT3230 has no entry in the official migration catalogue: SPECIFICATION_ERROR_SUSPECTED. The candidate succeeds WU9555/WU0115, not WT3230, and may not be mapped until the intended economic concept is decided.",
+      "currency": "rate",
+      "description": "Yield on long-dated German government bonds - the reference the statutory Basiszins is actually derived from.",
+      "frequency": "monthly",
+      "key": "BUND_LONG_YIELD",
+      "required_for": "B.2 Basiszins, currently legal_status TO_BE_VERIFIED",
+      "return_convention": "rate",
+      "sources": [
+        {
+          "endpoint_status": "UNVERIFIED",
+          "licence_status": "OPEN",
+          "note": "CANDIDATE ONLY - MAPPING FROM WT3230 NOT SUPPORTED. Umlaufsrenditen inl\u00e4ndischer Inhaberschuldverschreibungen / b\u00f6rsennotierte Bundeswertpapiere, monthly. The legacy Externally reported 2026-08-21 (round 2): the official Bundesbank migration catalogue contains NO entry for BBK01.WT3230, so that key is almost certainly a SPECIFICATION ERROR in this registry rather than a renamed series. This candidate is documented as the successor of WU9555 / WU0115, NOT of WT3230. Concept: Umlaufsrenditen inlaendischer Inhaberschuldverschreibungen / boersennotierte Bundeswertpapiere / monthly. The same Bundesbank table also carries maturity-band series (3-5, 5-8, 8-15, 15-30 years), and which one is correct depends on the Basiszins concept, not on the label.",
+          "provider": "Deutsche Bundesbank",
+          "tier": 2,
+          "url": "https://api.statistiken.bundesbank.de/rest/data/BBSIS/M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A?format=csv&lang=de"
+        }
+      ],
+      "transformation": "monthly average yield; compare against the published BMF Basiszins values to validate the B.2 coupling"
+    }
+  ],
+  "stop_if_missing": [
+    "CORE"
+  ],
+  "tracking_difference_note": "Tracking difference is not disclosed in a PRIIPs KID. It must be derived from published fund NAV history against the licensed index series, or taken from an issuer TD disclosure. Deriving it requires the index history, which is the same licence blocker as CORE."
+}
