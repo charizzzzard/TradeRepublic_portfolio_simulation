@@ -1,0 +1,89 @@
+{
+  "_spec_ref": "Operator decisions of 2026-08-21, refining Teil D. Separates three properties that PROJECT_META and the earlier implementation conflated.",
+  "schema_version": "1.0.0",
+
+  "core_principle": "reproducibility != redistribution. A licensed dataset can be used reproducibly if the repository carries complete provenance and a content hash, so that a second party holding the same legitimate source can verify byte equality. Open redistribution remains a valuable property, but it must not be equated with data existence or with scientific reproducibility.",
+
+  "dimensions": {
+    "availability_status": {
+      "values": ["ACQUIRED", "LICENCE_REQUIRED", "NOT_FOUND", "INSUFFICIENT_HISTORY",
+                 "DATA_INVALID", "REGISTRATION_REQUIRED", "PAYWALLED"],
+      "meaning": "Whether the series can be obtained at all, and on what terms."
+    },
+    "redistribution_status": {
+      "values": ["OPEN", "RESTRICTED", "UNKNOWN"],
+      "meaning": "Whether the raw bytes may be republished from this repository."
+    },
+    "reproducibility_status": {
+      "values": ["OPEN_REPRODUCIBLE", "LICENSED_REPRODUCIBLE", "NOT_REPRODUCIBLE"],
+      "meaning": "Whether a second party can reconstruct the identical input. LICENSED_REPRODUCIBLE requires complete provenance plus a SHA-256 that a holder of the same licensed source can check byte-for-byte."
+    }
+  },
+
+  "licensed_data_pathway": {
+    "permitted": true,
+    "raw_files_location": "data/licensed/ (git-ignored, never committed)",
+    "required_provenance_fields": [
+      "provider", "series_or_index_identity", "currency", "return_convention",
+      "retrieval_date", "licence_classification", "original_filename", "sha256",
+      "period_start", "period_end", "row_count", "transformation_specification",
+      "acquisition_instructions"
+    ],
+    "verification_contract": "A second user with the same legitimate source recomputes the local file hash and compares it against the recorded expected_sha256. Equality establishes that both parties calibrated from identical bytes.",
+    "what_this_is_not": "This is not open-data reproducibility. It is licensed reproducibility, and must be labelled as such in every report."
+  },
+
+  "phase4_core_decision_rule": {
+    "_note": "Evaluated in order. CORE is the only series whose outcome can force a STOP.",
+    "rules": [
+      {"condition": "exact CORE openly acquired and validated",
+       "core_status": "PASS", "phase4": "PASS",
+       "reproducibility": "OPEN_REPRODUCIBLE"},
+      {"condition": "exact CORE legitimately acquired under licence, stored outside the repo, hashed, provenance complete",
+       "core_status": "PASS_RESTRICTED_DATA", "phase4": "PASS",
+       "reproducibility": "LICENSED_REPRODUCIBLE"},
+      {"condition": "exact CORE exists commercially but the project holds no licence and no file",
+       "core_status": "LICENCE_REQUIRED", "phase4": "FAIL_ACCESS_CONSTRAINT",
+       "reproducibility": "NOT_REPRODUCIBLE",
+       "meaning": "A hard blocker for calibrated phases, but NOT a finding that the series does not exist."},
+      {"condition": "an operator-approved proxy exists and is used",
+       "core_status": "PROXY", "phase4": "PARTIAL",
+       "data_status": "PROXY_CALIBRATION",
+       "reproducibility": "OPEN_REPRODUCIBLE",
+       "caveat": "The EMPIRICAL_SUPPORT ceiling must be reconsidered: a proxy-calibrated result is not evidence about the instrument actually held."},
+      {"condition": "none of the above",
+       "core_status": "NOT_FOUND", "phase4": "FAIL_DATA_UNAVAILABLE",
+       "reproducibility": "NOT_REPRODUCIBLE"}
+    ]
+  },
+
+  "verdict_taxonomy": {
+    "FAIL_DATA_UNAVAILABLE": "SOURCE_NOT_FOUND, DATA_INVALID or INSUFFICIENT_HISTORY. An epistemic finding: the series does not exist in usable form.",
+    "FAIL_ACCESS_CONSTRAINT": "LICENCE_REQUIRED and the licence or file has not been obtained. NOT an epistemic finding: the data exists and is commercially available; the project has not acquired it. STOP for calibrated phases all the same.",
+    "BLOCKED_NETWORK": "Environment-level. No egress. Not a research finding of any kind.",
+    "rule": "A generic FAIL is no longer an admissible Phase 4 verdict. The reason must be one of the specific values above."
+  },
+
+  "approved_proxies": {
+    "GOLD": {
+      "approved": true,
+      "approved_by": "human_operator",
+      "approved_at": "2026-08-21",
+      "proxy_series": "World Bank Pink Sheet, Gold (UK) 99.5% fine, London afternoon fixing, average of daily rates",
+      "licence": "CC BY 4.0, redistribution permitted with attribution",
+      "target_series": "LBMA PM month-end fixing",
+      "difference": "monthly MEAN of daily fixings versus MONTH-END value",
+      "mandatory_sensitivity": {
+        "required": true,
+        "reason": "Phase 6 rests on second moments (G2). Monthly averaging is a low-pass filter and will SUPPRESS measured variance relative to month-end sampling. A gold downside claim calibrated on averaged data would understate exactly the quantity the claim is about.",
+        "requirement": "The variance reduction induced by averaging must be quantified as its own proxy sensitivity before any Phase 6 result calibrated on this series is reported.",
+        "must_not": "This series must never be labelled as LBMA-identical."
+      },
+      "data_status": "PROXY_CALIBRATION"
+    },
+    "CORE": {
+      "approved": false,
+      "reason": "No acceptable open proxy. Vanguard NAV starts 2019-07-23 (INSUFFICIENT_HISTORY and a fund series, not the benchmark). Kenneth French is not FTSE All-World, is USD, lacks a net-of-withholding concept, and inherits MSCI/Bloomberg licence constraints. CORE remains the binding constraint."
+    }
+  }
+}

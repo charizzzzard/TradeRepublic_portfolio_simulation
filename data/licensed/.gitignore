@@ -1,0 +1,10 @@
+# Licensed raw data lives here and is NEVER committed.
+#
+# reproducibility != redistribution. The repository carries complete provenance
+# and an expected SHA-256 for each licensed file (see the licensed-data manifest
+# in results/phase4/). A second party holding the same legitimate source
+# recomputes the hash locally and compares. Equality establishes that both
+# calibrated from identical bytes - licensed reproducibility, which is weaker
+# than open reproducibility and must be labelled as such.
+*
+!.gitignore

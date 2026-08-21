@@ -290,25 +290,33 @@ def test_hicp_key_migrated_off_the_discontinued_series():
     assert "ICP/M.U2.N.000000.4.ANR" not in urls, "discontinued key must be gone"
 
 
-def test_fx_specification_conflict_is_surfaced_and_unresolved():
-    """Round 2 established the CORE benchmark is USD. That collides with the
-    B.5 decision fx=EXCLUDED_BY_DESIGN, whose recorded rationale assumes an
-    EUR-denominated series. The conflict must be visible and OPEN, not silently
-    resolved."""
+def test_fx_specification_conflict_was_surfaced_then_resolved_by_the_operator():
+    """The conflict must remain visible with its resolution recorded - deleting
+    it would erase the reason the decision was taken."""
     conflict = next(c for c in reg.SPECIFICATION_CONFLICTS
                     if c["id"] == "B5_FX_VS_USD_BENCHMARK")
-    assert conflict["status"] == "OPEN"
+    assert conflict["status"] == "RESOLVED"
     assert conflict["severity"] == "DECISION_RELEVANT"
-    assert "operator" in conflict["decision_owner"]
-    assert len(conflict["resolution_options"]) >= 2
+    assert conflict["resolved_by"] == "human_operator"
+    assert "MUST be converted to EUR" in conflict["resolution"]
+    # The original conflict statement and damage scope stay on the record.
     assert "Phases 1-3 are NOT invalidated" in conflict["scope_of_damage"]
+    assert len(conflict["resolution_options"]) >= 2
 
 
-def test_fx_config_still_says_excluded_by_design():
-    """The conflict is recorded but config/fx.json is NOT unilaterally changed:
-    B.5 is a first-class assumption and the decision belongs to the operator."""
+def test_fx_conflict_was_resolved_by_the_operator_not_silently():
+    """B.5 is a first-class assumption, so the conflict was surfaced and left to
+    the operator, who resolved it on 2026-08-21. The revised file must record
+    WHAT changed and WHY, not merely carry a new value."""
     from portfolio_sim import config
-    assert config.load("fx")["status"] == "EXCLUDED_BY_DESIGN"
+    fx = config.load("fx")
+    assert fx["status"] == "EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR"
+    assert fx["supersedes_status"] == "EXCLUDED_BY_DESIGN"
+    assert fx["decided_by"] == "human_operator"
+    assert "OMITS FX" in fx["revision_reason"]
+    # The resolution keeps option_b's motivation: no stochastic FX factor.
+    assert fx["decision"] == "option_b"
+    assert fx["simulation"]["no_separate_fx_factor"] is True
 
 
 def test_costs_config_still_flags_placeholders_until_ter_is_verified():

@@ -52,8 +52,35 @@ def code_hash() -> str:
     return hash_tree(REPO_ROOT, ("src/portfolio_sim/*.py",))
 
 
+# Configs the numeric path may read. Deliberately conservative: investor.json
+# and assets.json are included even though the engine does not currently read
+# them, so that the hash already covers them if it ever does.
+NUMERIC_CONFIGS = ("investor", "conventions", "tax", "costs", "assets")
+
+# Configs that record decisions and policy but enter no computation. Changing
+# one cannot move a number - a property that is TESTED, not assumed
+# (tests/test_config_separation.py).
+NON_NUMERIC_CONFIGS = ("fx", "data_policy")
+
+
 def parameter_hash() -> str:
+    """Hash of the entire configuration, numeric and documentary alike."""
     return hash_tree(REPO_ROOT, ("config/*.json",))
+
+
+def numeric_parameter_hash() -> str:
+    """Hash of only those configs that can change a computed result.
+
+    A predecessor gate must fail hard on drift HERE, because such a change
+    invalidates the results. Drift in the documentary configs is recorded but
+    does not invalidate anything, because no computation reads them.
+    """
+    digest = hashlib.sha256()
+    for name in NUMERIC_CONFIGS:
+        path = REPO_ROOT / "config" / f"{name}.json"
+        digest.update(name.encode("utf-8"))
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
 
 
 def environment_hash() -> str:

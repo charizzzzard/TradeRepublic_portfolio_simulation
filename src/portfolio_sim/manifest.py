@@ -16,7 +16,7 @@ from pathlib import Path
 from . import BASELINE_ID, __version__
 from .config import all_configs, load
 from .hashing import (canonical_json, code_hash, environment_hash, git_sha,
-                      parameter_hash, sha256_obj)
+                      numeric_parameter_hash, parameter_hash, sha256_obj)
 
 STATUS_LADDER = (
     "DISCOVERY",
@@ -85,6 +85,7 @@ def build(
         "seed": cfg["conventions"]["seed"],
         "code_hash": code_hash(),
         "parameter_hash": parameter_hash(),
+        "numeric_parameter_hash": numeric_parameter_hash(),
         "data_hash": data_manifest_hash,
         "environment_hash": environment_hash(),
         "n_parameter_worlds": n_parameter_worlds,
@@ -99,6 +100,7 @@ def build(
         },
         "rebalancing_config": cfg["conventions"]["rebalancing"],
         "fx_config": cfg["fx"],
+        "data_policy": cfg["data_policy"],
         "engine": engine,
         "engine_status_ceiling": MAX_STATUS_BY_ENGINE[engine],
         "status": status,
@@ -106,7 +108,12 @@ def build(
         "human_final_decision": True,
         "epistemic_limits_ack": ["G1", "G2", "G3", "G4", "G5", "G6", "G7"],
         "b1_withholding_credit_status": cfg["tax"]["withholding_tax_credit"]["status"],
-        "b5_fx_disclosure": cfg["fx"]["cost_borne"],
+        "b5_fx_disclosure": {
+            "status": cfg["fx"]["status"],
+            "historical_calibration_rule": cfg["fx"]["historical_calibration"]["rule"],
+            "supported_claims": cfg["fx"]["supported_claims"],
+            "unsupported_claims": cfg["fx"]["unsupported_claims"],
+        },
         "unmodelled_boundary_conditions": (
             "Emergency fund, human capital, statutory/occupational pension, liquidity "
             "events and interim withdrawals are NOT modelled (B.6). This is a partial "

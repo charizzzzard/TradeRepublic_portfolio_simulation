@@ -28,6 +28,7 @@ def manifest_copy(tmp_path):
     return _make
 
 
+@pytest.mark.phase_artifact
 def test_real_phase1_manifest_passes_the_gate():
     rec = gates.require_phase_pass(PHASE1, PHASE1_NAME)
     assert rec["predecessor_acceptance"] == "PASS"
@@ -39,12 +40,14 @@ def test_missing_manifest_is_a_gate_failure(tmp_path):
         gates.require_phase_pass(tmp_path / "nope.json", PHASE1_NAME)
 
 
+@pytest.mark.phase_artifact
 def test_failed_acceptance_blocks_the_dependent_phase(manifest_copy):
     path = manifest_copy(extra={"acceptance": "FAIL"})
     with pytest.raises(gates.GateFailure, match="not PASS"):
         gates.require_phase_pass(path, PHASE1_NAME)
 
 
+@pytest.mark.phase_artifact
 def test_absent_acceptance_field_blocks_the_dependent_phase(tmp_path):
     """A manifest with no acceptance record must not be read as a pass."""
     man = json.loads(PHASE1.read_text())
@@ -55,15 +58,46 @@ def test_absent_acceptance_field_blocks_the_dependent_phase(tmp_path):
         gates.require_phase_pass(path, PHASE1_NAME)
 
 
+@pytest.mark.phase_artifact
 def test_wrong_phase_is_rejected(manifest_copy):
     path = manifest_copy(phase="PHASE_9_SOMETHING_ELSE")
     with pytest.raises(gates.GateFailure, match="expected"):
         gates.require_phase_pass(path, PHASE1_NAME)
 
 
-def test_config_drift_blocks_the_dependent_phase(manifest_copy):
-    """If config/ changed since the predecessor ran, its PASS no longer applies."""
+@pytest.mark.phase_artifact
+def test_numeric_config_drift_blocks_the_dependent_phase(manifest_copy):
+    """Drift in a config that enters the computation invalidates the predecessor's
+    results, so the gate must refuse."""
+    path = manifest_copy(numeric_parameter_hash="0" * 64)
+    with pytest.raises(gates.GateFailure, match="numeric parameter drift"):
+        gates.require_phase_pass(path, PHASE1_NAME)
+
+
+@pytest.mark.phase_artifact
+def test_documentary_config_drift_does_not_block_but_is_recorded(manifest_copy):
+    """Drift confined to configs no computation reads must NOT invalidate results,
+    but must still be visible in the gate record.
+
+    The exemption is safe only because tests/test_config_separation.py
+    demonstrates by mutation that those files move no number.
+    """
     path = manifest_copy(parameter_hash="0" * 64)
+    rec = gates.require_phase_pass(path, PHASE1_NAME)
+    assert rec["numeric_parameter_hash_stable"] is True
+    assert rec["documentary_parameter_drift"]["detected"] is True
+    assert rec["documentary_parameter_drift"]["invalidates_results"] is False
+
+
+@pytest.mark.phase_artifact
+def test_manifest_without_a_numeric_hash_falls_back_to_the_strict_comparison(manifest_copy):
+    """A manifest written before the split records no numeric hash. The gate must
+    then use the full hash, which is stricter, rather than skipping the check."""
+    import json
+    path = manifest_copy(parameter_hash="0" * 64)
+    man = json.loads(path.read_text())
+    man.pop("numeric_parameter_hash", None)
+    path.write_text(json.dumps(man))
     with pytest.raises(gates.GateFailure, match="parameter_hash drift"):
         gates.require_phase_pass(path, PHASE1_NAME)
 

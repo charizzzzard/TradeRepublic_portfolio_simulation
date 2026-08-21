@@ -80,9 +80,18 @@ Emergency fund, human capital, statutory and occupational pension, liquidity
 events and interim withdrawals are **not modelled** (B.6). This is a partial
 analysis of portfolio allocation, **not financial planning**.
 
-FX is `EXCLUDED_BY_DESIGN` (B.5, `config/fx.json`). The EUR investor's unhedged
-USD/JPY/EM exposure is out of scope, and no statement about a satellite's
-currency risk is supported by this model.
+FX is `EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR` (B.5, revised 2026-08-21). No FX
+factor is simulated, but every non-EUR calibration series **must** be converted
+to EUR before return estimation — data preprocessing, not a modelled process.
+Supported: EUR-investor total-return behaviour. **Unsupported**: isolated FX
+risk, hedging decisions, FX forecasts, asset-vs-currency decomposition. See
+[`docs/DECISIONS_20260821.md`](docs/DECISIONS_20260821.md).
+
+`reproducibility != redistribution`: licensed data held outside the repository
+with full provenance and a SHA-256 counts as `LICENSED_REPRODUCIBLE`. A generic
+`FAIL` is no longer an admissible Phase 4 verdict — `FAIL_ACCESS_CONSTRAINT`
+(data exists, not acquired) is distinct from `FAIL_DATA_UNAVAILABLE` (data does
+not exist in usable form).
 
 All cost values are **unsourced placeholders**. All tax assumptions are
 `TO_BE_VERIFIED`. Baseline v2 is absent from this repository — see
@@ -96,14 +105,15 @@ src/          engine, tax engine, lot ledger, CRN, macro, metrics, manifest, led
 tests/        hand checks + determinism + pre-tax regression + gates + grid (58 tests)
 scripts/      run_phase1.py, run_phase2.py, run_phase3.py, verify_g1.py
 results/      per-phase run_manifest.json, baseline reference, falsification ledger
-docs/         BASELINE_V3.md, PHASE2_R11.md, PHASE3_R2E.md
+docs/         BASELINE_V3.md, PHASE2_R11.md, PHASE3_R2E.md,
+              PHASE4_R3.md, DECISIONS_20260821.md, DATA_REQUEST_PROMPT.md
 ```
 
 ## Run it
 
 ```bash
 pip install -r requirements.txt
-python3 -m pytest tests/ -q      # 58 tests
+python3 -m pytest tests/ -q      # 117 tests
 python3 scripts/run_phase1.py    # acceptance checks + run_manifest.json
 python3 scripts/run_phase2.py    # R11 savings dynamics (~5 min)
 python3 scripts/run_phase3.py    # R2E convention/cost grid (~25 min)
@@ -150,7 +160,9 @@ Round 2 also found a **second** registry error of mine — `IE00BK5BQT80`
 benchmarks **FTSE All-World NR USD**, not EUR — which puts the B.5 decision
 `fx: EXCLUDED_BY_DESIGN` in conflict with calibration and must be resolved by the
 operator before any calibrated run. Recorded as
-`SPECIFICATION_CONFLICTS["B5_FX_VS_USD_BENCHMARK"]`, status `OPEN`.
+`SPECIFICATION_CONFLICTS["B5_FX_VS_USD_BENCHMARK"]` — since **`RESOLVED`** by
+operator decision, with Phases 1–3 re-run end to end and every frozen comparator
+hash confirmed bit-identical.
 
 **No empirical data is loaded.** Every result in this repository still rests on
 an `UNCALIBRATED_ASSUMPTION` prior, and `EMPIRICAL_SUPPORT` remains unreachable.

@@ -18,7 +18,8 @@ def load(name: str) -> dict:
 def all_configs() -> dict:
     return {
         n: load(n)
-        for n in ("investor", "conventions", "tax", "costs", "fx", "assets")
+        for n in ("investor", "conventions", "tax", "costs", "fx", "assets",
+                  "data_policy")
     }
 
 

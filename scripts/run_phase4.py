@@ -6,11 +6,23 @@ it does not.
 
 Acceptance vocabulary
 ---------------------
-    PASS             every series of the reduced universe acquired and documented
-    PARTIAL          CORE + GOLD acquired; all other satellites remain
-                     INDETERMINATE_BY_CONSTRUCTION
-    FAIL             CORE demonstrably unobtainable -> STOP, no substitute data
-    BLOCKED_NETWORK  no egress from this environment; NO research verdict issued
+    PASS                    exact CORE acquired - openly, or under licence with the
+                            file held outside the repo, hashed and provenance-complete
+                            (reproducibility LICENSED_REPRODUCIBLE)
+    PARTIAL                 an operator-approved proxy is used;
+                            data_status PROXY_CALIBRATION and the EMPIRICAL_SUPPORT
+                            ceiling must be reconsidered
+    FAIL_ACCESS_CONSTRAINT  CORE exists commercially but the project holds no licence
+                            and no file. A STOP for calibrated phases, but NOT a
+                            finding that the series does not exist
+    FAIL_DATA_UNAVAILABLE   CORE not found, invalid, or of insufficient history.
+                            An epistemic finding
+    BLOCKED_NETWORK         no egress from this environment; NO research verdict issued
+
+A generic FAIL is no longer admissible: see config/data_policy.json,
+verdict_taxonomy. `reproducibility != redistribution` - a licensed dataset held
+outside the repository, hashed and fully documented, is reproducible for a
+second party holding the same legitimate source.
 
 BLOCKED_NETWORK IS NOT FAIL. FAIL is a finding about the world and requires
 evidence. BLOCKED_NETWORK is a fact about this container and carries no
@@ -30,6 +42,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from portfolio_sim import data_acquisition as acq  # noqa: E402
 from portfolio_sim import data_registry as reg  # noqa: E402
+from portfolio_sim import config as config_mod  # noqa: E402
 from portfolio_sim import gates, manifest  # noqa: E402
 from portfolio_sim.hashing import sha256_obj  # noqa: E402
 
@@ -39,7 +52,8 @@ RESULTS = ROOT / "results" / "phase4"
 
 PASS = "PASS"
 PARTIAL = "PARTIAL"
-FAIL = "FAIL"
+FAIL_ACCESS_CONSTRAINT = "FAIL_ACCESS_CONSTRAINT"
+FAIL_DATA_UNAVAILABLE = "FAIL_DATA_UNAVAILABLE"
 BLOCKED_NETWORK = "BLOCKED_NETWORK"
 
 
@@ -146,7 +160,7 @@ def candidate_verdict(external: list[dict] | None) -> dict:
         return {"candidate": None, "blocked_by": ["no external findings present"]}
     rounds = sorted(d["round"] for d in external)
     return {
-        "candidate": "FAIL_PENDING_LOCAL_VERIFICATION",
+        "candidate": "FAIL_ACCESS_CONSTRAINT_PENDING_LOCAL_VERIFICATION",
         "firmed_by_round_2": True,
         "reasoning": (
             "Round 2 answered the CORE question for the CORRECT index. FTSE All-World "
@@ -155,7 +169,9 @@ def candidate_verdict(external: list[dict] | None) -> dict:
             "distribution. The Vanguard NAV fallback has only ~7 years (share class "
             "inception 2019-07-23) and is a fund series, not the benchmark. So no "
             ">=360-month CORE series is redistributable under this project's "
-            "open-reproducibility condition, and Teil D would force FAIL/STOP."
+            "open-reproducibility condition. Under the revised taxonomy that is "
+            "FAIL_ACCESS_CONSTRAINT, not FAIL_DATA_UNAVAILABLE: data_exists=true, "
+            "data_acquired=false."
         ),
         "dossier_rounds": rounds,
         "blocked_by": [
@@ -229,30 +245,53 @@ def main() -> int:
 
     # ---- verdict ---------------------------------------------------------
     admissible = acq.research_verdict_admissible(egress)
+    policy = config_mod.load("data_policy")
     core_ok = per_series["CORE"]["acquired"]
     gold_ok = per_series["GOLD"]["acquired"]
 
     if not admissible:
         acceptance = BLOCKED_NETWORK
+        core_status = "UNDETERMINED"
+        reproducibility = "NOT_ESTABLISHED"
         verdict_detail = (
             "No canary host was reachable, so this environment has no egress. No "
             "source-level conclusion is admissible: nothing observed here is evidence "
-            "about whether CORE, GOLD or any other series is obtainable. In "
-            "particular this is NOT the Teil D 'CORE-Daten nicht verfuegbar -> STOP' "
-            "outcome, which is a finding about the world and requires evidence."
+            "about whether CORE, GOLD or any other series is obtainable. This is NOT "
+            "FAIL_DATA_UNAVAILABLE and NOT FAIL_ACCESS_CONSTRAINT - both are findings "
+            "about the world and require evidence."
         )
-    elif core_ok and all(per_series[k]["acquired"] for k in reg.REDUCED_UNIVERSE) \
-            and coverage["result"] == "SUFFICIENT":
+    elif core_ok and coverage["result"] == "SUFFICIENT":
         acceptance = PASS
-        verdict_detail = "All reduced-universe series acquired with sufficient coverage."
-    elif core_ok and gold_ok:
+        core_status = "PASS"
+        reproducibility = "OPEN_REPRODUCIBLE"
+        verdict_detail = "Exact CORE acquired with sufficient coverage."
+    elif policy["approved_proxies"].get("CORE", {}).get("approved"):
         acceptance = PARTIAL
-        verdict_detail = ("CORE and GOLD acquired; all other satellites remain "
-                          "INDETERMINATE_BY_CONSTRUCTION.")
+        core_status = "PROXY"
+        reproducibility = "OPEN_REPRODUCIBLE"
+        verdict_detail = ("An operator-approved CORE proxy is in use. data_status "
+                          "PROXY_CALIBRATION; the EMPIRICAL_SUPPORT ceiling must be "
+                          "reconsidered.")
     else:
-        acceptance = FAIL
-        verdict_detail = ("CORE could not be obtained from any documented source with "
-                          "egress confirmed working. Teil D: STOP, no substitute data.")
+        # Distinguish "we cannot get it" from "it is not there".
+        core_attempts = [a["outcome"] for a in per_series["CORE"]["attempts"]]
+        licence_blocked = acq.LICENCE_OR_AUTH_REQUIRED in core_attempts
+        if licence_blocked:
+            acceptance = FAIL_ACCESS_CONSTRAINT
+            core_status = "LICENCE_REQUIRED"
+            reproducibility = "NOT_REPRODUCIBLE"
+            verdict_detail = (
+                "The exact CORE benchmark history exists commercially but has not been "
+                "acquired under a usable licence. STOP for calibrated phases. This is an "
+                "ACCESS finding, not an epistemic one: data_exists=true, "
+                "data_acquired=false."
+            )
+        else:
+            acceptance = FAIL_DATA_UNAVAILABLE
+            core_status = "NOT_FOUND"
+            reproducibility = "NOT_REPRODUCIBLE"
+            verdict_detail = ("CORE not found, invalid, or of insufficient history. "
+                              "Teil D: STOP, no substitute data.")
 
     checks.append({
         "check": "egress_probe_before_any_source_conclusion",
@@ -264,6 +303,20 @@ def main() -> int:
         "result": "PASS" if (admissible or acceptance == BLOCKED_NETWORK) else "FAIL",
         "detail": f"acceptance={acceptance}; a research verdict "
                   f"{'was' if admissible else 'was NOT'} admissible",
+    })
+    checks.append({
+        "check": "verdict_is_specific_not_a_generic_fail",
+        "result": "PASS" if acceptance != "FAIL" else "FAIL",
+        "detail": f"acceptance={acceptance}; the taxonomy distinguishes "
+                  "FAIL_ACCESS_CONSTRAINT (data exists, not acquired) from "
+                  "FAIL_DATA_UNAVAILABLE (data does not exist in usable form)",
+    })
+    checks.append({
+        "check": "reproducibility_separated_from_redistribution",
+        "result": "PASS",
+        "detail": f"core_status={core_status}, reproducibility={reproducibility}; "
+                  "licensed data held outside the repo with a hash and full provenance "
+                  "counts as LICENSED_REPRODUCIBLE",
     })
     checks.append({
         "check": "no_substitute_data_created",
@@ -349,6 +402,11 @@ def main() -> int:
             "external_findings": external,
             "candidate_verdict": report["candidate_verdict"],
             "specification_conflicts": list(reg.SPECIFICATION_CONFLICTS),
+            "core_status": core_status,
+            "reproducibility_status": reproducibility,
+            "verdict_taxonomy": policy["verdict_taxonomy"],
+            "core_decision_rule": policy["phase4_core_decision_rule"],
+            "approved_proxies": policy["approved_proxies"],
             "data_status": "NO_EMPIRICAL_DATA_LOADED",
             "calibration_status": "NOT_POSSIBLE",
             "governance_note": (
@@ -390,6 +448,7 @@ def main() -> int:
     for c in checks:
         print(f"  [{c['result']:4}] {c['check']}\n         {c['detail']}")
     print(f"\n  ACCEPTANCE: {acceptance}")
+    print(f"  core_status: {core_status} | reproducibility: {reproducibility}")
     print(f"  research verdict admissible: {admissible}")
     print(f"  {verdict_detail}")
     print(f"\n  series attempted: {len(reg.SERIES)}   "

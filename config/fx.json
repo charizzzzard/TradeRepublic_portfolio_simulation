@@ -1,11 +1,46 @@
 {
   "_spec_ref": "PROJECT_META v3, Teil B.5 - an explicit decision is MANDATORY; silent omission is disallowed.",
-  "schema_version": "1.0.0",
+  "schema_version": "2.0.0",
   "decision": "option_b",
-  "status": "EXCLUDED_BY_DESIGN",
+  "status": "EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR",
+  "supersedes_status": "EXCLUDED_BY_DESIGN",
   "decided_by": "human_operator",
   "decided_at": "2026-08-21",
-  "rationale": "No FX process is modelled. The only claim this project still tests (Phase 6, GOLD downside) is mu-neutral by pre-registration and rests exclusively on second moments and tax mechanics. An FX process would require a correlation structure between currency and asset returns that is subject to the same underdetermination as G6, and would therefore add model uncertainty without making the claim more decidable.",
-  "cost_borne": "The EUR investor's unhedged USD / JPY / EM currency exposure is OUT OF SCOPE. Asset processes are interpreted as EUR-denominated total returns with the FX component folded into their volatility rather than modelled as a separate correlated factor. Any statement about the currency risk of a satellite is therefore NOT SUPPORTED by this model.",
-  "mandatory_disclosure": "This decision MUST be restated verbatim in every result report, per B.5."
+  "revised_at": "2026-08-21",
+
+  "revision_reason": "The original formulation said non-EUR asset returns were 'interpreted as EUR-denominated total returns with the FX component folded into their volatility'. Phase 4 round 2 established that the CORE benchmark is FTSE All-World NET RETURN in USD. For a USD series that sentence is false: reading USD returns as EUR returns does not fold FX into volatility, it OMITS FX, misstating both the mean and the variance faced by a EUR investor. The error was in the interpretation clause, not in the decision to avoid a separate stochastic FX factor.",
+
+  "historical_calibration": {
+    "rule": "MANDATORY. Every non-EUR benchmark series MUST be converted into EUR BEFORE return estimation or calibration.",
+    "level_form": "I_EUR(t) = I_FOREIGN(t) * FX(t), with the FX quote convention documented explicitly per series",
+    "return_form": "1 + R_EUR(t) = (1 + R_FOREIGN(t)) * (1 + R_FX(t))",
+    "fx_quote_convention": "MUST be recorded per series in the data manifest. A quote-direction error silently inverts the currency effect and is not detectable from the numbers alone.",
+    "classification": "This is DATA PREPROCESSING, not a stochastic process. It happens once, before calibration, on observed history."
+  },
+
+  "simulation": {
+    "rule": "Simulate the resulting EUR-denominated asset return process directly.",
+    "no_separate_fx_factor": true,
+    "no_modelled_fx_asset_correlation": true,
+    "rationale": "This preserves the original motivation for option_b: no future USD/EUR correlation has to be parameterised, so the parameter space does not expand into a dimension that G6-style underdetermination would make unestimable. What changes is that the calibration now measures the risk a EUR investor actually bears, instead of a USD investor's risk relabelled."
+  },
+
+  "supported_claims": [
+    "EUR-investor total-return behaviour, currency effects included implicitly through the EUR-converted history"
+  ],
+
+  "unsupported_claims": [
+    "Isolated FX risk of any instrument",
+    "FX hedging decisions",
+    "Forecasts of future EUR/USD or any exchange rate",
+    "Decomposition of a result into asset return versus currency return"
+  ],
+
+  "mandatory_disclosure": "This decision, including the supported and unsupported claim lists, MUST be restated in every result report, per B.5.",
+
+  "effect_on_existing_results": {
+    "phases_1_to_3": "UNAFFECTED",
+    "reason": "config/fx.json is not read by any numeric code path. Phases 1-3 run on an UNCALIBRATED_ASSUMPTION prior and load no historical series, so the calibration rule above has nothing to act on there. The conflict arises only at the transition to empirical calibration.",
+    "verification": "Not asserted - demonstrated. Phases 1-3 were re-run after this revision and every frozen comparator hash was checked for equality against the pre-revision values. See docs/PHASE4_R3.md."
+  }
 }

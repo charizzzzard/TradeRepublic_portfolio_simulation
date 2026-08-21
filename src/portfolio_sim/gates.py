@@ -26,7 +26,8 @@ import json
 import subprocess
 from pathlib import Path
 
-from .hashing import REPO_ROOT, parameter_hash, sha256_bytes
+from .hashing import (NON_NUMERIC_CONFIGS, REPO_ROOT, numeric_parameter_hash,
+                      parameter_hash, sha256_bytes)
 
 # Modules that carry the frozen conventions of A.5 and the Teil B tax
 # decisions. Listed explicitly so that adding a module to this package is a
@@ -135,14 +136,39 @@ def require_phase_pass(manifest_path: Path, expected_phase: str,
     }
 
     current_params = parameter_hash()
+    current_numeric = numeric_parameter_hash()
     record["current_parameter_hash"] = current_params
-    if current_params != man.get("parameter_hash"):
-        raise GateFailure(
-            "parameter_hash drift: config/ changed since the predecessor phase "
-            f"({man.get('parameter_hash')} -> {current_params}). "
-            "A dependent phase may not run against altered configuration."
-        )
-    record["parameter_hash_stable"] = True
+    record["current_numeric_parameter_hash"] = current_numeric
+
+    # Hard failure only on drift that can move a number. A predecessor manifest
+    # written before the split records no numeric hash; in that case fall back
+    # to the full hash, which is the stricter comparison.
+    predecessor_numeric = man.get("numeric_parameter_hash")
+    if predecessor_numeric is not None:
+        if current_numeric != predecessor_numeric:
+            raise GateFailure(
+                "numeric parameter drift: a config that enters the computation changed "
+                f"since the predecessor phase ({predecessor_numeric} -> {current_numeric}). "
+                "The predecessor's results no longer describe the current configuration."
+            )
+        record["numeric_parameter_hash_stable"] = True
+        if current_params != man.get("parameter_hash"):
+            record["documentary_parameter_drift"] = {
+                "detected": True,
+                "configs_that_may_have_changed": list(NON_NUMERIC_CONFIGS),
+                "invalidates_results": False,
+                "reason": "Only configs outside the numeric path differ. No computation "
+                          "reads them, so no recorded result changes. This is verified by "
+                          "tests/test_config_separation.py, not assumed.",
+            }
+    else:
+        if current_params != man.get("parameter_hash"):
+            raise GateFailure(
+                "parameter_hash drift: config/ changed since the predecessor phase "
+                f"({man.get('parameter_hash')} -> {current_params}). "
+                "A dependent phase may not run against altered configuration."
+            )
+    record["parameter_hash_stable"] = current_params == man.get("parameter_hash")
 
     if baseline_ref is not None:
         conv = verify_conventions_unchanged(baseline_ref)

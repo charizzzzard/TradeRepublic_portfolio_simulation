@@ -405,7 +405,18 @@ SPECIFICATION_CONFLICTS: tuple[dict, ...] = (
     {
         "id": "B5_FX_VS_USD_BENCHMARK",
         "severity": "DECISION_RELEVANT",
-        "status": "OPEN",
+        "status": "RESOLVED",
+        "resolved_at": "2026-08-21",
+        "resolved_by": "human_operator",
+        "resolution": (
+            "option_b retained but redefined as EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR. "
+            "No separate stochastic FX factor is simulated, preserving the original "
+            "motivation. But every non-EUR calibration series MUST be converted to EUR "
+            "before return estimation - data preprocessing, not a modelled process. "
+            "Supported claims are limited to EUR-investor total-return behaviour; "
+            "isolated FX risk, hedging decisions, FX forecasts and asset/currency "
+            "decomposition are explicitly unsupported. See config/fx.json."
+        ),
         "conflict": (
             "B.5 was decided as option_b, fx=EXCLUDED_BY_DESIGN. The rationale recorded "
             "in config/fx.json is that asset processes are 'interpreted as EUR-denominated "
@@ -441,3 +452,66 @@ SPECIFICATION_CONFLICTS: tuple[dict, ...] = (
                           "implementation detail",
     },
 )
+
+
+# --------------------------------------------------------------------------
+# Three-dimensional data status (operator decision, 2026-08-21)
+# --------------------------------------------------------------------------
+# The earlier implementation collapsed three independent properties into one
+# licence_status, which is what produced the wrong inference
+# "not openly redistributable -> not available -> FAIL". They are separated
+# here. See config/data_policy.json for the authoritative vocabulary.
+
+AVAILABILITY = ("ACQUIRED", "LICENCE_REQUIRED", "NOT_FOUND", "INSUFFICIENT_HISTORY",
+                "DATA_INVALID", "REGISTRATION_REQUIRED", "PAYWALLED")
+REDISTRIBUTION = ("OPEN", "RESTRICTED", "UNKNOWN")
+REPRODUCIBILITY = ("OPEN_REPRODUCIBLE", "LICENSED_REPRODUCIBLE", "NOT_REPRODUCIBLE")
+
+# Fields a licensed file must carry for a second party to verify byte equality.
+LICENSED_PROVENANCE_FIELDS = (
+    "provider", "series_or_index_identity", "currency", "return_convention",
+    "retrieval_date", "licence_classification", "original_filename", "sha256",
+    "period_start", "period_end", "row_count", "transformation_specification",
+    "acquisition_instructions",
+)
+
+
+def redistribution_from_licence(licence_status: str) -> str:
+    return {"OPEN": "OPEN",
+            "LICENCE_REQUIRED": "RESTRICTED",
+            "LICENCE_UNKNOWN": "UNKNOWN"}.get(licence_status, "UNKNOWN")
+
+
+def classify_reproducibility(availability: str, redistribution: str,
+                             local_file_hashed: bool) -> str:
+    """Reproducibility is about whether a second party can reconstruct the input.
+
+    That is NOT the same as whether the bytes may be republished. A licensed
+    file held outside the repository, with complete provenance and a recorded
+    SHA-256, is reproducible for anyone holding the same legitimate source -
+    they recompute the hash and compare. Weaker than open reproducibility, and
+    must be labelled as such, but it is not irreproducible.
+    """
+    if availability != "ACQUIRED" or not local_file_hashed:
+        return "NOT_REPRODUCIBLE"
+    if redistribution == "OPEN":
+        return "OPEN_REPRODUCIBLE"
+    return "LICENSED_REPRODUCIBLE"
+
+
+def licensed_provenance_complete(record: dict) -> tuple[bool, list[str]]:
+    """Whether a licensed-data record carries everything the contract requires."""
+    missing = [f for f in LICENSED_PROVENANCE_FIELDS
+               if not str(record.get(f, "")).strip()]
+    return (not missing), missing
+
+
+def source_status_triple(source: SourceSpec, availability: str,
+                         local_file_hashed: bool = False) -> dict:
+    redistribution = redistribution_from_licence(source.licence_status)
+    return {
+        "availability_status": availability,
+        "redistribution_status": redistribution,
+        "reproducibility_status": classify_reproducibility(
+            availability, redistribution, local_file_hashed),
+    }
