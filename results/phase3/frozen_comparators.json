@@ -1,0 +1,37 @@
+{
+  "R2E_CONVENTION_SPREAD": {
+    "definition": "max(median) - min(median) of terminal_real_after_tax across funding x terminal timing x FSA, at TER +0 bp, 100% CORE",
+    "excludes_ter_sweep": true,
+    "frozen": true,
+    "values_by_horizon": {
+      "10": {
+        "as_pct_of_baseline_cell_median": 1.2746058098240132,
+        "best_cell": "D1|first_business_day_y_plus_1|ter+0bp|fsa2000",
+        "spread_eur": 1077.512655433471,
+        "worst_cell": "D1|last_trading_day_y|ter+0bp|fsa0"
+      },
+      "20": {
+        "as_pct_of_baseline_cell_median": 1.6033383133729133,
+        "best_cell": "D2|first_business_day_y_plus_1|ter+0bp|fsa2000",
+        "spread_eur": 2864.313630335353,
+        "worst_cell": "D1|last_trading_day_y|ter+0bp|fsa0"
+      }
+    }
+  },
+  "R2E_FULL_GRID_SPREAD": {
+    "contains_unsourced_ter_sensitivity": true,
+    "definition": "max(median) - min(median) of terminal_real_after_tax across all 72 cells including the TER sensitivity sweep",
+    "frozen": true,
+    "values_by_horizon": {
+      "10": {
+        "as_pct_of_baseline_cell_median": 2.7946238352154555,
+        "spread_eur": 2362.4892703387595
+      },
+      "20": {
+        "as_pct_of_baseline_cell_median": 4.65857604703221,
+        "spread_eur": 8322.400056290935
+      }
+    }
+  },
+  "frozen_comparator_hash": "98db26185b8e854a6a283159f3c9957c1a1c6c88210c05d2dcba424bf05ee6ac"
+}
