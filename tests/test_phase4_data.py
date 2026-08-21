@@ -183,3 +183,77 @@ def test_all_ten_universe_instruments_have_a_cost_source():
     from portfolio_sim import config
     universe = set(config.load("assets")["instruments"])
     assert {c.instrument for c in reg.COST_SOURCES} == universe
+
+
+# --- external findings dossier -------------------------------------------
+def _load_runner():
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import run_phase4
+    return run_phase4
+
+
+def test_external_findings_are_recorded_as_unverified():
+    """A dossier produced somewhere this session cannot reach is evidence, not a
+    result. It must carry verified_locally=False and a file hash."""
+    p4 = _load_runner()
+    ext = p4.load_external_findings()
+    assert ext is not None, "external findings dossier should be present"
+    assert ext["verified_locally"] is False
+    assert len(ext["file_sha256"]) == 64
+
+
+def test_candidate_verdict_is_never_the_acceptance_value():
+    """The projection must be structurally distinguishable from the finding."""
+    p4 = _load_runner()
+    cv = p4.candidate_verdict(p4.load_external_findings())
+    assert cv["candidate"] not in ("PASS", "PARTIAL", "FAIL")
+    assert cv["blocked_by"], "a candidate verdict must state what blocks issuing it"
+
+
+def test_candidate_verdict_records_the_index_mismatch_as_a_blocker():
+    """The CORE licence finding concerns MSCI ACWI; the instrument tracks FTSE
+    All-World. That mismatch must block any FAIL resting on it."""
+    p4 = _load_runner()
+    blockers = " ".join(p4.candidate_verdict(p4.load_external_findings())["blocked_by"])
+    assert "FTSE All-World" in blockers and "MSCI ACWI" in blockers
+
+
+def test_core_registry_target_is_ftse_all_world_not_msci_acwi():
+    """IE00BK5BQT80 is the Vanguard FTSE All-World UCITS ETF. The calibration
+    series must target the index the instrument actually tracks."""
+    core = reg.SERIES_BY_KEY["CORE"]
+    assert "FTSE All-World" in core.description
+    providers = [s.provider for s in core.sources]
+    assert "FTSE Russell" in providers
+    ftse = next(s for s in core.sources if s.provider == "FTSE Russell")
+    assert ftse.tier == 1
+    msci = next(s for s in core.sources if s.provider == "MSCI")
+    assert "not the index the core instrument tracks" in msci.note.lower()
+
+
+def test_eonia_splice_rule_is_documented_and_not_silent():
+    """PROJECT_META forbids spliced series without a documented splice rule."""
+    spec = reg.SERIES_BY_KEY["SHORT_RATE_EA"]
+    t = spec.transformation
+    assert "SPLICE" in t and "8.5 bp" in t and "never" in t.lower()
+
+
+def test_bund_long_yield_candidate_is_blocked_until_equivalence_is_shown():
+    spec = reg.SERIES_BY_KEY["BUND_LONG_YIELD"]
+    assert "equivalence" in spec.blocker.lower()
+    assert "CANDIDATE ONLY" in spec.sources[0].note
+
+
+def test_hicp_key_migrated_off_the_discontinued_series():
+    spec = reg.SERIES_BY_KEY["HICP_EA"]
+    urls = " ".join(s.url for s in spec.sources)
+    assert "4D0.ANR" in urls, "must use the current HICP key"
+    assert "ICP/M.U2.N.000000.4.ANR" not in urls, "discontinued key must be gone"
+
+
+def test_costs_config_still_flags_placeholders_until_ter_is_verified():
+    """TER values were reported externally but not verified or hashed here, so
+    config/costs.json must not yet claim to be sourced."""
+    import json
+    costs = json.loads((ROOT / "config" / "costs.json").read_text())
+    assert costs["data_status"] == "PLACEHOLDER_NOT_SOURCED"

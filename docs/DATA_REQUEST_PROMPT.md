@@ -1,86 +1,81 @@
-# Data request prompt for an LLM with internet access
+# Data request prompt — round 2
 
-Copy everything below the line into an assistant that can browse. Return its
-output to this session (or drop the files into `data/incoming/`).
+Round 1 (2026-08-21) is recorded at `data/external/findings_20260821.json`. It
+established licence positions but could not settle CORE, because the question
+was asked about the wrong index. This round fixes that and asks for verifiable
+artefacts.
+
+Copy everything below the line into an assistant that can browse.
 
 ---
 
-You are procuring **primary/official historical financial data**. Accuracy of
-provenance matters more than completeness — a documented "not available" is a
-useful answer; a plausible-looking substitute is a harmful one.
+You are procuring **primary/official historical financial data**. A documented
+"not available" is a useful answer; a plausible-looking substitute is a harmful
+one. Never estimate or recall numbers from memory — every number must come from
+a URL you opened in this session.
 
-## Hard rules
+## Question 1 — the decisive one
 
-1. **Only primary or official sources**, in this priority order: official index
-   provider → central bank → Destatis/Eurostat → academic dataset (Kenneth
-   French, Shiller) → high-quality institutional provider.
-2. **Never silently substitute a different index.** If MSCI ACWI is not
-   obtainable, do not return MSCI World, FTSE All-World, or an ETF's NAV history
-   as if it were ACWI. Return it *labelled as a proxy*, with the difference
-   stated (e.g. "developed markets only, excludes EM").
-3. **Never estimate, interpolate, or recall numbers from memory.** Every number
-   must come from a URL you actually opened in this session.
-4. If a series is licence-encumbered, say so and state the terms. Also state
-   whether **redistribution in a public git repository** is permitted — this
-   matters as much as whether the data can be downloaded.
-5. Report failures explicitly as `LICENCE_REQUIRED`, `NOT_FOUND`,
-   `REGISTRATION_REQUIRED`, or `PAYWALLED`.
+`IE00BK5BQT80` is the **Vanguard FTSE All-World UCITS ETF (Acc)**. It tracks the
+**FTSE All-World Index**, *not* MSCI ACWI. A previous round confirmed MSCI ACWI
+is licence-encumbered, but that is the wrong index for this study.
 
-## What is needed, in priority order
+**Is a FTSE All-World Net Total Return, EUR, monthly history (≥ 360 months)
+obtainable — and may it be redistributed in a public git repository?**
 
-| # | Series | Specification |
-|---|---|---|
-| 1 | **CORE** *(critical)* | MSCI ACWI **Net Total Return, EUR, monthly**, ≥ 360 months. This one decides the whole phase. |
-| 2 | **GOLD** | LBMA gold PM auction price, monthly month-end, USD or EUR, longest available |
-| 3 | **HICP_EA** | Euro-area HICP all-items, monthly, annual rate of change (ECB SDW `ICP.M.U2.N.000000.4.ANR`) |
-| 4 | **BUND_LONG_YIELD** | Bundesbank Umlaufrendite / long-dated Bund yield, monthly (`BBK01.WT3230`) |
-| 5 | **SHORT_RATE_EA** | Euro short-term rate (€STR), monthly; note the EONIA splice date if used |
-| 6 | **TER** | Ongoing charges from the **PRIIPs KID or official factsheet** for each ISIN below |
+Check FTSE Russell / LSEG directly, and also whether Vanguard itself publishes
+a long monthly NAV or benchmark-return history for this fund. State the licence
+and redistribution terms explicitly, not just whether a download exists.
 
-ISINs for #6: `IE00BK5BQT80` (CORE), `IE00B5BMR087` (SP500), `IE00B53SZB19`
-(NASDAQ), `IE00BK5BR626` (DIVIDEND), `LU0328475792` (EUROPE), `DE0005933931`
-(DAX), `IE00B4L5YX21` (JAPAN), `IE00BKM4GZ66` (EM), `IE00B4ND3602` (GOLD),
-`IE00BDFL4P12` (COMMOD).
+If it is not obtainable openly, say so plainly. That is the finding, and it
+settles the phase.
 
-For each: confirm the ISIN maps to the fund you think it does, give the exact
-ongoing-charges figure, the KID document URL, and its document date.
+## Question 2 — files I can hash
 
-## Two specific questions I need answered
+For the two series already confirmed open, I need **verifiable artefacts**, not
+descriptions. For each, give the direct download URL, then either attach the
+file or paste the complete CSV, plus its SHA-256 if you can compute one, plus
+the exact row count and first/last three rows.
 
-**A.** Is an EUR net-total-return MSCI ACWI monthly history obtainable *at all*
-without a commercial licence? If not, say so plainly — that is the finding.
+* **HICP_EA** — `https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata`
+* **SHORT_RATE_EA** — `https://api.statistiken.bundesbank.de/rest/data/BBMMB/M.EU000A2X2A25.WT?format=csv&lang=de`
 
-**B.** If not, what is the best **openly licensed** global equity total-return
-monthly series in EUR, and precisely how does it differ from ACWI (index
-coverage, net vs gross of withholding tax, currency treatment)?
+If the Bundesbank MIME type (`application/vnd.bbk.data+csv`) will not render in
+your interface, try `format=sdmx` or the CSV download from the series' web page
+instead, and say which worked.
 
-## Output format
+## Question 3 — one factual clarification
 
-For each series, one block:
+The Bundesbank key `BBK01.WT3230` no longer resolves. Which **current** series
+is its correct successor, and what yield concept did `WT3230` actually
+represent — Umlaufsrendite of all domestic bearer bonds, of listed federal
+securities, or something else? I will not map the candidate
+`BBSIS.M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A` until this is answered,
+because the Basiszins coupling depends on the concept, not the label.
 
-```
-series_key:        CORE
-status:            ACQUIRED | LICENCE_REQUIRED | NOT_FOUND | REGISTRATION_REQUIRED | PAYWALLED
-is_proxy:          yes/no   (if yes: what it is, and how it differs from the target)
-source_provider:
-source_url:        (the exact URL you downloaded from)
-retrieval_date:    (UTC)
-frequency:         monthly
-currency:
-return_convention: total_return_net | total_return_gross | price_only | rate
-period_start:      YYYY-MM
-period_end:        YYYY-MM
-n_observations:
-licence_status:    OPEN | LICENCE_REQUIRED | LICENCE_UNKNOWN
-redistribution_in_public_repo: permitted / not permitted / unclear
-transformations:   (any transformation you applied; "none" if raw)
-```
+## Question 4 — gold, openly
 
-Then the data as **CSV with a header**, `date,value`, ISO dates, `.` decimal
-separator, no thousands separators.
+LBMA now gates historical prices behind an IBA licence. Is there **any** openly
+redistributable long monthly gold price series — Bundesbank, World Gold Council,
+FRED, or a central bank? If not, say so; gold then stays `LICENCE_REQUIRED`.
 
-**Prefer giving me a direct download URL over transcribing a long series.**
-If you transcribe 360+ rows by hand you will introduce errors, and I cannot
-verify them against the source. A working URL plus the first and last five rows
-is more useful than a full transcription. If you can compute the SHA-256 of the
-downloaded file, include it.
+## Question 5 — the KID PDFs
+
+Round 1 reported ongoing charges for all ten ISINs. I could not open those
+documents. Please give the **direct PDF URL** for each, and if possible the
+file's SHA-256, so the value can be tied to a document I can verify later.
+
+ISINs: `IE00BK5BQT80`, `IE00B5BMR087`, `IE00B53SZB19`, `IE00BK5BR626`,
+`LU0328475792`, `DE0005933931`, `IE00B4L5YX21`, `IE00BKM4GZ66`, `IE00B4ND3602`,
+`IE00BDFL4P12`.
+
+## Output
+
+Per item: `status` (`ACQUIRED` / `LICENCE_REQUIRED` / `NOT_FOUND` /
+`REGISTRATION_REQUIRED` / `PAYWALLED`), `source_url`, `retrieval_date`,
+`licence_status`, `redistribution_in_public_repo`, and — where data was actually
+downloaded — `period_start`, `period_end`, `n_observations`, `sha256`, and the
+CSV itself.
+
+Do not transcribe long series by hand. A working URL with a row count and the
+first and last three rows beats an error-prone full transcription.

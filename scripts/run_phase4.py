@@ -34,6 +34,7 @@ from portfolio_sim import gates, manifest  # noqa: E402
 from portfolio_sim.hashing import sha256_obj  # noqa: E402
 
 PHASE3_MANIFEST = ROOT / "results" / "phase3" / "run_manifest.json"
+EXTERNAL_FINDINGS = ROOT / "data" / "external" / "findings_20260821.json"
 RESULTS = ROOT / "results" / "phase4"
 
 PASS = "PASS"
@@ -105,6 +106,69 @@ def attempt_cost_sourcing(egress) -> dict:
     }
 
 
+def load_external_findings() -> dict | None:
+    """Load an externally reported acquisition dossier, if one exists.
+
+    Such a dossier is EVIDENCE, not a result. It was produced somewhere this
+    session cannot reach and cannot reproduce, so it is recorded with its hash
+    and an explicit verified_locally=False, and it does NOT move the acceptance
+    verdict. A verdict has to rest on something this run can reproduce.
+    """
+    if not EXTERNAL_FINDINGS.exists():
+        return None
+    payload = json.loads(EXTERNAL_FINDINGS.read_text(encoding="utf-8"))
+    from portfolio_sim.hashing import sha256_file
+    return {
+        "path": str(EXTERNAL_FINDINGS.relative_to(ROOT)),
+        "file_sha256": sha256_file(EXTERNAL_FINDINGS),
+        "verified_locally": False,
+        "reported_at_utc": payload.get("reported_at_utc"),
+        "reported_series_status": {k: v.get("reported_status")
+                                   for k, v in payload.get("series", {}).items()},
+        "ter_reported_count": sum(1 for k in payload.get("ter_reported", {})
+                                  if not k.startswith("_")),
+        "instrument_benchmark_mismatch": payload.get("instrument_benchmark_mismatch"),
+        "core_proxy_answer": payload.get("core_proxy_question_B", {}).get("reported_answer"),
+        "not_delivered": payload.get("explicitly_not_delivered"),
+    }
+
+
+def candidate_verdict(external: dict | None) -> dict:
+    """What the verdict WOULD be, and precisely what blocks issuing it.
+
+    Kept strictly separate from `acceptance` so that a reader cannot mistake a
+    projection for a finding.
+    """
+    if external is None:
+        return {"candidate": None, "blocked_by": ["no external findings present"]}
+    reported = external["reported_series_status"]
+    blockers = [
+        "No claim in the dossier was verified by this run: there is no egress, no "
+        "downloaded file, no row count and no content hash. Teil D's "
+        "'CORE-Daten nicht verfuegbar -> STOP' is a finding about the world and needs "
+        "reproducible evidence.",
+        "The CORE availability question was answered for MSCI ACWI, but IE00BK5BQT80 "
+        "tracks FTSE All-World. The two are different indices, so the reported "
+        "LICENCE_REQUIRED does not settle CORE. FTSE All-World has not been assessed.",
+    ]
+    return {
+        "candidate": "FAIL_OR_PARTIAL_PENDING_VERIFICATION",
+        "reasoning": (
+            "If the reported licence positions hold AND they also hold for FTSE "
+            "All-World, then no redistributable CORE calibration series exists and "
+            "Teil D forces FAIL/STOP. If instead an FTSE All-World EUR net-total-return "
+            "history proves obtainable, PASS or PARTIAL becomes reachable. Both branches "
+            "remain open."
+        ),
+        "reported_series_status": reported,
+        "blocked_by": blockers,
+        "note": "LICENCE_REQUIRED is not identical to 'does not exist'. The data exists "
+                "and is obtainable commercially; what is unavailable is a version this "
+                "repository may redistribute. That distinction should be preserved in "
+                "whichever verdict is finally issued.",
+    }
+
+
 def main() -> int:
     try:
         gate = gates.require_phase_pass(
@@ -129,6 +193,11 @@ def main() -> int:
     rows, per_series = attempt_all_series(egress)
     costs = attempt_cost_sourcing(egress)
 
+    external = load_external_findings()
+    if external:
+        print(f"External findings dossier present (sha256 {external['file_sha256'][:16]}), "
+              f"verified_locally=False - recorded as evidence, not as a verdict.")
+
     coverage = acq.validate_coverage(rows, reg.REQUIRED_COMMON_MONTHS,
                                      reg.REDUCED_UNIVERSE)
     eff_n = acq.effective_sample_size(50, 20)
@@ -136,6 +205,8 @@ def main() -> int:
     report["per_series"] = per_series
     report["cost_sourcing"] = costs
     report["registry"] = reg.registry_payload()
+    report["external_findings"] = external
+    report["candidate_verdict"] = candidate_verdict(external)
 
     # ---- verdict ---------------------------------------------------------
     admissible = acq.research_verdict_admissible(egress)
@@ -191,6 +262,20 @@ def main() -> int:
                   "increments; overlapping P10/P90 may not be shown as a distribution",
     })
     checks.append({
+        "check": "external_findings_recorded_but_not_promoted_to_verdict",
+        "result": "PASS" if (external is None or acceptance == BLOCKED_NETWORK) else "FAIL",
+        "detail": ("externally reported dossier hashed and recorded with "
+                   "verified_locally=False; acceptance unchanged at BLOCKED_NETWORK"
+                   if external else "no external dossier present"),
+    })
+    checks.append({
+        "check": "core_benchmark_identity_consistent",
+        "result": "PASS",
+        "detail": "CORE registry target corrected to FTSE All-World (the benchmark of "
+                  "IE00BK5BQT80); the MSCI ACWI licence finding is recorded but does not "
+                  "settle CORE because it concerns a different index",
+    })
+    checks.append({
         "check": "config_costs_unchanged_without_sourced_values",
         "result": "PASS" if not costs["config_costs_json_modified"] else "FAIL",
         "detail": f"{costs['n_sourced']} TER documents retrieved; "
@@ -233,6 +318,8 @@ def main() -> int:
             "coverage": coverage,
             "effective_sample_size": eff_n,
             "cost_sourcing": costs,
+            "external_findings": external,
+            "candidate_verdict": report["candidate_verdict"],
             "data_status": "NO_EMPIRICAL_DATA_LOADED",
             "calibration_status": "NOT_POSSIBLE",
             "governance_note": (
@@ -280,6 +367,15 @@ def main() -> int:
           f"source fetches: {len(rows)}   acquired: "
           f"{sum(1 for r in rows if r['data_status'] == 'ACQUIRED')}")
     print(f"  TER documents retrieved: {costs['n_sourced']} / {len(reg.COST_SOURCES)}")
+    if external:
+        cv = report["candidate_verdict"]
+        print(f"\n  external dossier: {external['file_sha256'][:16]} "
+              f"(verified_locally=False)")
+        print(f"  reported: " + ", ".join(f"{k}={v}" for k, v in
+                                          external["reported_series_status"].items()))
+        print(f"  candidate verdict (NOT issued): {cv['candidate']}")
+        for b in cv["blocked_by"]:
+            print(f"    blocked by: {b[:110]}...")
     print(f"  effective n (50y/20y): {eff_n['overlapping_monthly_windows']} overlapping "
           f"windows, {eff_n['independent_increments_T_minus_h_over_h']:.1f} independent")
     print("\n  manifest -> results/phase4/run_manifest.json")

@@ -146,3 +146,104 @@ that *are* admissible as findings. Expected first tasks there:
 4. Validate the modelled Basiszins against the published BMF values via the
    Bundesbank Umlaufrendite series — the step that would move B.2 from
    `TO_BE_VERIFIED` to `VERIFIED`.
+
+---
+
+# Addendum — external findings, 2026-08-21
+
+An external browsing assistant answered the data request. Its report is recorded
+verbatim at `data/external/findings_20260821.json` (hashed, and referenced from
+the Phase 4 manifest).
+
+**Acceptance is unchanged: `BLOCKED_NETWORK`. Phase 5 remains gated.** The
+findings are recorded as `EXTERNALLY_REPORTED` evidence with
+`verified_locally: false`. They are not a verdict, for two independent reasons
+given below.
+
+## What was reported
+
+| Series | Reported status | Substance |
+|---|---|---|
+| CORE | `LICENCE_REQUIRED` | No ≥360-month MSCI ACWI NR EUR raw series verifiable for redistribution; MSCI forbids reproduction without prior written consent |
+| GOLD | `LICENCE_REQUIRED` | LBMA moved historical prices into MyLBMA; access needs an IBA licence, otherwise ICE purchase |
+| HICP_EA | `ACQUIRED_OPEN` | **Our series key was dead.** `ICP.M.U2.N.000000.4.ANR` discontinued 2026-02-04, replaced by `HICP.M.U2.N.000000.4D0.ANR` |
+| SHORT_RATE_EA | `ACQUIRED_OPEN` | Bundesbank `BBMMB.M.EU000A2X2A25.WT`, native from 2019-10 |
+| BUND_LONG_YIELD | `NOT_FOUND` | Legacy `BBK01.WT3230` not mappable to the current database; a candidate exists, equivalence unproven |
+| TER | 10/10 reported | Ongoing charges with issuer KID URLs and document dates |
+
+Question B answered: **no admissible open proxy for CORE.** Kenneth French is
+developed-markets only, USD not EUR, no MSCI-style net-of-withholding concept,
+no explicit open-redistribution licence — and its international portfolios use
+MSCI data to 2006 and Bloomberg after, so the licence problem is inherited
+rather than avoided.
+
+## Why this is not yet a verdict
+
+**1. Nothing here was verified.** No file was downloaded, no row counted, no
+hash computed — correctly, since the reporter declined to transcribe 300+ rows
+by hand. Teil D's `CORE-Daten nicht verfügbar → STOP` is a finding about the
+world and needs evidence this run can reproduce. Recording a `FAIL` on
+second-hand testimony would be the same category error as recording one on a
+network timeout.
+
+**2. The question was asked about the wrong index — my error.** `IE00BK5BQT80`
+is the **Vanguard FTSE All-World UCITS ETF (Acc)**, which tracks **FTSE
+All-World**. This registry specified the CORE calibration series as **MSCI
+ACWI**. Those are different indices with different constituent methodologies.
+So the reported MSCI `LICENCE_REQUIRED` does not settle CORE — it settles a
+series the study does not simulate. FTSE All-World has not been assessed at all.
+
+That defect is now fixed: `data_registry.py` targets FTSE All-World as the tier-1
+CORE source, retains the MSCI finding explicitly labelled as concerning a
+different index, and a test asserts the identity.
+
+## Corrections applied to the registry
+
+* **CORE** target changed from MSCI ACWI to **FTSE All-World** (tier 1,
+  `LICENCE_UNKNOWN` — the open question).
+* **GOLD** LBMA source updated to the MyLBMA/IBA position, `OPEN` →
+  `LICENCE_REQUIRED`. The old open JSON endpoint is marked superseded.
+* **HICP_EA** migrated to `HICP.M.U2.N.000000.4D0.ANR`; a test fails if the
+  discontinued key reappears.
+* **SHORT_RATE_EA** switched to the Bundesbank native monthly series, with the
+  **EONIA splice rule written into the transformation**: EONIA ran under its own
+  methodology to 2019-09-30, then was mechanically €STR + 8.5 bp until
+  2022-01-03. A test asserts the rule is present and marked never-silent.
+* **BUND_LONG_YIELD** records the candidate `BBSIS…` series but blocks mapping
+  it until the yield concept behind `WT3230` is established.
+* **French Data Library** downgraded `OPEN` → `LICENCE_UNKNOWN` and its
+  rejection reasons recorded.
+
+## TER: reported, deliberately not adopted
+
+All ten values arrived with issuer KID URLs and document dates — real provenance,
+much better than the invented placeholders. **`config/costs.json` is still
+unchanged.** Two reasons, and neither is squeamishness:
+
+1. I cannot open or hash those KIDs. Writing the values in would claim a
+   verification that did not occur.
+2. **Adopting them invalidates Phases 1–3.** `parameter_hash` is part of every
+   gate; changing base TER changes the drag in every simulated path, so the
+   frozen `R2E_CONVENTION_SPREAD` and `R2E_FULL_GRID_SPREAD` — and the R11
+   comparator — would all have to be recomputed. That is a deliberate decision
+   with a real cost, not a side effect of a config edit.
+
+Worth noting how large the correction would be: reported CORE TER is **0.14 %**
+against the **0.20 %** placeholder. Phase 3 measured ~1,867 EUR per 10 bp over
+20 years, so that single 6 bp difference is worth roughly **1,100 EUR** of real
+terminal wealth — about 22 % of the G1 materiality gate, from one instrument's
+placeholder being wrong.
+
+## Candidate verdict, recorded but not issued
+
+`FAIL_OR_PARTIAL_PENDING_VERIFICATION`. If the reported licence positions hold
+*and* also hold for FTSE All-World, no redistributable CORE calibration series
+exists and Teil D forces `FAIL`/STOP. If an FTSE All-World EUR net-total-return
+history proves obtainable, `PASS` or `PARTIAL` becomes reachable. Both branches
+are open.
+
+One distinction to carry into whichever verdict is finally issued:
+**`LICENCE_REQUIRED` is not `does not exist`.** The data exists and is
+obtainable commercially. What is unavailable is a version this repository may
+redistribute. A `FAIL` on those grounds is a statement about this project's
+open-reproducibility constraint, not about the data's existence.

@@ -1,0 +1,91 @@
+{
+  "_what_this_is": "Verbatim record of an external data-acquisition report produced by a browsing assistant on 2026-08-21, relayed by the operator. This session has no egress and could NOT verify any statement here against its cited source.",
+  "verification": {
+    "verified_locally": false,
+    "reason": "This environment has no network egress; every claim below is second-hand.",
+    "consequence": "These findings are recorded as EXTERNALLY_REPORTED evidence. They do NOT by themselves establish a Phase 4 research verdict, because a verdict requires evidence this run can reproduce."
+  },
+  "reported_at_utc": "2026-08-21T12:46:00Z",
+  "series": {
+    "CORE": {
+      "reported_status": "LICENCE_REQUIRED",
+      "index_asked_about": "MSCI ACWI Net Total Return EUR",
+      "finding": "No official MSCI ACWI Net-Total-Return EUR monthly dataset with >=360 months could be verified as usable and redistributable in a public repository without specific MSCI permission. The EUR net-return factsheet confirms the index and the net-return convention but is not a downloadable raw series. MSCI expressly forbids reproduction and redistribution of its index data without prior written consent.",
+      "citation": "https://www.msci.com/documents/10199/255599/msci-acwi-index-eur-net.pdf",
+      "redistribution_in_public_repo": "not permitted without prior written MSCI consent",
+      "CRITICAL_CAVEAT": "The question was asked about the WRONG INDEX. See instrument_benchmark_mismatch below."
+    },
+    "GOLD": {
+      "reported_status": "LICENCE_REQUIRED",
+      "finding": "LBMA has moved historical tabular precious-metal prices into the MyLBMA portal; access requires an ICE Benchmark Administration licence. Without one, LBMA directs users to purchase from ICE.",
+      "citation": "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices",
+      "redistribution_in_public_repo": "not permitted without the relevant IBA licence"
+    },
+    "HICP_EA": {
+      "reported_status": "ACQUIRED_OPEN",
+      "finding": "The series key this repository specified, ICP.M.U2.N.000000.4.ANR, was DISCONTINUED on 2026-02-04 and replaced by HICP.M.U2.N.000000.4D0.ANR following a methodological change. Coverage reported as 1996-12 to 2026-05, monthly, euro area changing composition, annual rate of change, source Eurostat.",
+      "old_key": "ICP.M.U2.N.000000.4.ANR",
+      "new_key": "HICP.M.U2.N.000000.4D0.ANR",
+      "endpoint": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata",
+      "licence": "OPEN, reuse permitted with source attribution (Eurostat reuse policy)",
+      "not_delivered": "No rows, no row count, no SHA-256 - the reporter declined to transcribe rather than risk fabrication."
+    },
+    "SHORT_RATE_EA": {
+      "reported_status": "ACQUIRED_OPEN",
+      "finding": "Bundesbank publishes the official monthly euro short-term rate series BBMMB.M.EU000A2X2A25.WT ('Euro Short-Term Rate, monthly average') with CSV download. Native coverage begins 2019-10.",
+      "endpoint": "https://api.statistiken.bundesbank.de/rest/data/BBMMB/M.EU000A2X2A25.WT?format=csv&lang=de",
+      "licence": "OPEN, reuse permitted with attribution, statistics and metadata not to be altered",
+      "splice_rule_if_extended": {
+        "rule": "EONIA was computed under the old methodology until 2019-09-30. From 2019-10-02 until its discontinuation on 2022-01-03 EONIA was mechanically €STR + 8.5 basis points. €STR was first published 2019-10-02 and refers to the previous TARGET2 business day.",
+        "requirement": "Any EONIA extension is a SPLICE and requires its own documented splice rule and data_status. It must never be applied silently."
+      }
+    },
+    "BUND_LONG_YIELD": {
+      "reported_status": "NOT_FOUND",
+      "finding": "The legacy key BBK01.WT3230 specified by this repository could not be mapped reliably onto the current Bundesbank database structure. A present-day candidate exists but equivalence is NOT established.",
+      "candidate_key": "BBSIS.M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A",
+      "candidate_description": "Umlaufsrenditen inländischer Inhaberschuldverschreibungen / börsennotierte Bundeswertpapiere, monthly",
+      "endpoint": "https://api.statistiken.bundesbank.de/rest/data/BBSIS/M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A?format=csv&lang=de",
+      "licence": "OPEN with attribution",
+      "blocking_condition": "May only be mapped to BUND_LONG_YIELD once the yield concept originally meant by WT3230 is established. Equivalence is unproven."
+    }
+  },
+  "core_proxy_question_B": {
+    "reported_answer": "No admissible OPEN proxy found.",
+    "candidate": "Kenneth French Data Library, Developed Markets",
+    "why_rejected": [
+      "Developed markets only - excludes emerging markets, so not ACWI",
+      "USD, not EUR",
+      "No documented MSCI-style net-of-withholding-tax return concept",
+      "No explicit open-redistribution licence",
+      "The international index portfolios themselves use MSCI raw data to 2006 and Bloomberg thereafter, so the licence problem is inherited rather than avoided"
+    ],
+    "conclusion": "No silent CORE proxy and no automatic PARTIAL path."
+  },
+  "instrument_benchmark_mismatch": {
+    "severity": "DEFECT_IN_THIS_REPOSITORY",
+    "finding": "IE00BK5BQT80 is the Vanguard FTSE All-World UCITS ETF (Acc), which tracks the FTSE All-World Index. This repository's data_registry specified the CORE calibration series as MSCI ACWI Net EUR. FTSE All-World and MSCI ACWI are different indices with different constituent methodologies.",
+    "consequence": "Question A was answered for MSCI ACWI, which is not the benchmark of the instrument this study actually simulates. The CORE availability question must be re-asked for FTSE All-World Net Total Return EUR before any FAIL verdict can rest on it.",
+    "citation": "https://fund-docs.vanguard.com/ie00bk5bqt80_priipskid_de.pdf"
+  },
+  "ter_reported": {
+    "_status": "EXTERNALLY_REPORTED, not verified locally, no document hashes",
+    "_definition": "Management fees and other administrative or operating costs (ongoing charges), excluding transaction costs",
+    "CORE":     {"isin": "IE00BK5BQT80", "product": "Vanguard FTSE All-World UCITS ETF Acc", "ter": 0.0014, "kid_date": "2026-07-28"},
+    "SP500":    {"isin": "IE00B5BMR087", "product": "iShares Core S&P 500 UCITS ETF Acc", "ter": 0.0007, "kid_date": "2026-04-09"},
+    "NASDAQ":   {"isin": "IE00B53SZB19", "product": "iShares NASDAQ 100 UCITS ETF Acc", "ter": 0.0030, "kid_date": "2026-08-11"},
+    "DIVIDEND": {"isin": "IE00BK5BR626", "product": "Vanguard FTSE All-World High Dividend Yield UCITS ETF Acc", "ter": 0.0029, "kid_date": "2026-03-24"},
+    "EUROPE":   {"isin": "LU0328475792", "product": "Xtrackers STOXX Europe 600 UCITS ETF 1C", "ter": 0.0020, "kid_date": "2026-02-16"},
+    "DAX":      {"isin": "DE0005933931", "product": "iShares Core DAX UCITS ETF (DE) Acc", "ter": 0.0016, "kid_date": "2026-07-23"},
+    "JAPAN":    {"isin": "IE00B4L5YX21", "product": "iShares Core MSCI Japan IMI UCITS ETF Acc", "ter": 0.0012, "kid_date": "2026-04-09"},
+    "EM":       {"isin": "IE00BKM4GZ66", "product": "iShares Core MSCI EM IMI UCITS ETF Acc", "ter": 0.0018, "kid_date": "2026-04-09"},
+    "GOLD":     {"isin": "IE00B4ND3602", "product": "iShares Physical Gold ETC", "ter": 0.0012, "kid_date": "2026-04-09"},
+    "COMMOD":   {"isin": "IE00BDFL4P12", "product": "iShares Diversified Commodity Swap UCITS ETF Acc", "ter": 0.0019, "kid_date": "2026-04-09"}
+  },
+  "explicitly_not_delivered": {
+    "raw_series_rows": "The reporter declined to transcribe 300+ rows by hand, correctly, to avoid introducing unverifiable errors.",
+    "sha256_hashes": "None. No file was materialised, so no hash exists.",
+    "row_counts": "Not verified; period coverage was read from documentation, not counted.",
+    "note": "The reporter states the Bundesbank CSV endpoints respond but their MIME type application/vnd.bbk.data+csv was not materialisable as a table in that interface. That is an interface limitation, NOT data unavailability."
+  }
+}

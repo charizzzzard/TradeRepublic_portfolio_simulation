@@ -65,8 +65,11 @@ class SeriesSpec:
 SERIES: tuple[SeriesSpec, ...] = (
     SeriesSpec(
         key="CORE",
-        description="Global all-country equity total return, EUR, the benchmark the "
-                    "whole study is defined against (MSCI ACWI family).",
+        description="Global all-country equity total return, EUR - the benchmark the "
+                    "whole study is defined against. The tracked index is FTSE All-World, "
+                    "NOT MSCI ACWI: IE00BK5BQT80 is the Vanguard FTSE All-World UCITS ETF "
+                    "(Acc). An earlier version of this registry specified MSCI ACWI, which "
+                    "is a different index with a different constituent methodology.",
         required_for="PHASE_5, PHASE_6, and every calibrated statement. CORE missing "
                      "is the one condition that forces STOP.",
         frequency="monthly", currency="EUR", return_convention="total_return",
@@ -74,19 +77,36 @@ SERIES: tuple[SeriesSpec, ...] = (
                        "directly, never converted from USD without an FX series (FX is "
                        "EXCLUDED_BY_DESIGN per B.5)",
         sources=(
+            SourceSpec("FTSE Russell", 1,
+                       "https://www.lseg.com/en/ftse-russell/indices/all-world",
+                       "LICENCE_UNKNOWN",
+                       note="THE CORRECT TARGET INDEX. FTSE All-World Net Total Return "
+                            "EUR is the benchmark of IE00BK5BQT80. Availability and "
+                            "redistribution terms have NOT been established - this is the "
+                            "open question that must be answered before any FAIL verdict "
+                            "on CORE."),
             SourceSpec("MSCI", 1, "https://www.msci.com/end-of-day-data-search",
                        "LICENCE_REQUIRED",
-                       note="MSCI publishes limited end-of-day levels; full history for "
-                            "net total return in EUR is a licensed product."),
+                       note="MSCI ACWI. Externally reported 2026-08-21: no >=360-month "
+                            "EUR net-total-return raw series verifiable for redistribution; "
+                            "MSCI forbids reproduction without prior written consent. NOTE "
+                            "this is NOT the index the CORE instrument tracks, so this "
+                            "finding does not settle CORE."),
             SourceSpec("Kenneth R. French Data Library (Dartmouth)", 4,
                        "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/"
-                       "Developed_3_Factors_CSV.zip", "OPEN",
-                       note="CANDIDATE PROXY ONLY. Developed-markets factors exclude "
-                            "emerging markets, so this is NOT ACWI. Using it requires an "
-                            "explicit splice rule with Emerging_3_Factors and a "
-                            "data_status flag; it may not silently stand in for CORE."),
+                       "Developed_3_Factors_CSV.zip", "LICENCE_UNKNOWN",
+                       note="CANDIDATE PROXY ONLY - REJECTED as of 2026-08-21. NOT ACWI "
+                            "and not FTSE All-World: developed markets only, USD not EUR, "
+                            "no MSCI-style net-of-withholding-tax concept, no explicit "
+                            "open-redistribution licence, and its international portfolios "
+                            "use MSCI raw data to 2006 and Bloomberg thereafter, so the "
+                            "licence problem is inherited rather than avoided. Using it "
+                            "would require an explicit SPLICE rule and its own data_status; "
+                            "it may not silently stand in for CORE."),
         ),
-        blocker="Authoritative EUR net-total-return ACWI history is licence-encumbered.",
+        blocker="Authoritative EUR net-total-return global equity history is "
+                "licence-encumbered. MSCI ACWI confirmed LICENCE_REQUIRED (externally "
+                "reported); FTSE All-World, the actually relevant index, NOT YET ASSESSED.",
     ),
     SeriesSpec(
         key="GOLD",
@@ -96,9 +116,14 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="LBMA PM auction price, month-end; EUR series or USD with a "
                        "documented FX treatment (currently out of scope per B.5)",
         sources=(
-            SourceSpec("LBMA", 1, "https://prices.lbma.org.uk/json/gold_pm.json", "OPEN",
-                       note="LBMA publishes the auction price series; redistribution "
-                            "terms must be recorded."),
+            SourceSpec("LBMA / ICE Benchmark Administration", 1,
+                       "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices",
+                       "LICENCE_REQUIRED",
+                       note="Externally reported 2026-08-21: LBMA moved historical tabular "
+                            "precious-metal prices into the MyLBMA portal; access requires "
+                            "an IBA licence, otherwise LBMA directs users to purchase from "
+                            "ICE. The former open JSON endpoint "
+                            "(prices.lbma.org.uk/json/gold_pm.json) is superseded."),
             SourceSpec("Deutsche Bundesbank", 2,
                        "https://api.statistiken.bundesbank.de/rest/download/BBEX3/"
                        "D.USD.EUR.BB.AC.000", "OPEN",
@@ -200,9 +225,14 @@ SERIES: tuple[SeriesSpec, ...] = (
         required_for="every real-terms number in every phase",
         frequency="monthly", currency="index", return_convention="rate",
         transformation="annual rate of change -> monthly inflation for the OU calibration",
-        sources=(SourceSpec("European Central Bank (SDW)", 2,
-                            "https://data-api.ecb.europa.eu/service/data/ICP/"
-                            "M.U2.N.000000.4.ANR?format=csvdata", "OPEN"),
+        sources=(SourceSpec("European Central Bank Data Portal (source: Eurostat)", 2,
+                            "https://data-api.ecb.europa.eu/service/data/HICP/"
+                            "M.U2.N.000000.4D0.ANR?format=csvdata", "OPEN",
+                            note="KEY MIGRATED. The previous key ICP.M.U2.N.000000.4.ANR "
+                                 "was discontinued 2026-02-04 after a methodological "
+                                 "change and replaced by HICP.M.U2.N.000000.4D0.ANR. "
+                                 "Externally reported coverage 1996-12 to 2026-05. "
+                                 "Eurostat reuse permitted with attribution."),
                  SourceSpec("Eurostat", 3,
                             "https://ec.europa.eu/eurostat/api/dissemination/statistics/"
                             "1.0/data/prc_hicp_manr", "OPEN"),),
@@ -224,11 +254,20 @@ SERIES: tuple[SeriesSpec, ...] = (
         description="Euro-area short-term interest rate.",
         required_for="B.2 - the Basiszins is a function of the modelled short rate",
         frequency="monthly", currency="rate", return_convention="rate",
-        transformation="EONIA spliced to euro short-term rate; splice rule must be "
-                       "documented explicitly with its own data_status",
-        sources=(SourceSpec("European Central Bank", 2,
-                            "https://data-api.ecb.europa.eu/service/data/EST/"
-                            "B.EU000A2X2A25.WT", "OPEN"),),
+        transformation="Native €STR from 2019-10 requires NO transformation. Extending "
+                       "backwards with EONIA is a SPLICE: EONIA ran under its own "
+                       "methodology to 2019-09-30, then was mechanically €STR + 8.5 bp "
+                       "from 2019-10-02 until discontinuation on 2022-01-03. The splice "
+                       "must carry its own documented rule and data_status and must never "
+                       "be applied silently.",
+        sources=(SourceSpec("Deutsche Bundesbank", 2,
+                            "https://api.statistiken.bundesbank.de/rest/data/BBMMB/"
+                            "M.EU000A2X2A25.WT?format=csv&lang=de", "OPEN",
+                            note="Euro Short-Term Rate, monthly average. Externally "
+                                 "reported as the official monthly series with CSV "
+                                 "download; native coverage begins 2019-10. Reuse "
+                                 "permitted with attribution, statistics and metadata "
+                                 "not to be altered."),),
     ),
     SeriesSpec(
         key="BUND_LONG_YIELD",
@@ -239,11 +278,19 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="monthly average yield; compare against the published BMF "
                        "Basiszins values to validate the B.2 coupling",
         sources=(SourceSpec("Deutsche Bundesbank", 2,
-                            "https://api.statistiken.bundesbank.de/rest/download/BBK01/"
-                            "WT3230?format=csv", "OPEN",
-                            note="Umlaufrendite. Validating the modelled Basiszins "
-                                 "against the published BMF values is what would move "
-                                 "B.2 from TO_BE_VERIFIED to VERIFIED."),),
+                            "https://api.statistiken.bundesbank.de/rest/data/BBSIS/"
+                            "M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A?format=csv&lang=de",
+                            "OPEN",
+                            note="CANDIDATE ONLY - EQUIVALENCE NOT ESTABLISHED. "
+                                 "Umlaufsrenditen inländischer Inhaberschuldverschreibungen "
+                                 "/ börsennotierte Bundeswertpapiere, monthly. The legacy "
+                                 "key BBK01.WT3230 that this registry previously specified "
+                                 "could not be mapped onto the current Bundesbank database "
+                                 "structure (externally reported 2026-08-21). This series "
+                                 "may NOT be mapped to BUND_LONG_YIELD until the yield "
+                                 "concept originally meant by WT3230 is established."),),
+        blocker="Legacy key BBK01.WT3230 not resolvable; candidate exists but equivalence "
+                "is unproven.",
     ),
 )
 

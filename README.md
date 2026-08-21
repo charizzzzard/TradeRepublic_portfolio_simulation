@@ -133,10 +133,16 @@ sources. That is a fact about the container, not a finding about the data, so no
 which nothing here evidences. The separation is enforced in code, not by
 convention. See [`docs/PHASE4_R3.md`](docs/PHASE4_R3.md).
 
-The specification is complete and ready to execute the moment egress exists: 14
-series with provider, tier, endpoint, licence status and transformation, plus
-PRIIPs KID sources for all 10 TERs. All endpoints are marked `UNVERIFIED`
-because none could be confirmed to resolve.
+An external browsing assistant has since answered the data request
+(`data/external/findings_20260821.json`, hashed and referenced from the Phase 4
+manifest). It reports CORE and GOLD as `LICENCE_REQUIRED`, HICP and €STR as open,
+and supplied all ten TERs with issuer KID dates. **Acceptance is unchanged**: the
+findings are recorded as `EXTERNALLY_REPORTED` with `verified_locally: false`,
+because nothing was downloaded, counted or hashed here — and because the CORE
+question was asked about MSCI ACWI when `IE00BK5BQT80` actually tracks **FTSE
+All-World**. That registry defect is fixed; the decisive question is now open and
+unanswered. Candidate verdict, recorded but not issued:
+`FAIL_OR_PARTIAL_PENDING_VERIFICATION`.
 
 **No empirical data is loaded.** Every result in this repository still rests on
 an `UNCALIBRATED_ASSUMPTION` prior, and `EMPIRICAL_SUPPORT` remains unreachable.
