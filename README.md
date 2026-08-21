@@ -18,14 +18,21 @@ system, and it does not derive an optimal portfolio from point forecasts.
 | | |
 |---|---|
 | Baseline | `r0_baseline_20260821_v3` |
-| Phase completed | **Phase 1 — `R2F_DECISION_PATH_CLEANUP`** (bootstrap variant) |
+| Phases completed | **Phase 1 — `R2F_DECISION_PATH_CLEANUP`** (bootstrap variant)<br>**Phase 2 — `R11_SAVINGS_DYNAMICS`** |
 | Governance status | `DISCOVERY` |
 | `promotion_allowed` | `false` |
 | Highest stage reachable today | `MODEL_CONSISTENT_FINDING` (Engine C only) |
 | Human final decision | required |
 
-Phases 2–7 have **not** run. Teil D forbids starting a phase whose predecessor
-gate is not `PASS`.
+Phases 3–7 have **not** run. Teil D forbids starting a phase whose predecessor
+gate is not `PASS`, and that is now enforced in code (`src/portfolio_sim/gates.py`),
+not merely documented.
+
+**Frozen R11 comparator** — every admissible satellite finding must later be
+reported against it: +1 pp contribution growth is worth a paired median
+**2,923 EUR (3.45 % of core median) at 10 years** and **13,973 EUR (7.79 %) at
+20 years**, both with `P_model(delta > 0) = 100 %`. See
+[`docs/PHASE2_R11.md`](docs/PHASE2_R11.md).
 
 ## Read this before any number
 
@@ -76,18 +83,19 @@ All cost values are **unsourced placeholders**. All tax assumptions are
 ```
 config/       investor, conventions, tax, costs, fx, assets — data, hashed as data
 src/          engine, tax engine, lot ledger, CRN, macro, metrics, manifest, ledger
-tests/        28 hand checks + determinism + pre-tax regression (40 tests)
-scripts/      run_phase1.py, verify_g1.py
-results/      run_manifest.json, baseline reference, falsification ledger
-docs/         BASELINE_V3.md
+tests/        28 hand checks + determinism + pre-tax regression + gates (49 tests)
+scripts/      run_phase1.py, run_phase2.py, verify_g1.py
+results/      per-phase run_manifest.json, baseline reference, falsification ledger
+docs/         BASELINE_V3.md, PHASE2_R11.md
 ```
 
 ## Run it
 
 ```bash
 pip install -r requirements.txt
-python3 -m pytest tests/ -q      # 40 tests
+python3 -m pytest tests/ -q      # 49 tests
 python3 scripts/run_phase1.py    # acceptance checks + run_manifest.json
+python3 scripts/run_phase2.py    # R11 savings dynamics (~5 min)
 python3 scripts/verify_g1.py     # recompute the G1 arithmetic
 ```
 
@@ -107,8 +115,13 @@ enforced in code (`src/portfolio_sim/manifest.py`), not merely documented.
 
 ## Next phase
 
-**Phase 2 — `R11_SAVINGS_DYNAMICS`**: quantify the contribution-growth lever
-(0/2/3/5 %) *before* any satellite test, because it is controllable and largely
-parameter-independent. Its mandatory comparison — the effect of +1 pp of
-contribution growth against the largest measured satellite median delta — is the
-first real test of whether the satellite question is worth asking at all.
+**Phase 3 — `R2E_CONVENTION_AND_COST_SENSITIVITY`**: cross-tabulate funding
+convention (D1/D2/D3), terminal timing, TER delta (0/10/20/30 bp) and FSA
+(0/1000/2000 EUR) on 100 % CORE, on shared worlds under CRN. If the largest
+convention spread meets or exceeds the best satellite median delta, the
+`CONVENTION_DOMINANCE_CONFIRMED` flag fires and the satellite question is
+reported as subordinate (G7).
+
+Note that TER must be *swept*, not read from `config/costs.json`: every value
+there is an unsourced placeholder, and a 0.20 pp TER delta alone exceeds the
+0.124 pp G1 materiality gate.

@@ -1,2 +1,13 @@
-numpy>=1.24
-pytest>=7.0
+# Exact pins. PASS_EXACT is a bit-equality claim, and bit equality in floating
+# point is not guaranteed across numpy versions: BLAS backends, SIMD dispatch
+# and reduction orderings all change between releases. A range specifier would
+# let a freshly provisioned environment silently produce different last bits
+# while every gate still reported PASS.
+#
+# environment_hash in each run_manifest.json records the versions that actually
+# produced a result, so drift is identifiable after the fact - but identifying
+# drift is not the same as preventing it, which is what these pins are for.
+#
+# Verified reproducing baseline v3 on CPython 3.11.15, Linux x86_64.
+numpy==2.4.6
+pytest==9.1.1

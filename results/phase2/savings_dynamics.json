@@ -1,0 +1,884 @@
+{
+  "horizons": {
+    "10": {
+      "growth_scenarios": {
+        "0.00": {
+          "P_model_real_terminal_below_real_contributions": {
+            "P_model": 0.29038,
+            "effective_n_for_parameter_claims": 100,
+            "n_parameter_worlds": 100,
+            "n_paths_per_world": 500,
+            "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+          },
+          "contributions_nominal": {
+            "mean": 72903.6710601111,
+            "median": 73000.0,
+            "p10": 72689.92796124621,
+            "p5": 72482.18700326911,
+            "p50": 73000.0,
+            "p90": 73000.0,
+            "p95": 73000.0
+          },
+          "contributions_real": {
+            "mean": 67415.57710214706,
+            "median": 67382.7286629247,
+            "p10": 64938.97674766953,
+            "p5": 64281.444840798875,
+            "p50": 67382.7286629247,
+            "p90": 69945.2600619367,
+            "p95": 70692.08920033037
+          },
+          "result_hash": "295c6761b67d904a236f7e2d0b0f21f256bb96fd245abff8596450faae867a65",
+          "tax_paid_nominal": {
+            "mean": 6279.5993081207025,
+            "median": 4319.938521268647,
+            "p10": 0.0,
+            "p5": 0.0,
+            "p50": 4319.938521268647,
+            "p90": 15368.005172310184,
+            "p95": 19882.749782115905
+          },
+          "terminal_nominal_after_tax": {
+            "mean": 102761.24372919358,
+            "median": 96664.17099018492,
+            "p10": 65590.30427590632,
+            "p5": 57932.486142370304,
+            "p50": 96664.17099018492,
+            "p90": 146523.5130368376,
+            "p95": 167102.95837778988
+          },
+          "terminal_real_after_tax": {
+            "mean": 84434.42297197676,
+            "median": 79362.83522096562,
+            "p10": 52990.96295201397,
+            "p5": 46719.34851585073,
+            "p50": 79362.83522096562,
+            "p90": 121520.62442847418,
+            "p95": 138644.1301149657
+          },
+          "terminal_real_pretax": {
+            "mean": 89609.90287694088,
+            "median": 82905.34300403713,
+            "p10": 53055.953279564215,
+            "p5": 46772.46450680846,
+            "p50": 82905.34300403713,
+            "p90": 134095.7780490214,
+            "p95": 154862.3806316267
+          },
+          "xirr_money_weighted": {
+            "mean": 0.04757172334758354,
+            "median": 0.046742482806802044,
+            "p10": -0.018176366799916077,
+            "p5": -0.03965201976631582,
+            "p50": 0.046742482806802044,
+            "p90": 0.11409668749619424,
+            "p95": 0.13500810521386303
+          }
+        },
+        "0.02": {
+          "P_model_real_terminal_below_real_contributions": {
+            "P_model": 0.2907,
+            "effective_n_for_parameter_claims": 100,
+            "n_parameter_worlds": 100,
+            "n_paths_per_world": 500,
+            "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+          },
+          "contributions_nominal": {
+            "mean": 78590.09678976983,
+            "median": 78698.32599842723,
+            "p10": 78349.7353409127,
+            "p5": 78131.77255563696,
+            "p50": 78698.32599842723,
+            "p90": 78698.32599842723,
+            "p95": 78698.32599842723
+          },
+          "contributions_real": {
+            "mean": 72390.412523986,
+            "median": 72348.7688815408,
+            "p10": 69588.57035603747,
+            "p5": 68840.46228292101,
+            "p50": 72348.7688815408,
+            "p90": 75250.81375120944,
+            "p95": 76101.48278563663
+          },
+          "result_hash": "4795fefc51cae1b0dd7c976e458759f8b2102dd4de35bcc55c272d5750452833",
+          "tax_paid_nominal": {
+            "mean": 6543.650485500017,
+            "median": 4522.693923337889,
+            "p10": 0.0,
+            "p5": 0.0,
+            "p50": 4522.693923337889,
+            "p90": 15970.430304070396,
+            "p95": 20682.850312135626
+          },
+          "terminal_nominal_after_tax": {
+            "mean": 109536.17594506756,
+            "median": 103285.32597727969,
+            "p10": 70782.48790529865,
+            "p5": 62729.711034648106,
+            "p50": 103285.32597727969,
+            "p90": 155117.9709171004,
+            "p95": 176191.84668159773
+          },
+          "terminal_real_after_tax": {
+            "mean": 90001.74516205268,
+            "median": 84800.066544484,
+            "p10": 57159.79810200014,
+            "p5": 50611.07727352735,
+            "p50": 84800.066544484,
+            "p90": 128705.98478637017,
+            "p95": 146354.81442572054
+          },
+          "terminal_real_pretax": {
+            "mean": 95390.38943638356,
+            "median": 88485.97696064308,
+            "p10": 57240.55929869349,
+            "p5": 50662.240466543335,
+            "p50": 88485.97696064308,
+            "p90": 141765.90332165663,
+            "p95": 163311.47605751042
+          },
+          "xirr_money_weighted": {
+            "mean": 0.04754093829558785,
+            "median": 0.04676996639282527,
+            "p10": -0.01865081324021162,
+            "p5": -0.04033428219740044,
+            "p50": 0.04676996639282527,
+            "p90": 0.11442078117878852,
+            "p95": 0.13535706588767188
+          }
+        },
+        "0.03": {
+          "P_model_real_terminal_below_real_contributions": {
+            "P_model": 0.29146,
+            "effective_n_for_parameter_claims": 100,
+            "n_parameter_worlds": 100,
+            "n_paths_per_world": 500,
+            "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+          },
+          "contributions_nominal": {
+            "mean": 81668.55030054989,
+            "median": 81783.27586882445,
+            "p10": 81414.34481081639,
+            "p5": 81190.17179481905,
+            "p50": 81783.27586882445,
+            "p90": 81783.27586882445,
+            "p95": 81783.27586882445
+          },
+          "contributions_real": {
+            "mean": 75079.89916568852,
+            "median": 75034.35472589378,
+            "p10": 72099.22045526573,
+            "p5": 71308.95361795035,
+            "p50": 75034.35472589378,
+            "p90": 78124.8513638553,
+            "p95": 79029.17494503883
+          },
+          "result_hash": "5a0421bcd8a33096dba03d839807acd1161d0a6f8b0abcf14a55d079c343ee57",
+          "tax_paid_nominal": {
+            "mean": 6683.72608790762,
+            "median": 4626.911532835337,
+            "p10": 0.0,
+            "p5": 0.0,
+            "p50": 4626.911532835337,
+            "p90": 16311.69666175477,
+            "p95": 21092.095954065593
+          },
+          "terminal_nominal_after_tax": {
+            "mean": 113188.97239555445,
+            "median": 106850.98786802372,
+            "p10": 73611.60615869985,
+            "p5": 65335.39496667784,
+            "p50": 106850.98786802372,
+            "p90": 159658.50093836538,
+            "p95": 181003.83635724566
+          },
+          "terminal_real_after_tax": {
+            "mean": 93003.44961951344,
+            "median": 87726.22542442926,
+            "p10": 59432.016993665755,
+            "p5": 52708.65942851408,
+            "p50": 87726.22542442926,
+            "p90": 132503.88794729052,
+            "p95": 150489.46649114558
+          },
+          "terminal_real_pretax": {
+            "mean": 98505.06900328373,
+            "median": 91531.19724871688,
+            "p10": 59506.16747185581,
+            "p5": 52768.00179105989,
+            "p50": 91531.19724871688,
+            "p90": 145851.7485982306,
+            "p95": 167793.65421946245
+          },
+          "xirr_money_weighted": {
+            "mean": 0.04752353084366999,
+            "median": 0.04678506840346219,
+            "p10": -0.018873430036281766,
+            "p5": -0.040664052591153396,
+            "p50": 0.04678506840346219,
+            "p90": 0.11455147285038743,
+            "p95": 0.13542415427903903
+          }
+        },
+        "0.05": {
+          "P_model_real_terminal_below_real_contributions": {
+            "P_model": 0.29244,
+            "effective_n_for_parameter_claims": 100,
+            "n_parameter_worlds": 100,
+            "n_paths_per_world": 500,
+            "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+          },
+          "contributions_nominal": {
+            "mean": 88338.45450501384,
+            "median": 88467.35521329308,
+            "p10": 88054.33104396607,
+            "p5": 87818.43255569454,
+            "p50": 88467.35521329308,
+            "p90": 88467.35521329308,
+            "p95": 88467.35521329308
+          },
+          "contributions_real": {
+            "mean": 80899.13613941858,
+            "median": 80844.06524851592,
+            "p10": 77523.39976270942,
+            "p5": 76632.10980686464,
+            "p50": 80844.06524851592,
+            "p90": 84351.39349200999,
+            "p95": 85371.82352533097
+          },
+          "result_hash": "4d20beb180014480468704e6954fe5abeba76ccf5ecf5774e93433430a20fa9d",
+          "tax_paid_nominal": {
+            "mean": 6981.140688793683,
+            "median": 4846.819675961222,
+            "p10": 0.0,
+            "p5": 0.0,
+            "p50": 4846.819675961222,
+            "p90": 17023.871489172972,
+            "p95": 21970.204558493886
+          },
+          "terminal_nominal_after_tax": {
+            "mean": 121071.6352988291,
+            "median": 114542.26187746553,
+            "p10": 79690.77434763682,
+            "p5": 70991.53102369352,
+            "p50": 114542.26187746553,
+            "p90": 169374.29605840368,
+            "p95": 191662.04808411552
+          },
+          "terminal_real_after_tax": {
+            "mean": 99481.08152611673,
+            "median": 94098.86253965672,
+            "p10": 64293.38548934878,
+            "p5": 57275.228678978136,
+            "p50": 94098.86253965672,
+            "p90": 140772.98270886167,
+            "p95": 159350.49519786966
+          },
+          "terminal_real_pretax": {
+            "mean": 105222.36154668337,
+            "median": 98033.2964826184,
+            "p10": 64384.490118758324,
+            "p5": 57335.502838294924,
+            "p50": 98033.2964826184,
+            "p90": 154687.31936435073,
+            "p95": 177319.16513228582
+          },
+          "xirr_money_weighted": {
+            "mean": 0.047484544182038936,
+            "median": 0.046792214879571414,
+            "p10": -0.01940649580625689,
+            "p5": -0.04133989009264207,
+            "p50": 0.046792214879571414,
+            "p90": 0.11478328625142072,
+            "p95": 0.13575285423011713
+          }
+        }
+      },
+      "incremental_real_terminal_after_tax": {
+        "vs_adjacent_lower_step": {
+          "0.02_minus_0.00": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "5b57d56c30feacc1a0ef07fecce1e7df512291ac21a50205711bbde38b050313",
+            "mean": 5567.322190075922,
+            "median": 5416.386715549386,
+            "median_as_pct_of_core_median_terminal": 6.387243473102801,
+            "p10": 4076.9553700050005,
+            "p5": 3733.5306064876795,
+            "p90": 7225.926634507792,
+            "p95": 7892.116888659112,
+            "paired": true
+          },
+          "0.03_minus_0.02": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "faef439d420652977e9ca528ab1b4178aa013463d6a6898a3e9da70529044e66",
+            "mean": 3001.704457460763,
+            "median": 2922.6121762083494,
+            "median_as_pct_of_core_median_terminal": 3.4464739183609248,
+            "p10": 2207.6901541443012,
+            "p5": 2023.9161196116668,
+            "p90": 3882.6021928733094,
+            "p95": 4234.79712505731,
+            "paired": true
+          },
+          "0.05_minus_0.03": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "a33d749f99e7560ad400be2cd2740b16c4d6fe52273538ffe3ca6d05e51dd1fb",
+            "mean": 6477.6319066033,
+            "median": 6311.470199613512,
+            "median_as_pct_of_core_median_terminal": 7.442765621301336,
+            "p10": 4783.731786147996,
+            "p5": 4390.370376053909,
+            "p90": 8357.38214933734,
+            "p95": 9098.366869066926,
+            "paired": true
+          }
+        },
+        "vs_zero_growth": {
+          "0.02": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "5b57d56c30feacc1a0ef07fecce1e7df512291ac21a50205711bbde38b050313",
+            "mean": 5567.322190075922,
+            "median": 5416.386715549386,
+            "median_as_pct_of_core_median_terminal": 6.387243473102801,
+            "p10": 4076.9553700050005,
+            "p5": 3733.5306064876795,
+            "p90": 7225.926634507792,
+            "p95": 7892.116888659112,
+            "paired": true
+          },
+          "0.03": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "81958e0f094c0609de5c5124e968905ed21317c6ef8157629e4f57f55f90bbfc",
+            "mean": 8569.026647536686,
+            "median": 8340.231987709005,
+            "median_as_pct_of_core_median_terminal": 9.835171512906687,
+            "p10": 6284.520802391298,
+            "p5": 5757.945385401843,
+            "p90": 11109.304195233659,
+            "p95": 12123.476386439239,
+            "paired": true
+          },
+          "0.05": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "81d34d45aa98a544c7c6c5f926d5acfffc8104a95c091d8de487459154df86e3",
+            "mean": 15046.658554139985,
+            "median": 14651.189807295552,
+            "median_as_pct_of_core_median_terminal": 17.27733291295226,
+            "p10": 11068.6347967463,
+            "p5": 10148.982745273612,
+            "p90": 19458.440456493216,
+            "p95": 21221.345406555487,
+            "paired": true
+          }
+        }
+      },
+      "primary_comparator_plus_1pp": {
+        "P_model_delta_gt_0": {
+          "P_model": 1.0,
+          "effective_n_for_parameter_claims": 100,
+          "n_parameter_worlds": 100,
+          "n_paths_per_world": 500,
+          "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+        },
+        "baseline_core_median_real_terminal_eur": 84800.066544484,
+        "definition": "paired real terminal wealth delta, 3% growth minus 2% growth",
+        "delta_hash": "faef439d420652977e9ca528ab1b4178aa013463d6a6898a3e9da70529044e66",
+        "frozen": true,
+        "increment_pp": 1.0,
+        "mean": 3001.704457460763,
+        "median": 2922.6121762083494,
+        "median_as_pct_of_core_median_terminal": 3.4464739183609248,
+        "p10": 2207.6901541443012,
+        "p5": 2023.9161196116668,
+        "p90": 3882.6021928733094,
+        "p95": 4234.79712505731,
+        "paired": true
+      }
+    },
+    "20": {
+      "growth_scenarios": {
+        "0.00": {
+          "P_model_real_terminal_below_real_contributions": {
+            "P_model": 0.22418,
+            "effective_n_for_parameter_claims": 100,
+            "n_parameter_worlds": 100,
+            "n_paths_per_world": 500,
+            "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+          },
+          "contributions_nominal": {
+            "mean": 131339.4676239538,
+            "median": 132047.0045392078,
+            "p10": 128858.9781711904,
+            "p5": 127286.04750834093,
+            "p50": 132047.0045392078,
+            "p90": 132989.22172968218,
+            "p95": 133000.0
+          },
+          "contributions_real": {
+            "mean": 111081.86630675895,
+            "median": 110846.92517995264,
+            "p10": 102978.59437222869,
+            "p5": 100799.76166242611,
+            "p50": 110846.92517995264,
+            "p90": 119474.89711141774,
+            "p95": 122016.057227604
+          },
+          "result_hash": "a872d926f2f19be3e9a7dd810c84c335fe85a9a706a147a536cece37122933fb",
+          "tax_paid_nominal": {
+            "mean": 28293.846149548153,
+            "median": 19756.249480936967,
+            "p10": 698.016336563884,
+            "p5": 156.74392718638572,
+            "p50": 19756.249480936967,
+            "p90": 64820.52162532796,
+            "p95": 86519.0711824441
+          },
+          "terminal_nominal_after_tax": {
+            "mean": 265417.6015162547,
+            "median": 231415.58151371544,
+            "p10": 134335.28423949966,
+            "p5": 114005.15512776977,
+            "p50": 231415.58151371544,
+            "p90": 432415.976088247,
+            "p95": 528802.0083015003
+          },
+          "terminal_real_after_tax": {
+            "mean": 179391.07910104145,
+            "median": 155508.96130510466,
+            "p10": 87836.12361674088,
+            "p5": 74395.23073216449,
+            "p50": 155508.96130510466,
+            "p90": 296316.7029168536,
+            "p95": 363104.15341155144
+          },
+          "terminal_real_pretax": {
+            "mean": 197655.20248644167,
+            "median": 167980.8644210325,
+            "p10": 88336.15533819378,
+            "p5": 74489.5613258476,
+            "p50": 167980.8644210325,
+            "p90": 338214.4250874167,
+            "p95": 419320.6765690191
+          },
+          "xirr_money_weighted": {
+            "mean": 0.04884467142044615,
+            "median": 0.04821950230630834,
+            "p10": 0.0012841110265498852,
+            "p5": -0.013965431572901742,
+            "p50": 0.04821950230630834,
+            "p90": 0.09791322076529883,
+            "p95": 0.11339371333009828
+          }
+        },
+        "0.02": {
+          "P_model_real_terminal_below_real_contributions": {
+            "P_model": 0.22664,
+            "effective_n_for_parameter_claims": 100,
+            "n_parameter_worlds": 100,
+            "n_paths_per_world": 500,
+            "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+          },
+          "contributions_nominal": {
+            "mean": 156857.10976653878,
+            "median": 157610.41391849788,
+            "p10": 154088.81314212256,
+            "p5": 152390.2658407602,
+            "p50": 157610.41391849788,
+            "p90": 158742.74615832092,
+            "p95": 158784.21879350633
+          },
+          "contributions_real": {
+            "mean": 130679.0490263137,
+            "median": 130330.32862178182,
+            "p10": 120349.42279356284,
+            "p5": 117670.16581900117,
+            "p50": 130330.32862178182,
+            "p90": 141382.96628411367,
+            "p95": 144634.4458797559
+          },
+          "result_hash": "5d2819c0db3d98ace130c68eb21334c05cc508ab67388a35b4814fa5b4f07f37",
+          "tax_paid_nominal": {
+            "mean": 31088.150946286598,
+            "median": 21946.494312375537,
+            "p10": 893.0400377883904,
+            "p5": 245.90447810735907,
+            "p50": 21946.494312375537,
+            "p90": 71084.54235738763,
+            "p95": 94297.90261235595
+          },
+          "terminal_nominal_after_tax": {
+            "mean": 303121.7323121207,
+            "median": 266845.34657944244,
+            "p10": 159054.49490446542,
+            "p5": 136280.0819067178,
+            "p50": 266845.34657944244,
+            "p90": 485410.0377247993,
+            "p95": 588738.0957704714
+          },
+          "terminal_real_after_tax": {
+            "mean": 204875.92924894986,
+            "median": 179312.07176921118,
+            "p10": 103937.75793811772,
+            "p5": 88771.68693325396,
+            "p50": 179312.07176921118,
+            "p90": 332353.3154935003,
+            "p95": 404719.7156590404
+          },
+          "terminal_real_pretax": {
+            "mean": 224881.9227288096,
+            "median": 193261.87667626856,
+            "p10": 104518.53227666371,
+            "p5": 88922.77983715123,
+            "p50": 193261.87667626856,
+            "p90": 378585.39432907396,
+            "p95": 465676.5305943804
+          },
+          "xirr_money_weighted": {
+            "mean": 0.04880531885300263,
+            "median": 0.04832296707319517,
+            "p10": 0.0005995471575556808,
+            "p5": -0.014933764053039098,
+            "p50": 0.04832296707319517,
+            "p90": 0.09830485449179864,
+            "p95": 0.11371549259576665
+          }
+        },
+        "0.03": {
+          "P_model_real_terminal_below_real_contributions": {
+            "P_model": 0.22762,
+            "effective_n_for_parameter_claims": 100,
+            "n_parameter_worlds": 100,
+            "n_paths_per_world": 500,
+            "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+          },
+          "contributions_nominal": {
+            "mean": 172142.8356616466,
+            "median": 172923.27679494084,
+            "p10": 169214.89057784327,
+            "p5": 167439.86768444235,
+            "p50": 172923.27679494084,
+            "p90": 174161.32045115286,
+            "p95": 174222.24693388306
+          },
+          "contributions_real": {
+            "mean": 142349.30513445748,
+            "median": 141941.2298827644,
+            "p10": 130678.16891195593,
+            "p5": 127679.01623753282,
+            "p50": 141941.2298827644,
+            "p90": 154465.75752671037,
+            "p95": 158143.52249692503
+          },
+          "result_hash": "a35e908c5d89ddd5af62d91777988a7b71351c172f271ee436a12a9dfe78b3db",
+          "tax_paid_nominal": {
+            "mean": 32674.862081703424,
+            "median": 23186.49039614353,
+            "p10": 998.5540460984683,
+            "p5": 300.9405280253347,
+            "p50": 23186.49039614353,
+            "p90": 74522.78413731088,
+            "p95": 98576.91974189665
+          },
+          "terminal_nominal_after_tax": {
+            "mean": 325293.9827956714,
+            "median": 287856.70666028745,
+            "p10": 173830.0016723525,
+            "p5": 149565.023011993,
+            "p50": 287856.70666028745,
+            "p90": 516578.5259942331,
+            "p95": 623184.1076681874
+          },
+          "terminal_real_after_tax": {
+            "mean": 219862.3562454048,
+            "median": 193521.73657789768,
+            "p10": 113580.68564069305,
+            "p5": 97215.71605995366,
+            "p50": 193521.73657789768,
+            "p90": 353545.0236707727,
+            "p95": 428956.3924806332
+          },
+          "terminal_real_pretax": {
+            "mean": 240857.2927753633,
+            "median": 207927.43492051418,
+            "p10": 114179.47083798976,
+            "p5": 97381.51123185812,
+            "p50": 207927.43492051418,
+            "p90": 401890.9988296953,
+            "p95": 492600.74967947183
+          },
+          "xirr_money_weighted": {
+            "mean": 0.04877886269806897,
+            "median": 0.04836896096593579,
+            "p10": 0.0003128176887732756,
+            "p5": -0.015498287105856469,
+            "p50": 0.04836896096593579,
+            "p90": 0.09854464785434724,
+            "p95": 0.11392245123776701
+          }
+        },
+        "0.05": {
+          "P_model_real_terminal_below_real_contributions": {
+            "P_model": 0.23108,
+            "effective_n_for_parameter_claims": 100,
+            "n_parameter_worlds": 100,
+            "n_paths_per_world": 500,
+            "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+          },
+          "contributions_nominal": {
+            "mean": 208967.60804330307,
+            "median": 209805.20995764618,
+            "p10": 205670.8607048294,
+            "p5": 203735.85005481544,
+            "p50": 209805.20995764618,
+            "p90": 211287.3623723085,
+            "p95": 211395.72461733123
+          },
+          "contributions_real": {
+            "mean": 170302.7763397302,
+            "median": 169732.57660044875,
+            "p10": 155352.46577047708,
+            "p5": 151524.9748418754,
+            "p50": 169732.57660044875,
+            "p90": 185864.91578931845,
+            "p95": 190602.85224766037
+          },
+          "result_hash": "b6fa42932719b03e7dc190451df14ab9e525b786ae2e80f5d3155409932ff391",
+          "tax_paid_nominal": {
+            "mean": 36294.089368536006,
+            "median": 25981.856185392422,
+            "p10": 1250.3549806293129,
+            "p5": 429.7265358490902,
+            "p50": 25981.856185392422,
+            "p90": 82551.52351820319,
+            "p95": 108795.2696893774
+          },
+          "terminal_nominal_after_tax": {
+            "mean": 377750.16252300737,
+            "median": 337416.94505312643,
+            "p10": 209290.96696880052,
+            "p5": 181280.64008828232,
+            "p50": 337416.94505312643,
+            "p90": 589272.157845247,
+            "p95": 704259.4919032675
+          },
+          "terminal_real_after_tax": {
+            "mean": 255317.56198960144,
+            "median": 226694.94654819818,
+            "p10": 136559.46468693824,
+            "p5": 117700.80099787348,
+            "p50": 226694.94654819818,
+            "p90": 403687.9687756051,
+            "p95": 485796.9698723783
+          },
+          "terminal_real_pretax": {
+            "mean": 278568.5355819397,
+            "median": 242958.19484717943,
+            "p10": 137414.61595835615,
+            "p5": 117922.15115728814,
+            "p50": 242958.19484717943,
+            "p90": 457084.5235487187,
+            "p95": 556279.0230892379
+          },
+          "xirr_money_weighted": {
+            "mean": 0.04871136226078122,
+            "median": 0.04838500064081652,
+            "p10": -0.0006287287524560838,
+            "p5": -0.016814504949415412,
+            "p50": 0.04838500064081652,
+            "p90": 0.09903334619476757,
+            "p95": 0.11442825078339719
+          }
+        }
+      },
+      "incremental_real_terminal_after_tax": {
+        "vs_adjacent_lower_step": {
+          "0.02_minus_0.00": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "c7d01a757a6aa8f400574939ef77ac0a1d80082dff50329dfaa50cae3cd95461",
+            "mean": 25484.85014790843,
+            "median": 23680.71479919953,
+            "median_as_pct_of_core_median_terminal": 13.206425292814911,
+            "p10": 15658.009537470809,
+            "p5": 13832.09238260545,
+            "p90": 37281.8396285352,
+            "p95": 43158.8531301999,
+            "paired": true
+          },
+          "0.03_minus_0.02": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "9c2c3a5221c382041cc6376912eebca985caf2cda21406a0eb3d0cee600d065c",
+            "mean": 14986.426996454942,
+            "median": 13973.248072286704,
+            "median_as_pct_of_core_median_terminal": 7.792697911756538,
+            "p10": 9346.311983231184,
+            "p5": 8280.565985987289,
+            "p90": 21734.399534197335,
+            "p95": 25058.031188816338,
+            "paired": true
+          },
+          "0.05_minus_0.03": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "ea7c879768a332157162dfb71869dd8a1333a92a0752e1890012fb85c59a6be8",
+            "mean": 35455.20574419663,
+            "median": 33167.53093548221,
+            "median_as_pct_of_core_median_terminal": 18.497098721926232,
+            "p10": 22405.098037439726,
+            "p5": 19943.53475399833,
+            "p90": 51017.22445395825,
+            "p95": 58537.910264815895,
+            "paired": true
+          }
+        },
+        "vs_zero_growth": {
+          "0.02": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "c7d01a757a6aa8f400574939ef77ac0a1d80082dff50329dfaa50cae3cd95461",
+            "mean": 25484.85014790843,
+            "median": 23680.71479919953,
+            "median_as_pct_of_core_median_terminal": 13.206425292814911,
+            "p10": 15658.009537470809,
+            "p5": 13832.09238260545,
+            "p90": 37281.8396285352,
+            "p95": 43158.8531301999,
+            "paired": true
+          },
+          "0.03": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "4c52f86e830fd190d120bf0a4ed68b09e755d7b3e24f6e4d9f01f7083ae0a7e1",
+            "mean": 40471.277144363376,
+            "median": 37651.200392960076,
+            "median_as_pct_of_core_median_terminal": 20.997582606384775,
+            "p10": 25007.289322173056,
+            "p5": 22119.14400068874,
+            "p90": 59032.78541746563,
+            "p95": 68218.93722715466,
+            "paired": true
+          },
+          "0.05": {
+            "P_model_delta_gt_0": {
+              "P_model": 1.0,
+              "effective_n_for_parameter_claims": 100,
+              "n_parameter_worlds": 100,
+              "n_paths_per_world": 500,
+              "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+            },
+            "delta_hash": "abb447ca04c61721237b533caeb0e36cb15a7750182baa7433bc301058f0580f",
+            "mean": 75926.48288856001,
+            "median": 70823.62668163136,
+            "median_as_pct_of_core_median_terminal": 39.49741140283459,
+            "p10": 47446.815049714976,
+            "p5": 42052.49692373545,
+            "p90": 110041.05839481262,
+            "p95": 126706.48495301539,
+            "paired": true
+          }
+        }
+      },
+      "primary_comparator_plus_1pp": {
+        "P_model_delta_gt_0": {
+          "P_model": 1.0,
+          "effective_n_for_parameter_claims": 100,
+          "n_parameter_worlds": 100,
+          "n_paths_per_world": 500,
+          "note": "G4: P_model(X) = P(X | model, parameter prior); not a statement about the world. G5: effective n for parameter claims is n_parameter_worlds."
+        },
+        "baseline_core_median_real_terminal_eur": 179312.07176921118,
+        "definition": "paired real terminal wealth delta, 3% growth minus 2% growth",
+        "delta_hash": "9c2c3a5221c382041cc6376912eebca985caf2cda21406a0eb3d0cee600d065c",
+        "frozen": true,
+        "increment_pp": 1.0,
+        "mean": 14986.426996454942,
+        "median": 13973.248072286704,
+        "median_as_pct_of_core_median_terminal": 7.792697911756538,
+        "p10": 9346.311983231184,
+        "p5": 8280.565985987289,
+        "p90": 21734.399534197335,
+        "p95": 25058.031188816338,
+        "paired": true
+      }
+    }
+  },
+  "metric_notes": {
+    "pairing": "All growth scenarios within a horizon share parameter worlds and the same CRNBlock, so every delta is paired path by path.",
+    "reporting_precision": "Full precision stored. Teil C rounding (wealth to 5000 EUR, probabilities to 0.5 pp, returns to 0.1 pp) applies to the Phase 7 report, not to this file.",
+    "return_metric": "Money-weighted return (XIRR) only. No CAGR is computed on DCA cashflows: with a contribution stream a start-to-end CAGR is not a return anyone earned."
+  },
+  "result_hashes": {
+    "h10_g0.00": "295c6761b67d904a236f7e2d0b0f21f256bb96fd245abff8596450faae867a65",
+    "h10_g0.02": "4795fefc51cae1b0dd7c976e458759f8b2102dd4de35bcc55c272d5750452833",
+    "h10_g0.03": "5a0421bcd8a33096dba03d839807acd1161d0a6f8b0abcf14a55d079c343ee57",
+    "h10_g0.05": "4d20beb180014480468704e6954fe5abeba76ccf5ecf5774e93433430a20fa9d",
+    "h20_g0.00": "a872d926f2f19be3e9a7dd810c84c335fe85a9a706a147a536cece37122933fb",
+    "h20_g0.02": "5d2819c0db3d98ace130c68eb21334c05cc508ab67388a35b4814fa5b4f07f37",
+    "h20_g0.03": "a35e908c5d89ddd5af62d91777988a7b71351c172f271ee436a12a9dfe78b3db",
+    "h20_g0.05": "b6fa42932719b03e7dc190451df14ab9e525b786ae2e80f5d3155409932ff391"
+  },
+  "savings_dynamics_hash": "67fa5200ffd47bed138945afffe8bf850ef504b8d396207025b54b35b087d3e2"
+}
