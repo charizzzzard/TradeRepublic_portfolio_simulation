@@ -2,7 +2,7 @@
   "b1_withholding_credit_status": "NOT_IN_DECISION_PATH",
   "b5_fx_disclosure": "The EUR investor's unhedged USD / JPY / EM currency exposure is OUT OF SCOPE. Asset processes are interpreted as EUR-denominated total returns with the FX component folded into their volatility rather than modelled as a separate correlated factor. Any statement about the currency risk of a satellite is therefore NOT SUPPORTED by this model.",
   "baseline_id": "r0_baseline_20260821_v3",
-  "code_hash": "f89ffa1553e8962e76c2071e2fe10dfd5a1d1da4823ea12ce6cbaf52d5717fd3",
+  "code_hash": "d0a3153a6c205f00afdba6c7668e169669345707da738bbac532e5925e291b41",
   "costs_config": {
     "_spec_ref": "PROJECT_META v3, Teil B.4 - own parameter class. Rationale: a 0.20 pp TER delta runs directly against a 0.124 pp portfolio-CAGR materiality gate (G1).",
     "blocking_note": "Every value above is an UNSOURCED PLACEHOLDER of the right order of magnitude. It exists so the cost machinery is exercised and hash-tracked, NOT so cost numbers can be quoted. Because a 0.20 pp TER delta alone exceeds the 0.124 pp G1 gate, no cost-sensitive claim may be promoted until these are replaced with sourced values (KIID/PRIIPs for TER, provider factsheets for tracking difference, venue data for spreads). Phase 3 (R2E) must therefore treat TER as a SWEPT DIMENSION (0/10/20/30 bp) rather than reading these point values.",
@@ -273,7 +273,7 @@
       "scope": "CORE_100 only; no satellite simulated"
     }
   },
-  "git_sha": "5efb528af366810042870a6aa40faf0ec775d825",
+  "git_sha": "cd5a22e8c75b1bfd0fd81547093738e5c24caf5d",
   "human_final_decision": true,
   "inflation_config": {
     "model": "Ornstein-Uhlenbeck, monthly, coupled to the short rate",
@@ -421,6 +421,6 @@
       "status": "NOT_IN_DECISION_PATH"
     }
   },
-  "timestamp_utc": "2026-08-21T10:45:51+00:00",
+  "timestamp_utc": "2026-08-21T10:59:29+00:00",
   "unmodelled_boundary_conditions": "Emergency fund, human capital, statutory/occupational pension, liquidity events and interim withdrawals are NOT modelled (B.6). This is a partial analysis of portfolio allocation, not financial planning."
 }
