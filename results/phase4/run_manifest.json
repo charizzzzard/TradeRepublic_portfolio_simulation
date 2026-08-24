@@ -150,7 +150,7 @@
       30
     ]
   },
-  "data_hash": "1b9dd19cfaa6bfedf04553c386f45cd2d2daba9a040592984dcf6169c3fab83e",
+  "data_hash": "0e643af5a45f220e27cc1454f7f56a8833684a70fc1f1cbed8e448fc1c940560",
   "data_policy": {
     "_spec_ref": "Operator decisions of 2026-08-21, refining Teil D. Separates three properties that PROJECT_META and the earlier implementation conflated.",
     "approved_proxies": {
@@ -568,7 +568,7 @@
           "error": "Tunnel connection failed: 403 Forbidden",
           "http_status": null,
           "outcome": "NETWORK_BLOCKED",
-          "retrieved_at_utc": "2026-08-24T09:05:58+00:00",
+          "retrieved_at_utc": "2026-08-24T09:06:53+00:00",
           "url": "https://example.com/"
         },
         {
@@ -578,7 +578,7 @@
           "error": "Tunnel connection failed: 403 Forbidden",
           "http_status": null,
           "outcome": "NETWORK_BLOCKED",
-          "retrieved_at_utc": "2026-08-24T09:05:59+00:00",
+          "retrieved_at_utc": "2026-08-24T09:06:53+00:00",
           "url": "https://www.iana.org/domains/reserved"
         }
       ],
@@ -817,7 +817,7 @@
       "rule": "BLOCKED_NETWORK is not FAIL and must never be read as one"
     }
   },
-  "git_sha": "a89b9bbb670abe501d104bf10baba610e20b8881",
+  "git_sha": "8310869698d4788f66738485f62bd2057e9cddd2",
   "human_final_decision": true,
   "inflation_config": {
     "model": "Ornstein-Uhlenbeck, monthly, coupled to the short rate",
@@ -962,6 +962,6 @@
       "status": "NOT_IN_DECISION_PATH"
     }
   },
-  "timestamp_utc": "2026-08-24T09:06:09+00:00",
+  "timestamp_utc": "2026-08-24T09:07:03+00:00",
   "unmodelled_boundary_conditions": "Emergency fund, human capital, statutory/occupational pension, liquidity events and interim withdrawals are NOT modelled (B.6). This is a partial analysis of portfolio allocation, not financial planning."
 }
