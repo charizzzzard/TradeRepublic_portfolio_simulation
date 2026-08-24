@@ -47,6 +47,12 @@ from portfolio_sim import gates, manifest  # noqa: E402
 from portfolio_sim.hashing import sha256_obj  # noqa: E402
 
 PHASE3_MANIFEST = ROOT / "results" / "phase3" / "run_manifest.json"
+LICENSED_DIR = ROOT / "data" / "licensed"
+
+# An access constraint on CORE needs BOTH propositions, validated, about the
+# EXACT series. Neither alone is sufficient, and PROXY or DIFFERENT_INDEX
+# evidence never counts.
+REQUIRED_ACCESS_EVIDENCE_KINDS = (reg.COVERAGE_LIMIT, reg.LICENCE_REQUIREMENT)
 EXTERNAL_DIR = ROOT / "data" / "external"
 RESULTS = ROOT / "results" / "phase4"
 
@@ -68,11 +74,24 @@ def attempt_all_series(egress) -> tuple[list[dict], dict]:
             # No parser is wired yet, so a data artifact yields zero observations
             # even on HTTP 200. That is exactly the case that must NOT read as
             # acquisition.
+            # No parser is wired for any series, so a data artifact yields zero
+            # observations even on HTTP 200 - exactly the case that must not
+            # read as acquisition.
             n_obs = 0
-            outcome = acq.classify(raw, egress, source.role, n_obs)
+            validation = acq.run_validator(source.validator_id, raw.body)
+            outcome = acq.classify(raw, egress, source.role, n_obs, validation)
             outcomes.append({
                 "provider": source.provider, "tier": source.tier, "url": source.url,
                 "role": source.role, "evidence_purpose": source.evidence_purpose,
+                "series_relation": source.series_relation,
+                "evidence_kind": source.evidence_kind,
+                "validator_id": source.validator_id,
+                "parser_id": source.parser_id,
+                "validation": (None if validation is None else {
+                    "validated": validation.validated,
+                    "matched_markers": validation.matched_markers,
+                    "validator_version": validation.validator_version,
+                }),
                 "licence_status": source.licence_status,
                 "endpoint_status": source.endpoint_status,
                 "outcome": outcome,
@@ -84,11 +103,12 @@ def attempt_all_series(egress) -> tuple[list[dict], dict]:
                 spec.frequency, spec.currency, spec.return_convention,
                 n_observations=n_obs))
         codes = [o["outcome"] for o in outcomes]
+        established, access_detail = acq.access_constraint_established(
+            outcomes, REQUIRED_ACCESS_EVIDENCE_KINDS, reg.EXACT)
         per_series[spec.key] = {
             "acquired": acq.series_is_acquired(codes),
-            "access_evidence": acq.has_access_evidence(
-                [o["outcome"] for o in outcomes
-                 if o["role"] == reg.EVIDENCE or o["outcome"] == acq.LICENCE_OR_AUTH_REQUIRED]),
+            "access_evidence": established,
+            "access_evidence_detail": access_detail,
             "unavailability_evidence": acq.has_unavailability_evidence(
                 [o["outcome"] for o in outcomes if o["role"] == reg.DATA_ARTIFACT]),
             "attempts": outcomes,
@@ -147,9 +167,17 @@ def load_licensed_provenance(series_key: str) -> dict:
     if not path.exists():
         return {"present": False, "complete": False, "missing": ["record absent"]}
     record = json.loads(path.read_text(encoding="utf-8"))
-    complete, missing = reg.licensed_provenance_complete(record)
-    return {"present": True, "complete": complete, "missing": missing,
-            "record": {k: record.get(k) for k in reg.LICENSED_PROVENANCE_FIELDS}}
+    verification = acq.verify_licensed_file(record, LICENSED_DIR)
+    return {
+        "present": True,
+        # `complete` now means VERIFIED AGAINST THE FILE, not merely
+        # metadata-complete. Complete metadata alone must never yield PASS.
+        "complete": verification["verified"],
+        "provenance_complete": verification.get("provenance_complete", False),
+        "file_verification": verification,
+        "missing": verification["failures"],
+        "record": {k: record.get(k) for k in reg.LICENSED_PROVENANCE_FIELDS},
+    }
 
 
 def load_external_findings() -> list[dict] | None:
@@ -364,7 +392,7 @@ def main() -> int:
     admissible = acq.research_verdict_admissible(egress)
     policy = config_mod.load("data_policy")
     core = per_series["CORE"]
-    licensed = load_licensed_provenance("CORE")
+    licensed = licensed_state = load_licensed_provenance("CORE")
     verdict = derive_verdict(core, coverage, licensed, policy, admissible)
     acceptance = verdict["acceptance"]
     core_status = verdict["core_status"]
@@ -389,17 +417,31 @@ def main() -> int:
         "detail": "a series is ACQUIRED only via a DATA_ARTIFACT that parsed to >0 "
                   "observations; EVIDENCE pages and bare HTTP 200 never set acquired",
     })
+    detail = core["access_evidence_detail"]
     checks.append({
-        "check": "access_constraint_derived_from_positive_evidence",
+        "check": "access_constraint_requires_validated_exact_series_evidence",
         "result": "PASS",
-        "detail": f"CORE access_evidence={core['access_evidence']}, "
-                  f"unavailability_evidence={core['unavailability_evidence']}; "
-                  "FAIL_ACCESS_CONSTRAINT requires positive licence/access evidence, "
-                  "never the absence of a licence error",
+        "detail": f"CORE access_evidence={core['access_evidence']} "
+                  f"(satisfied {detail['satisfied_kinds']}, missing "
+                  f"{detail['missing_kinds']}); requires validated "
+                  f"{detail['required_kinds']} about the EXACT series - PROXY "
+                  "(Vanguard) and DIFFERENT_INDEX (MSCI) evidence cannot trigger it",
+    })
+    checks.append({
+        "check": "licensed_pass_requires_a_verified_file_not_just_metadata",
+        "result": "PASS" if not (licensed_state["present"]
+                                 and licensed_state["complete"]
+                                 and not licensed_state["file_verification"]["verified"])
+                  else "FAIL",
+        "detail": ("no licensed provenance record present"
+                   if not licensed_state["present"]
+                   else f"file verification: {licensed_state['file_verification']}"),
     })
     checks.append({
         "check": "verdict_is_specific_not_a_generic_fail",
-        "result": "PASS" if acceptance != "FAIL" else "FAIL",
+        "result": "PASS" if acceptance in (PASS, PARTIAL, FAIL_ACCESS_CONSTRAINT,
+                                           FAIL_DATA_UNAVAILABLE, INCONCLUSIVE,
+                                           BLOCKED_NETWORK) else "FAIL",
         "detail": f"acceptance={acceptance}; the taxonomy distinguishes "
                   "FAIL_ACCESS_CONSTRAINT (data exists, not acquired) from "
                   "FAIL_DATA_UNAVAILABLE (data does not exist in usable form)",
@@ -428,9 +470,17 @@ def main() -> int:
     })
     checks.append({
         "check": "external_findings_recorded_but_not_promoted_to_verdict",
-        "result": "PASS" if (external is None or acceptance == BLOCKED_NETWORK) else "FAIL",
-        "detail": ("externally reported dossier hashed and recorded with "
-                   "verified_locally=False; acceptance unchanged at BLOCKED_NETWORK"
+        # The verdict is derived solely from `core`, `coverage`, `licensed` and
+        # `policy` - `derive_verdict` never sees the dossiers. So the check is
+        # that they are recorded as unverified, NOT that the acceptance value
+        # happens to be BLOCKED_NETWORK. Requiring the latter would make every
+        # locally derived verdict fail this check once a dossier exists.
+        "result": "PASS" if (external is None
+                             or all(d["verified_locally"] is False for d in external))
+                  else "FAIL",
+        "detail": (f"{len(external)} dossier(s) hashed and recorded with "
+                   "verified_locally=False; the verdict is derived from local "
+                   "evidence only and does not read them"
                    if external else "no external dossier present"),
     })
     core = reg.SERIES_BY_KEY["CORE"]
@@ -474,7 +524,14 @@ def main() -> int:
         gates={"phase4_acceptance": {
             "PASS": "all reduced-universe series acquired and documented",
             "PARTIAL": "CORE + GOLD only",
-            "FAIL": "CORE demonstrably unobtainable -> STOP",
+            "FAIL_ACCESS_CONSTRAINT": "CORE exists commercially but was not acquired "
+                                      "under a usable licence -> STOP for calibrated "
+                                      "phases; NOT an epistemic finding",
+            "FAIL_DATA_UNAVAILABLE": "CORE not found, invalid or of insufficient "
+                                     "history -> STOP; an epistemic finding",
+            "INCONCLUSIVE_INSUFFICIENT_EVIDENCE": "egress worked but neither access nor "
+                                                  "unavailability evidence was obtained; "
+                                                  "no verdict issued",
             "BLOCKED_NETWORK": "no egress; no research verdict issued",
             "rule": "BLOCKED_NETWORK is not FAIL and must never be read as one",
         }},
@@ -547,7 +604,7 @@ def main() -> int:
     print(f"  {verdict_detail}")
     print(f"\n  series attempted: {len(reg.SERIES)}   "
           f"source fetches: {len(rows)}   acquired: "
-          f"{sum(1 for r in rows if r['data_status'] == 'ACQUIRED')}")
+          f"{sum(1 for r in rows if r['data_status'] == acq.DATA_ACQUIRED)}")
     print(f"  TER documents retrieved: {costs['n_sourced']} / {len(reg.COST_SOURCES)}")
     if external:
         cv = report["candidate_verdict"]

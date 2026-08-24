@@ -33,7 +33,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .hashing import sha256_bytes, sha256_obj
+from .hashing import sha256_bytes, sha256_file, sha256_obj
 
 # Environment-level outcomes. None of these is a statement about the data.
 NETWORK_BLOCKED = "NETWORK_BLOCKED"
@@ -49,20 +49,26 @@ ENVIRONMENT_OUTCOMES = frozenset({NETWORK_BLOCKED, NETWORK_TIMEOUT, NETWORK_DNS_
 # series behind it was obtained. Conflating the two is how a successful network
 # request turns into a false "data unavailable" verdict.
 HTTP_OK = "HTTP_OK"                      # transport succeeded; content unclassified
-EVIDENCE_CAPTURED = "EVIDENCE_CAPTURED"  # an EVIDENCE source fetched successfully
+EVIDENCE_CAPTURED = "EVIDENCE_CAPTURED"    # EVIDENCE source fetched; content NOT checked
+EVIDENCE_VALIDATED = "EVIDENCE_VALIDATED"  # a validator confirmed the proposition in the body
 DATA_ACQUIRED = "DATA_ACQUIRED"          # a DATA_ARTIFACT parsed to >0 observations
 DATA_NOT_PARSED = "DATA_NOT_PARSED"      # 200 from a data artifact, but no series parsed
 SOURCE_NOT_FOUND = "SOURCE_NOT_FOUND"
 LICENCE_OR_AUTH_REQUIRED = "LICENCE_OR_AUTH_REQUIRED"
 DATA_INVALID = "DATA_INVALID"
-SOURCE_OUTCOMES = frozenset({HTTP_OK, EVIDENCE_CAPTURED, DATA_ACQUIRED, DATA_NOT_PARSED,
+SOURCE_OUTCOMES = frozenset({HTTP_OK, EVIDENCE_CAPTURED, EVIDENCE_VALIDATED,
+                             DATA_ACQUIRED, DATA_NOT_PARSED,
                              SOURCE_NOT_FOUND, LICENCE_OR_AUTH_REQUIRED, DATA_INVALID})
 
 # The only outcome that may ever set `acquired` on a series.
 ACQUISITION_OUTCOMES = frozenset({DATA_ACQUIRED})
 
-# Outcomes that constitute locally validated evidence of a licence/access wall.
-ACCESS_EVIDENCE_OUTCOMES = frozenset({LICENCE_OR_AUTH_REQUIRED, EVIDENCE_CAPTURED})
+# Outcomes that constitute LOCALLY VALIDATED evidence.
+#
+# EVIDENCE_CAPTURED is deliberately NOT here. Fetching a page proves the page
+# exists, not that it says what the registry claims it says. Only a validator
+# that matched the proposition in the response body counts.
+ACCESS_EVIDENCE_OUTCOMES = frozenset({LICENCE_OR_AUTH_REQUIRED, EVIDENCE_VALIDATED})
 
 # Outcomes that constitute evidence the data itself is not there.
 UNAVAILABILITY_EVIDENCE_OUTCOMES = frozenset({SOURCE_NOT_FOUND, DATA_INVALID})
@@ -81,6 +87,10 @@ class AttemptResult:
     bytes_received: int = 0
     content_sha256: str | None = None
     error: str = ""
+    # Response body, kept so evidence validators can inspect what the page
+    # actually says. Excluded from every serialised record: it is raw remote
+    # content, often large, and belongs in a validator, not in a manifest.
+    body: bytes | None = field(default=None, repr=False)
     retrieved_at_utc: str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat(timespec="seconds"))
 
@@ -97,7 +107,7 @@ def _raw_fetch(url: str, timeout: float = 30.0) -> AttemptResult:
             body = resp.read()
             return AttemptResult(url=url, outcome=HTTP_OK, http_status=resp.status,
                                  bytes_received=len(body),
-                                 content_sha256=sha256_bytes(body))
+                                 content_sha256=sha256_bytes(body), body=body)
     except urllib.error.HTTPError as exc:
         # An HTTP status from an origin we actually reached.
         status = exc.code
@@ -153,8 +163,103 @@ def probe_egress(hosts: tuple[str, ...] = CANARY_HOSTS, timeout: float = 20.0) -
                        detail=detail)
 
 
+# --------------------------------------------------------------------------
+# Evidence validators
+# --------------------------------------------------------------------------
+# A validator reads the response body and decides whether it actually asserts
+# the proposition the registry files it under. These are deliberately
+# CONSERVATIVE: each requires several independent markers, and anything it
+# cannot confirm stays EVIDENCE_CAPTURED rather than becoming
+# EVIDENCE_VALIDATED. A false negative costs a re-check; a false positive would
+# manufacture a verdict, which is the failure mode this whole module exists to
+# prevent.
+#
+# They are text heuristics over remote pages, so every result records the
+# matched markers for human audit, and a validator_version so a later change is
+# detectable.
+VALIDATOR_VERSION = "1.0.0"
+
+
+@dataclass
+class ValidationResult:
+    validator_id: str
+    validated: bool
+    matched_markers: list[str]
+    validator_version: str = VALIDATOR_VERSION
+    note: str = ""
+
+
+def _markers_present(text: str, groups: tuple[tuple[str, ...], ...]) -> list[str]:
+    """Return one matched phrase per group, or [] unless EVERY group matched.
+
+    Requiring a hit in each group is what stops a single incidental word from
+    validating a proposition.
+    """
+    lowered = text.lower()
+    hits = []
+    for group in groups:
+        found = next((phrase for phrase in group if phrase in lowered), None)
+        if found is None:
+            return []
+        hits.append(found)
+    return hits
+
+
+def validate_lseg_coverage_limit(text: str) -> ValidationResult:
+    """Does the page state that freely available history is short (~2 years)?"""
+    hits = _markers_present(text, (
+        ("two years", "2 years", "24 months", "twenty-four months"),
+        ("month-end", "month end", "monthly"),
+        ("historic index values", "index values", "historical values"),
+    ))
+    return ValidationResult(
+        "lseg_coverage_limit", bool(hits), hits,
+        note="Requires a limited-duration phrase, a month-end/monthly phrase and an "
+             "index-values phrase to co-occur.")
+
+
+def validate_lseg_licence_requirement(text: str) -> ValidationResult:
+    """Does the page state that use/distribution requires a licence?"""
+    hits = _markers_present(text, (
+        ("licence", "license", "licensing"),
+        ("distribut", "redistribut", "reproduc"),
+        ("index data", "index values", "ftse russell", "lseg"),
+    ))
+    return ValidationResult(
+        "lseg_licence_requirement", bool(hits), hits,
+        note="Requires licence language, distribution/reproduction language and an "
+             "index-data reference to co-occur.")
+
+
+VALIDATORS = {
+    "lseg_coverage_limit": validate_lseg_coverage_limit,
+    "lseg_licence_requirement": validate_lseg_licence_requirement,
+}
+
+
+def run_validator(validator_id: str, body: bytes | None) -> ValidationResult | None:
+    """Run a registered validator over a response body.
+
+    Returns None when there is nothing to validate - no validator declared, or
+    no body. None is not a failure; it means the proposition was never checked,
+    and the outcome stays EVIDENCE_CAPTURED.
+    """
+    if not validator_id or body is None:
+        return None
+    fn = VALIDATORS.get(validator_id)
+    if fn is None:
+        return ValidationResult(validator_id, False, [],
+                                note="no validator registered under this id")
+    try:
+        text = body.decode("utf-8", errors="replace")
+    except Exception:  # pragma: no cover - decode with errors= cannot raise
+        return ValidationResult(validator_id, False, [], note="body not decodable")
+    return fn(text)
+
+
 def classify(attempt: AttemptResult, egress: EgressProbe,
-             source_role: str = "DATA_ARTIFACT", n_observations: int = 0) -> str:
+             source_role: str = "DATA_ARTIFACT", n_observations: int = 0,
+             validation: "ValidationResult | None" = None) -> str:
     """Final outcome for one attempt, given egress state, source role and content.
 
     Two guards, both load-bearing:
@@ -175,6 +280,9 @@ def classify(attempt: AttemptResult, egress: EgressProbe,
     if attempt.outcome != HTTP_OK:
         return attempt.outcome
     if source_role == "EVIDENCE":
+        # Fetching the page is not the same as the page saying what we claim.
+        if validation is not None and validation.validated:
+            return EVIDENCE_VALIDATED
         return EVIDENCE_CAPTURED
     return DATA_ACQUIRED if n_observations > 0 else DATA_NOT_PARSED
 
@@ -189,8 +297,58 @@ def series_is_acquired(outcomes) -> bool:
 
 
 def has_access_evidence(outcomes) -> bool:
-    """Locally validated evidence that a licence or authorisation wall exists."""
+    """Any locally validated evidence of a licence or authorisation wall.
+
+    Coarse. For CORE use `access_constraint_established`, which additionally
+    requires the RIGHT propositions about the RIGHT series.
+    """
     return any(o in ACCESS_EVIDENCE_OUTCOMES for o in outcomes)
+
+
+def access_constraint_established(attempts, required_kinds, required_relation="EXACT"):
+    """Whether an access constraint is proven for the EXACT series.
+
+    `attempts` are per-source records carrying `outcome`, `series_relation`,
+    `evidence_kind`. An attempt counts only when all three hold:
+
+      * outcome is EVIDENCE_VALIDATED or LICENCE_OR_AUTH_REQUIRED - a validator
+        actually confirmed the proposition, or the origin itself refused;
+      * series_relation == required_relation - evidence about a PROXY or a
+        DIFFERENT_INDEX says nothing about the exact series;
+      * evidence_kind is one of `required_kinds`.
+
+    EVERY required kind must be satisfied. For CORE that means a validated
+    COVERAGE_LIMIT *and* a validated LICENCE_REQUIREMENT: knowing the public
+    history is short does not by itself show the longer history is licensed, and
+    knowing index data is licensed does not by itself show the free history is
+    too short.
+
+    Returns (established, detail).
+    """
+    required = set(required_kinds)
+    satisfied, contributing = {}, []
+    for a in attempts:
+        outcome = a.get("outcome")
+        if outcome not in ACCESS_EVIDENCE_OUTCOMES:
+            continue
+        if a.get("series_relation") != required_relation:
+            continue
+        kind = a.get("evidence_kind")
+        if kind in required:
+            satisfied[kind] = a.get("provider", "")
+            contributing.append({"provider": a.get("provider"), "kind": kind,
+                                 "outcome": outcome,
+                                 "series_relation": a.get("series_relation")})
+    missing = sorted(required - set(satisfied))
+    return (not missing), {
+        "required_kinds": sorted(required),
+        "required_relation": required_relation,
+        "satisfied_kinds": sorted(satisfied),
+        "missing_kinds": missing,
+        "contributing_sources": contributing,
+        "rule": "Every required kind must be validated for the EXACT series. "
+                "PROXY and DIFFERENT_INDEX evidence is excluded by construction.",
+    }
 
 
 def has_unavailability_evidence(outcomes) -> bool:
@@ -337,3 +495,99 @@ def acquisition_report(egress: EgressProbe, rows: list[dict], coverage: dict,
     }
     payload["report_hash"] = sha256_obj(payload)
     return payload
+
+
+# --------------------------------------------------------------------------
+# Licensed-file verification (item 4)
+# --------------------------------------------------------------------------
+# reproducibility != redistribution, but it does require that the bytes exist
+# and match. A complete provenance record on its own proves nothing: it is a
+# claim about a file, not the file.
+#
+# NOTE ON SCOPE: the row/period check below is a GENERIC CSV integrity check, not
+# a calibration parser. It counts data rows and reads the first column of the
+# first and last data row. It does not interpret HICP, EUR-STR or gold semantics,
+# and building those parsers is explicitly out of scope here.
+
+def _generic_csv_scan(path: Path) -> dict:
+    """Count data rows and read first/last first-column values from a CSV."""
+    import csv as _csv
+
+    with Path(path).open("r", encoding="utf-8", errors="replace", newline="") as fh:
+        reader = _csv.reader(fh)
+        rows = [r for r in reader if r and any(str(c).strip() for c in r)]
+    if not rows:
+        return {"row_count": 0, "first_key": "", "last_key": ""}
+    data = rows[1:] if len(rows) > 1 else []
+    if not data:
+        return {"row_count": 0, "first_key": "", "last_key": ""}
+    return {"row_count": len(data),
+            "first_key": str(data[0][0]).strip(),
+            "last_key": str(data[-1][0]).strip()}
+
+
+def verify_licensed_file(record: dict, licensed_dir: Path) -> dict:
+    """Verify a licensed file against its provenance record.
+
+    Metadata completeness is necessary but never sufficient. All of these must
+    hold before PASS_RESTRICTED_DATA may be issued:
+
+      1. the provenance record carries every required field;
+      2. the file named by `original_filename` exists under `licensed_dir`;
+      3. its actual SHA-256 equals the recorded `sha256`;
+      4. its row count equals the recorded `row_count`;
+      5. its first and last keys equal `period_start` and `period_end`.
+    """
+    from .data_registry import licensed_provenance_complete
+
+    failures = []
+    complete, missing = licensed_provenance_complete(record)
+    if not complete:
+        failures.append(f"provenance incomplete: missing {missing}")
+
+    filename = str(record.get("original_filename", "")).strip()
+    path = Path(licensed_dir) / filename if filename else None
+    file_present = bool(filename) and path.exists()
+    if not file_present:
+        failures.append(
+            f"licensed file not present at {licensed_dir}/{filename or '<unnamed>'}. "
+            "A provenance record is a claim about a file, not the file.")
+        return {"verified": False, "file_present": False, "failures": failures,
+                "provenance_complete": complete}
+
+    actual_sha = sha256_file(path)
+    sha_ok = actual_sha == str(record.get("sha256", "")).strip().lower()
+    if not sha_ok:
+        failures.append(f"sha256 mismatch: recorded {record.get('sha256')}, "
+                        f"actual {actual_sha}")
+
+    scan = _generic_csv_scan(path)
+    try:
+        expected_rows = int(record.get("row_count", -1))
+    except (TypeError, ValueError):
+        expected_rows = -1
+    rows_ok = scan["row_count"] == expected_rows
+    if not rows_ok:
+        failures.append(f"row_count mismatch: recorded {record.get('row_count')}, "
+                        f"actual {scan['row_count']}")
+
+    start_ok = scan["first_key"] == str(record.get("period_start", "")).strip()
+    end_ok = scan["last_key"] == str(record.get("period_end", "")).strip()
+    if not start_ok:
+        failures.append(f"period_start mismatch: recorded {record.get('period_start')}, "
+                        f"actual {scan['first_key']}")
+    if not end_ok:
+        failures.append(f"period_end mismatch: recorded {record.get('period_end')}, "
+                        f"actual {scan['last_key']}")
+
+    return {
+        "verified": not failures,
+        "file_present": True,
+        "provenance_complete": complete,
+        "sha256_match": sha_ok,
+        "row_count_match": rows_ok,
+        "period_match": start_ok and end_ok,
+        "actual": scan | {"sha256": actual_sha},
+        "failures": failures,
+        "scope_note": "Generic CSV integrity check, not a calibration parser.",
+    }

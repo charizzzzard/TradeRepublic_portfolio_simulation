@@ -32,6 +32,23 @@ REQUIRED_COMMON_MONTHS = 360  # 30 years of overlapping coverage
 DATA_ARTIFACT = "DATA_ARTIFACT"
 EVIDENCE = "EVIDENCE"
 
+# How the source relates to the series it is filed under. EVIDENCE about a
+# DIFFERENT_INDEX or a PROXY can never establish a fact about the EXACT series.
+EXACT = "EXACT"
+PROXY = "PROXY"
+DIFFERENT_INDEX = "DIFFERENT_INDEX"
+SERIES_RELATIONS = (EXACT, PROXY, DIFFERENT_INDEX)
+
+# What proposition the evidence is supposed to establish. Naming it makes the
+# verdict rule checkable: FAIL_ACCESS_CONSTRAINT needs a COVERAGE_LIMIT AND a
+# LICENCE_REQUIREMENT, both EXACT - not merely "some page returned 200".
+COVERAGE_LIMIT = "COVERAGE_LIMIT"
+LICENCE_REQUIREMENT = "LICENCE_REQUIREMENT"
+PRODUCT_IDENTITY_EVIDENCE = "PRODUCT_IDENTITY"
+INSUFFICIENT_HISTORY_EVIDENCE = "INSUFFICIENT_HISTORY"
+EVIDENCE_KINDS = (COVERAGE_LIMIT, LICENCE_REQUIREMENT, PRODUCT_IDENTITY_EVIDENCE,
+                  INSUFFICIENT_HISTORY_EVIDENCE)
+
 
 @dataclass(frozen=True)
 class SourceSpec:
@@ -55,6 +72,14 @@ class SourceSpec:
     note: str = ""
     role: str = DATA_ARTIFACT
     evidence_purpose: str = ""
+    # Machine-readable evidence semantics. A human-readable evidence_purpose is
+    # not checkable; these are.
+    series_relation: str = EXACT
+    evidence_kind: str = ""
+    validator_id: str = ""
+    # Prepared for the calibration parsers, which are NOT built yet. A
+    # DATA_ARTIFACT without a parser_id can never yield DATA_ACQUIRED.
+    parser_id: str = ""
 
 
 @dataclass(frozen=True)
@@ -93,15 +118,17 @@ SERIES: tuple[SeriesSpec, ...] = (
                      "is the one condition that forces STOP.",
         frequency="monthly", currency="USD", return_convention="total_return",
         transformation="FTSE All-World NR USD -> monthly log returns, then an EXPLICIT "
-                       "USD->EUR conversion for the EUR investor. That conversion is a "
-                       "required transformation, not an optional one, and it collides "
-                       "with the B.5 decision fx=EXCLUDED_BY_DESIGN - see "
-                       "SPECIFICATION_CONFLICTS below.",
+                       "USD->EUR conversion for the EUR investor, per B.5 "
+                       "(EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR): the conversion is "
+                       "MANDATORY data preprocessing and the FX quote convention must be "
+                       "recorded with the series. See config/fx.json.",
         sources=(
             SourceSpec("FTSE Russell / LSEG (historic index values)", 1,
                        "https://www.lseg.com/en/ftse-russell/index-resources/"
                        "historic-index-values", "LICENCE_REQUIRED",
-                       role=EVIDENCE,
+                       role=EVIDENCE, series_relation=EXACT,
+                       evidence_kind=COVERAGE_LIMIT,
+                       validator_id="lseg_coverage_limit",
                        evidence_purpose="availability_and_coverage: documents that the "
                                         "freely accessible history is about two years of "
                                         "month-end values, far short of the 360 required",
@@ -114,7 +141,9 @@ SERIES: tuple[SeriesSpec, ...] = (
             SourceSpec("FTSE Russell / LSEG (licence terms)", 1,
                        "https://www.lseg.com/en/ftse-russell/index-resources",
                        "LICENCE_REQUIRED",
-                       role=EVIDENCE,
+                       role=EVIDENCE, series_relation=EXACT,
+                       evidence_kind=LICENCE_REQUIREMENT,
+                       validator_id="lseg_licence_requirement",
                        evidence_purpose="licence_terms: documents that use and "
                                         "distribution of LSEG index data require a "
                                         "licence, and that longer history is a "
@@ -125,23 +154,31 @@ SERIES: tuple[SeriesSpec, ...] = (
             SourceSpec("Vanguard (fund NAV)", 5,
                        "https://www.vanguard.co.uk/professional/product/etf/equity/9679/"
                        "ftse-all-world-ucits-etf-usd-accumulating", "LICENCE_UNKNOWN",
-                       role=EVIDENCE,
+                       role=EVIDENCE, series_relation=PROXY,
+                       evidence_kind=INSUFFICIENT_HISTORY_EVIDENCE,
                        evidence_purpose="availability: documents share class inception "
-                                        "2019-07-23, establishing INSUFFICIENT_HISTORY",
+                                        "2019-07-23, establishing INSUFFICIENT_HISTORY "
+                                        "for the FUND series. Relation is PROXY: the fund "
+                                        "NAV is not the benchmark, so this can never "
+                                        "establish an access constraint on the benchmark.",
                        note="INSUFFICIENT_HISTORY and a proxy in any case. Share class "
                             "inception 2019-07-23, so at most ~7 years exist against the "
                             "360 required. Fund NAV is also net of fund fees and tracking "
                             "difference, so it is not the benchmark series."),
             SourceSpec("MSCI", 1, "https://www.msci.com/end-of-day-data-search",
                        "LICENCE_REQUIRED", role=EVIDENCE,
-                       evidence_purpose="licence_terms (different index; retained for "
-                                        "the record only)",
+                       series_relation=DIFFERENT_INDEX,
+                       evidence_kind=LICENCE_REQUIREMENT,
+                       evidence_purpose="licence_terms for MSCI ACWI, a DIFFERENT index. "
+                                        "Retained for the record; must never contribute "
+                                        "to a verdict about FTSE All-World.",
                        note="MSCI ACWI - NOT the index the CORE instrument tracks. "
                             "Retained only because round 1 assessed it. Reported "
                             "LICENCE_REQUIRED; does not settle CORE."),
             SourceSpec("Kenneth R. French Data Library (Dartmouth)", 4,
                        "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/"
                        "Developed_3_Factors_CSV.zip", "LICENCE_UNKNOWN",
+                       series_relation=PROXY,
                        note="CANDIDATE PROXY ONLY - REJECTED. NOT ACWI and not FTSE "
                             "All-World: developed markets only, USD not EUR, no "
                             "net-of-withholding-tax concept, no explicit "
@@ -165,7 +202,8 @@ SERIES: tuple[SeriesSpec, ...] = (
         sources=(
             SourceSpec("LBMA / ICE Benchmark Administration", 1,
                        "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices",
-                       "LICENCE_REQUIRED", role=EVIDENCE,
+                       "LICENCE_REQUIRED", role=EVIDENCE, series_relation=EXACT,
+                       evidence_kind=LICENCE_REQUIREMENT,
                        evidence_purpose="licence_terms: documents that historical prices "
                                         "moved into MyLBMA and require an IBA licence",
                        note="Externally reported 2026-08-21: LBMA moved historical tabular "
@@ -177,6 +215,7 @@ SERIES: tuple[SeriesSpec, ...] = (
                        "https://thedocs.worldbank.org/en/doc/"
                        "74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/"
                        "CMO-Historical-Data-Monthly.xlsx", "OPEN",
+                       series_relation=PROXY,
                        note="ADMISSIBLE OPEN PROXY CANDIDATE, CC BY 4.0, redistribution "
                             "permitted with attribution. Monthly from 1960. Definition: "
                             "Gold (UK), 99.5% fine, London afternoon fixing, AVERAGE OF "
@@ -199,7 +238,7 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="total return index -> monthly log returns",
         sources=(
             SourceSpec("S&P Dow Jones Indices", 1, "https://www.spglobal.com/spdji/",
-                       "LICENCE_REQUIRED", role=EVIDENCE,
+                       "LICENCE_REQUIRED", role=EVIDENCE, evidence_kind=LICENCE_REQUIREMENT,
                             evidence_purpose="licence_terms",
                        note="Total return history is a licensed product."),
             SourceSpec("Robert Shiller (Yale) online data", 4,
@@ -213,7 +252,7 @@ SERIES: tuple[SeriesSpec, ...] = (
         frequency="monthly", currency="USD", return_convention="price_only",
         transformation="index level -> monthly log returns",
         sources=(SourceSpec("Nasdaq", 1, "https://www.nasdaq.com/market-activity/index/ndx",
-                            "LICENCE_UNKNOWN", role=EVIDENCE,
+                            "LICENCE_UNKNOWN", role=EVIDENCE, evidence_kind=LICENCE_REQUIREMENT,
                             evidence_purpose="licence_terms"),),
     ),
     SeriesSpec(
@@ -224,7 +263,7 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="performance index level -> monthly log returns",
         sources=(SourceSpec("Deutsche Boerse / STOXX", 1,
                             "https://www.stoxx.com/index-details?symbol=DAX",
-                            "LICENCE_REQUIRED", role=EVIDENCE,
+                            "LICENCE_REQUIRED", role=EVIDENCE, evidence_kind=LICENCE_REQUIREMENT,
                             evidence_purpose="licence_terms"),),
     ),
     SeriesSpec(
@@ -232,7 +271,7 @@ SERIES: tuple[SeriesSpec, ...] = (
         required_for="INDETERMINATE_BY_CONSTRUCTION under G1",
         frequency="monthly", currency="EUR", return_convention="total_return",
         transformation="net total return index -> monthly log returns",
-        sources=(SourceSpec("STOXX", 1, "https://www.stoxx.com/", "LICENCE_REQUIRED", role=EVIDENCE,
+        sources=(SourceSpec("STOXX", 1, "https://www.stoxx.com/", "LICENCE_REQUIRED", role=EVIDENCE, evidence_kind=LICENCE_REQUIREMENT,
                             evidence_purpose="licence_terms"),),
     ),
     SeriesSpec(
@@ -242,7 +281,7 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="TOPIX total return -> monthly log returns",
         sources=(SourceSpec("Japan Exchange Group", 1,
                             "https://www.jpx.co.jp/english/markets/indices/topix/",
-                            "LICENCE_UNKNOWN", role=EVIDENCE,
+                            "LICENCE_UNKNOWN", role=EVIDENCE, evidence_kind=LICENCE_REQUIREMENT,
                             evidence_purpose="availability_and_licence_terms"),),
         blocker="No confirmed source mapping (known blocker in PROJECT_META Phase 4).",
     ),
@@ -253,7 +292,8 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="net total return index -> monthly log returns",
         sources=(
             SourceSpec("MSCI", 1, "https://www.msci.com/", "LICENCE_REQUIRED",
-                       role=EVIDENCE, evidence_purpose="licence_terms"),
+                       role=EVIDENCE, evidence_kind=LICENCE_REQUIREMENT,
+                       evidence_purpose="licence_terms"),
             SourceSpec("Kenneth R. French Data Library", 4,
                        "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/"
                        "Emerging_5_Factors_CSV.zip", "OPEN",
@@ -267,7 +307,8 @@ SERIES: tuple[SeriesSpec, ...] = (
         frequency="monthly", currency="EUR", return_convention="total_return",
         transformation="net total return index -> monthly log returns",
         sources=(SourceSpec("MSCI", 1, "https://www.msci.com/", "LICENCE_REQUIRED",
-                            role=EVIDENCE, evidence_purpose="licence_terms"),),
+                            role=EVIDENCE, evidence_kind=LICENCE_REQUIREMENT,
+                       evidence_purpose="licence_terms"),),
         blocker="No confirmed source mapping (known blocker).",
     ),
     SeriesSpec(
@@ -277,7 +318,7 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="index level -> monthly log returns",
         sources=(SourceSpec("Bloomberg", 5, "https://www.bloomberg.com/professional/"
                             "product/indices/bloomberg-commodity-index-family/",
-                            "LICENCE_REQUIRED", role=EVIDENCE,
+                            "LICENCE_REQUIRED", role=EVIDENCE, evidence_kind=LICENCE_REQUIREMENT,
                             evidence_purpose="licence_terms"),),
         blocker="No confirmed source mapping (known blocker); tax class also unresolved.",
     ),

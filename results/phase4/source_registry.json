@@ -104,56 +104,76 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "COVERAGE_LIMIT",
           "evidence_purpose": "availability_and_coverage: documents that the freely accessible history is about two years of month-end values, far short of the 360 required",
           "licence_status": "LICENCE_REQUIRED",
           "note": "THE CORRECT TARGET INDEX. Externally reported 2026-08-21 (round 2): LSEG's freely accessible Historic Index Values typically give only about TWO YEARS of month-end values; longer history is a licensed subscription product and LSEG requires a licence for use and distribution. A >=360-month redistributable series could NOT be verified.",
+          "parser_id": "",
           "provider": "FTSE Russell / LSEG (historic index values)",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.lseg.com/en/ftse-russell/index-resources/historic-index-values"
+          "url": "https://www.lseg.com/en/ftse-russell/index-resources/historic-index-values",
+          "validator_id": "lseg_coverage_limit"
         },
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "licence_terms: documents that use and distribution of LSEG index data require a licence, and that longer history is a subscription product",
           "licence_status": "LICENCE_REQUIRED",
           "note": "Fetching this page successfully establishes the LICENCE position. It does NOT obtain any data and must never contribute to acquisition.",
+          "parser_id": "",
           "provider": "FTSE Russell / LSEG (licence terms)",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.lseg.com/en/ftse-russell/index-resources"
+          "url": "https://www.lseg.com/en/ftse-russell/index-resources",
+          "validator_id": "lseg_licence_requirement"
         },
         {
           "endpoint_status": "UNVERIFIED",
-          "evidence_purpose": "availability: documents share class inception 2019-07-23, establishing INSUFFICIENT_HISTORY",
+          "evidence_kind": "INSUFFICIENT_HISTORY",
+          "evidence_purpose": "availability: documents share class inception 2019-07-23, establishing INSUFFICIENT_HISTORY for the FUND series. Relation is PROXY: the fund NAV is not the benchmark, so this can never establish an access constraint on the benchmark.",
           "licence_status": "LICENCE_UNKNOWN",
           "note": "INSUFFICIENT_HISTORY and a proxy in any case. Share class inception 2019-07-23, so at most ~7 years exist against the 360 required. Fund NAV is also net of fund fees and tracking difference, so it is not the benchmark series.",
+          "parser_id": "",
           "provider": "Vanguard (fund NAV)",
           "role": "EVIDENCE",
+          "series_relation": "PROXY",
           "tier": 5,
-          "url": "https://www.vanguard.co.uk/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating"
+          "url": "https://www.vanguard.co.uk/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
+          "validator_id": ""
         },
         {
           "endpoint_status": "UNVERIFIED",
-          "evidence_purpose": "licence_terms (different index; retained for the record only)",
+          "evidence_kind": "LICENCE_REQUIREMENT",
+          "evidence_purpose": "licence_terms for MSCI ACWI, a DIFFERENT index. Retained for the record; must never contribute to a verdict about FTSE All-World.",
           "licence_status": "LICENCE_REQUIRED",
           "note": "MSCI ACWI - NOT the index the CORE instrument tracks. Retained only because round 1 assessed it. Reported LICENCE_REQUIRED; does not settle CORE.",
+          "parser_id": "",
           "provider": "MSCI",
           "role": "EVIDENCE",
+          "series_relation": "DIFFERENT_INDEX",
           "tier": 1,
-          "url": "https://www.msci.com/end-of-day-data-search"
+          "url": "https://www.msci.com/end-of-day-data-search",
+          "validator_id": ""
         },
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "LICENCE_UNKNOWN",
           "note": "CANDIDATE PROXY ONLY - REJECTED. NOT ACWI and not FTSE All-World: developed markets only, USD not EUR, no net-of-withholding-tax concept, no explicit open-redistribution licence, and its international portfolios use MSCI raw data to 2006 and Bloomberg thereafter, so the licence problem is inherited rather than avoided. Would require an explicit SPLICE rule and its own data_status.",
+          "parser_id": "",
           "provider": "Kenneth R. French Data Library (Dartmouth)",
           "role": "DATA_ARTIFACT",
+          "series_relation": "PROXY",
           "tier": 4,
-          "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Developed_3_Factors_CSV.zip"
+          "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Developed_3_Factors_CSV.zip",
+          "validator_id": ""
         }
       ],
-      "transformation": "FTSE All-World NR USD -> monthly log returns, then an EXPLICIT USD->EUR conversion for the EUR investor. That conversion is a required transformation, not an optional one, and it collides with the B.5 decision fx=EXCLUDED_BY_DESIGN - see SPECIFICATION_CONFLICTS below."
+      "transformation": "FTSE All-World NR USD -> monthly log returns, then an EXPLICIT USD->EUR conversion for the EUR investor, per B.5 (EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR): the conversion is MANDATORY data preprocessing and the FX quote convention must be recorded with the series. See config/fx.json."
     },
     {
       "blocker": "",
@@ -166,33 +186,45 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "licence_terms: documents that historical prices moved into MyLBMA and require an IBA licence",
           "licence_status": "LICENCE_REQUIRED",
           "note": "Externally reported 2026-08-21: LBMA moved historical tabular precious-metal prices into the MyLBMA portal; access requires an IBA licence, otherwise LBMA directs users to purchase from ICE. The former open JSON endpoint (prices.lbma.org.uk/json/gold_pm.json) is superseded.",
+          "parser_id": "",
           "provider": "LBMA / ICE Benchmark Administration",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices"
+          "url": "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices",
+          "validator_id": ""
         },
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "OPEN",
           "note": "ADMISSIBLE OPEN PROXY CANDIDATE, CC BY 4.0, redistribution permitted with attribution. Monthly from 1960. Definition: Gold (UK), 99.5% fine, London afternoon fixing, AVERAGE OF DAILY RATES. DIFFERS FROM TARGET: the target is the LBMA PM MONTH-END fixing; averaging suppresses month-end volatility, which matters directly for a claim resting on second moments (G2). Requires a documented substitution rule and its own data_status before use - it may not stand in silently.",
+          "parser_id": "",
           "provider": "World Bank (Pink Sheet)",
           "role": "DATA_ARTIFACT",
+          "series_relation": "PROXY",
           "tier": 5,
-          "url": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
+          "url": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx",
+          "validator_id": ""
         },
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "OPEN",
           "note": "For the EUR/USD leg if a USD gold series is used.",
+          "parser_id": "",
           "provider": "Deutsche Bundesbank",
           "role": "DATA_ARTIFACT",
+          "series_relation": "EXACT",
           "tier": 2,
-          "url": "https://api.statistiken.bundesbank.de/rest/download/BBEX3/D.USD.EUR.BB.AC.000"
+          "url": "https://api.statistiken.bundesbank.de/rest/download/BBEX3/D.USD.EUR.BB.AC.000",
+          "validator_id": ""
         }
       ],
       "transformation": "LBMA PM auction price, month-end; EUR series or USD with a documented FX treatment (currently out of scope per B.5)"
@@ -208,23 +240,31 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "licence_terms",
           "licence_status": "LICENCE_REQUIRED",
           "note": "Total return history is a licensed product.",
+          "parser_id": "",
           "provider": "S&P Dow Jones Indices",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.spglobal.com/spdji/"
+          "url": "https://www.spglobal.com/spdji/",
+          "validator_id": ""
         },
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "OPEN",
           "note": "Monthly S&P with dividends since 1871; academic dataset.",
+          "parser_id": "",
           "provider": "Robert Shiller (Yale) online data",
           "role": "DATA_ARTIFACT",
+          "series_relation": "EXACT",
           "tier": 4,
-          "url": "http://www.econ.yale.edu/~shiller/data/ie_data.xls"
+          "url": "http://www.econ.yale.edu/~shiller/data/ie_data.xls",
+          "validator_id": ""
         }
       ],
       "transformation": "total return index -> monthly log returns"
@@ -240,13 +280,17 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "licence_terms",
           "licence_status": "LICENCE_UNKNOWN",
           "note": "",
+          "parser_id": "",
           "provider": "Nasdaq",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.nasdaq.com/market-activity/index/ndx"
+          "url": "https://www.nasdaq.com/market-activity/index/ndx",
+          "validator_id": ""
         }
       ],
       "transformation": "index level -> monthly log returns"
@@ -262,13 +306,17 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "licence_terms",
           "licence_status": "LICENCE_REQUIRED",
           "note": "",
+          "parser_id": "",
           "provider": "Deutsche Boerse / STOXX",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.stoxx.com/index-details?symbol=DAX"
+          "url": "https://www.stoxx.com/index-details?symbol=DAX",
+          "validator_id": ""
         }
       ],
       "transformation": "performance index level -> monthly log returns"
@@ -284,13 +332,17 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "licence_terms",
           "licence_status": "LICENCE_REQUIRED",
           "note": "",
+          "parser_id": "",
           "provider": "STOXX",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.stoxx.com/"
+          "url": "https://www.stoxx.com/",
+          "validator_id": ""
         }
       ],
       "transformation": "net total return index -> monthly log returns"
@@ -306,13 +358,17 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "availability_and_licence_terms",
           "licence_status": "LICENCE_UNKNOWN",
           "note": "",
+          "parser_id": "",
           "provider": "Japan Exchange Group",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.jpx.co.jp/english/markets/indices/topix/"
+          "url": "https://www.jpx.co.jp/english/markets/indices/topix/",
+          "validator_id": ""
         }
       ],
       "transformation": "TOPIX total return -> monthly log returns"
@@ -328,23 +384,31 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "licence_terms",
           "licence_status": "LICENCE_REQUIRED",
           "note": "",
+          "parser_id": "",
           "provider": "MSCI",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.msci.com/"
+          "url": "https://www.msci.com/",
+          "validator_id": ""
         },
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "OPEN",
           "note": "Shorter history than the developed set.",
+          "parser_id": "",
           "provider": "Kenneth R. French Data Library",
           "role": "DATA_ARTIFACT",
+          "series_relation": "EXACT",
           "tier": 4,
-          "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Emerging_5_Factors_CSV.zip"
+          "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Emerging_5_Factors_CSV.zip",
+          "validator_id": ""
         }
       ],
       "transformation": "net total return index -> monthly log returns"
@@ -360,13 +424,17 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "licence_terms",
           "licence_status": "LICENCE_REQUIRED",
           "note": "",
+          "parser_id": "",
           "provider": "MSCI",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 1,
-          "url": "https://www.msci.com/"
+          "url": "https://www.msci.com/",
+          "validator_id": ""
         }
       ],
       "transformation": "net total return index -> monthly log returns"
@@ -382,13 +450,17 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "LICENCE_REQUIREMENT",
           "evidence_purpose": "licence_terms",
           "licence_status": "LICENCE_REQUIRED",
           "note": "",
+          "parser_id": "",
           "provider": "Bloomberg",
           "role": "EVIDENCE",
+          "series_relation": "EXACT",
           "tier": 5,
-          "url": "https://www.bloomberg.com/professional/product/indices/bloomberg-commodity-index-family/"
+          "url": "https://www.bloomberg.com/professional/product/indices/bloomberg-commodity-index-family/",
+          "validator_id": ""
         }
       ],
       "transformation": "index level -> monthly log returns"
@@ -404,23 +476,31 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "OPEN",
           "note": "KEY MIGRATED. The previous key ICP.M.U2.N.000000.4.ANR was discontinued 2026-02-04 after a methodological change and replaced by HICP.M.U2.N.000000.4D0.ANR. Externally reported coverage 1996-12 to 2026-05. Eurostat reuse permitted with attribution.",
+          "parser_id": "",
           "provider": "European Central Bank Data Portal (source: Eurostat)",
           "role": "DATA_ARTIFACT",
+          "series_relation": "EXACT",
           "tier": 2,
-          "url": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata"
+          "url": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata",
+          "validator_id": ""
         },
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "OPEN",
           "note": "",
+          "parser_id": "",
           "provider": "Eurostat",
           "role": "DATA_ARTIFACT",
+          "series_relation": "EXACT",
           "tier": 3,
-          "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr"
+          "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr",
+          "validator_id": ""
         }
       ],
       "transformation": "annual rate of change -> monthly inflation for the OU calibration"
@@ -436,13 +516,17 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "OPEN",
           "note": "GENESIS REST API requires free registration.",
+          "parser_id": "",
           "provider": "Statistisches Bundesamt (Destatis)",
           "role": "DATA_ARTIFACT",
+          "series_relation": "EXACT",
           "tier": 3,
-          "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/table?name=61111-0001"
+          "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/table?name=61111-0001",
+          "validator_id": ""
         }
       ],
       "transformation": "index -> monthly inflation"
@@ -458,13 +542,17 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "OPEN",
           "note": "Euro Short-Term Rate, monthly average. Externally reported as the official monthly series with CSV download; native coverage begins 2019-10. Reuse permitted with attribution, statistics and metadata not to be altered.",
+          "parser_id": "",
           "provider": "Deutsche Bundesbank",
           "role": "DATA_ARTIFACT",
+          "series_relation": "EXACT",
           "tier": 2,
-          "url": "https://api.statistiken.bundesbank.de/rest/data/BBMMB/M.EU000A2X2A25.WT?format=csv&lang=de"
+          "url": "https://api.statistiken.bundesbank.de/rest/data/BBMMB/M.EU000A2X2A25.WT?format=csv&lang=de",
+          "validator_id": ""
         }
       ],
       "transformation": "Native \u20acSTR from 2019-10 requires NO transformation. Extending backwards with EONIA is a SPLICE: EONIA ran under its own methodology to 2019-09-30, then was mechanically \u20acSTR + 8.5 bp from 2019-10-02 until discontinuation on 2022-01-03. The splice must carry its own documented rule and data_status and must never be applied silently."
@@ -480,13 +568,17 @@
       "sources": [
         {
           "endpoint_status": "UNVERIFIED",
+          "evidence_kind": "",
           "evidence_purpose": "",
           "licence_status": "OPEN",
           "note": "CANDIDATE ONLY - MAPPING FROM WT3230 NOT SUPPORTED. Umlaufsrenditen inl\u00e4ndischer Inhaberschuldverschreibungen / b\u00f6rsennotierte Bundeswertpapiere, monthly. The legacy Externally reported 2026-08-21 (round 2): the official Bundesbank migration catalogue contains NO entry for BBK01.WT3230, so that key is almost certainly a SPECIFICATION ERROR in this registry rather than a renamed series. This candidate is documented as the successor of WU9555 / WU0115, NOT of WT3230. Concept: Umlaufsrenditen inlaendischer Inhaberschuldverschreibungen / boersennotierte Bundeswertpapiere / monthly. The same Bundesbank table also carries maturity-band series (3-5, 5-8, 8-15, 15-30 years), and which one is correct depends on the Basiszins concept, not on the label.",
+          "parser_id": "",
           "provider": "Deutsche Bundesbank",
           "role": "DATA_ARTIFACT",
+          "series_relation": "EXACT",
           "tier": 2,
-          "url": "https://api.statistiken.bundesbank.de/rest/data/BBSIS/M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A?format=csv&lang=de"
+          "url": "https://api.statistiken.bundesbank.de/rest/data/BBSIS/M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A?format=csv&lang=de",
+          "validator_id": ""
         }
       ],
       "transformation": "monthly average yield; compare against the published BMF Basiszins values to validate the B.2 coupling"

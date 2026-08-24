@@ -14,7 +14,7 @@
     ]
   },
   "baseline_id": "r0_baseline_20260821_v3",
-  "code_hash": "9efff2daa0fdb9815274f5e1360f32389698927e2d5797dc67fb132243ded5e0",
+  "code_hash": "b1170acec3db6109b7ed66b26b9a5d8070d5f33d3fc3c4f8e99f6617848ae14e",
   "costs_config": {
     "_spec_ref": "PROJECT_META v3, Teil B.4 - own parameter class. Rationale: a 0.20 pp TER delta runs directly against a 0.124 pp portfolio-CAGR materiality gate (G1).",
     "blocking_note": "Every value above is an UNSOURCED PLACEHOLDER of the right order of magnitude. It exists so the cost machinery is exercised and hash-tracked, NOT so cost numbers can be quoted. Because a 0.20 pp TER delta alone exceeds the 0.124 pp G1 gate, no cost-sensitive claim may be promoted until these are replaced with sourced values (KIID/PRIIPs for TER, provider factsheets for tracking difference, venue data for spreads). Phase 3 (R2E) must therefore treat TER as a SWEPT DIMENSION (0/10/20/30 bp) rather than reading these point values.",
@@ -150,7 +150,7 @@
       30
     ]
   },
-  "data_hash": "75781f4f27cfbdd3ddb912ffb161b9b62285b2f1bcebef4febd92447cab1116e",
+  "data_hash": "1b9dd19cfaa6bfedf04553c386f45cd2d2daba9a040592984dcf6169c3fab83e",
   "data_policy": {
     "_spec_ref": "Operator decisions of 2026-08-21, refining Teil D. Separates three properties that PROJECT_META and the earlier implementation conflated.",
     "approved_proxies": {
@@ -310,8 +310,13 @@
         "result": "PASS"
       },
       {
-        "check": "access_constraint_derived_from_positive_evidence",
-        "detail": "CORE access_evidence=False, unavailability_evidence=False; FAIL_ACCESS_CONSTRAINT requires positive licence/access evidence, never the absence of a licence error",
+        "check": "access_constraint_requires_validated_exact_series_evidence",
+        "detail": "CORE access_evidence=False (satisfied [], missing ['COVERAGE_LIMIT', 'LICENCE_REQUIREMENT']); requires validated ['COVERAGE_LIMIT', 'LICENCE_REQUIREMENT'] about the EXACT series - PROXY (Vanguard) and DIFFERENT_INDEX (MSCI) evidence cannot trigger it",
+        "result": "PASS"
+      },
+      {
+        "check": "licensed_pass_requires_a_verified_file_not_just_metadata",
+        "detail": "no licensed provenance record present",
         "result": "PASS"
       },
       {
@@ -336,7 +341,7 @@
       },
       {
         "check": "external_findings_recorded_but_not_promoted_to_verdict",
-        "detail": "externally reported dossier hashed and recorded with verified_locally=False; acceptance unchanged at BLOCKED_NETWORK",
+        "detail": "2 dossier(s) hashed and recorded with verified_locally=False; the verdict is derived from local evidence only and does not read them",
         "result": "PASS"
       },
       {
@@ -557,32 +562,34 @@
     "egress_probe": {
       "attempts": [
         {
+          "body": null,
           "bytes_received": 0,
           "content_sha256": null,
           "error": "Tunnel connection failed: 403 Forbidden",
           "http_status": null,
           "outcome": "NETWORK_BLOCKED",
-          "retrieved_at_utc": "2026-08-24T08:22:17+00:00",
+          "retrieved_at_utc": "2026-08-24T09:05:58+00:00",
           "url": "https://example.com/"
         },
         {
+          "body": null,
           "bytes_received": 0,
           "content_sha256": null,
           "error": "Tunnel connection failed: 403 Forbidden",
           "http_status": null,
           "outcome": "NETWORK_BLOCKED",
-          "retrieved_at_utc": "2026-08-24T08:22:20+00:00",
+          "retrieved_at_utc": "2026-08-24T09:05:59+00:00",
           "url": "https://www.iana.org/domains/reserved"
         }
       ],
       "detail": "no canary host reachable; egress is blocked at the environment level, so NO source-level conclusion about data availability is admissible",
       "egress_available": false,
       "proxy_env": {
-        "HTTPS_PROXY": "http://127.0.0.1:45645",
+        "HTTPS_PROXY": "http://127.0.0.1:33067",
         "HTTP_PROXY": "",
         "NO_PROXY": "localhost,127.0.0.1,::1,127.0.0.0/8,0.0.0.0/8,::,169.254.0.0/16,api.anthropic.com,api-staging.anthropic.com,api-pr-preview.anthropic.com,mcp-proxy.anthropic.com,mcp-proxy-staging.anthropic.com,registry.npmjs.org,jsr.io,npm.jsr.io,pypi.org,files.pythonhosted.org,index.crates.io,proxy.golang.org,host.docker.internal,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,.svc.cluster.local,*.svc.cluster.local",
         "http_proxy": "",
-        "https_proxy": "http://127.0.0.1:45645"
+        "https_proxy": "http://127.0.0.1:33067"
       }
     },
     "external_findings": [
@@ -798,17 +805,19 @@
       "Decomposition of a result into asset return versus currency return"
     ]
   },
-  "gate_freeze_hash": "693a44b4cb80fee353f787ff2bdd47d52d7d089638e6b6dcd49b98fba7039490",
+  "gate_freeze_hash": "27a4bb4413646de46bd3c9e1a1dc5a8d725559df8b03e3a3dc98c230dbe6bc8c",
   "gates": {
     "phase4_acceptance": {
       "BLOCKED_NETWORK": "no egress; no research verdict issued",
-      "FAIL": "CORE demonstrably unobtainable -> STOP",
+      "FAIL_ACCESS_CONSTRAINT": "CORE exists commercially but was not acquired under a usable licence -> STOP for calibrated phases; NOT an epistemic finding",
+      "FAIL_DATA_UNAVAILABLE": "CORE not found, invalid or of insufficient history -> STOP; an epistemic finding",
+      "INCONCLUSIVE_INSUFFICIENT_EVIDENCE": "egress worked but neither access nor unavailability evidence was obtained; no verdict issued",
       "PARTIAL": "CORE + GOLD only",
       "PASS": "all reduced-universe series acquired and documented",
       "rule": "BLOCKED_NETWORK is not FAIL and must never be read as one"
     }
   },
-  "git_sha": "f59e042adc801bf257fdb9079095e1c285242f5d",
+  "git_sha": "a89b9bbb670abe501d104bf10baba610e20b8881",
   "human_final_decision": true,
   "inflation_config": {
     "model": "Ornstein-Uhlenbeck, monthly, coupled to the short rate",
@@ -953,6 +962,6 @@
       "status": "NOT_IN_DECISION_PATH"
     }
   },
-  "timestamp_utc": "2026-08-24T08:22:32+00:00",
+  "timestamp_utc": "2026-08-24T09:06:09+00:00",
   "unmodelled_boundary_conditions": "Emergency fund, human capital, statutory/occupational pension, liquidity events and interim withdrawals are NOT modelled (B.6). This is a partial analysis of portfolio allocation, not financial planning."
 }
