@@ -18,13 +18,13 @@
   "cost_sourcing": {
     "attempts": [
       {
-        "authority": "issuer (State Street / SPDR)",
+        "authority": "issuer (Vanguard)",
         "document_type": "PRIIPs KID + factsheet",
         "http_status": null,
         "instrument": "CORE",
         "isin": "IE00BK5BQT80",
         "outcome": "NETWORK_BLOCKED",
-        "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+        "url": "https://fund-docs.vanguard.com/ie00bk5bqt80_priipskid_de.pdf"
       },
       {
         "authority": "issuer (BlackRock / iShares)",
@@ -45,13 +45,13 @@
         "url": "https://www.ishares.com/de"
       },
       {
-        "authority": "issuer (State Street / SPDR)",
+        "authority": "issuer (Vanguard)",
         "document_type": "PRIIPs KID + factsheet",
         "http_status": null,
         "instrument": "DIVIDEND",
         "isin": "IE00BK5BR626",
         "outcome": "NETWORK_BLOCKED",
-        "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+        "url": "https://fund-docs.vanguard.com/"
       },
       {
         "authority": "issuer (DWS / Xtrackers)",
@@ -90,13 +90,13 @@
         "url": "https://www.ishares.com/de"
       },
       {
-        "authority": "issuer (Invesco)",
+        "authority": "issuer (BlackRock / iShares)",
         "document_type": "PRIIPs KID + prospectus",
         "http_status": null,
         "instrument": "GOLD",
         "isin": "IE00B4ND3602",
         "outcome": "NETWORK_BLOCKED",
-        "url": "https://www.invesco.com/"
+        "url": "https://www.blackrock.com/de/privatanleger/literature/kiid/"
       },
       {
         "authority": "issuer (BlackRock / iShares)",
@@ -141,7 +141,7 @@
         "error": "Tunnel connection failed: 403 Forbidden",
         "http_status": null,
         "outcome": "NETWORK_BLOCKED",
-        "retrieved_at_utc": "2026-08-21T15:17:21+00:00",
+        "retrieved_at_utc": "2026-08-24T08:21:17+00:00",
         "url": "https://example.com/"
       },
       {
@@ -150,18 +150,18 @@
         "error": "Tunnel connection failed: 403 Forbidden",
         "http_status": null,
         "outcome": "NETWORK_BLOCKED",
-        "retrieved_at_utc": "2026-08-21T15:17:21+00:00",
+        "retrieved_at_utc": "2026-08-24T08:21:17+00:00",
         "url": "https://www.iana.org/domains/reserved"
       }
     ],
     "detail": "no canary host reachable; egress is blocked at the environment level, so NO source-level conclusion about data availability is admissible",
     "egress_available": false,
     "proxy_env": {
-      "HTTPS_PROXY": "http://127.0.0.1:41493",
+      "HTTPS_PROXY": "http://127.0.0.1:45645",
       "HTTP_PROXY": "",
-      "NO_PROXY": "localhost,127.0.0.1,::1,127.0.0.0/8,0.0.0.0/8,::,169.254.0.0/16,anthropic.com,.anthropic.com,*.anthropic.com,registry.npmjs.org,jsr.io,npm.jsr.io,pypi.org,files.pythonhosted.org,index.crates.io,proxy.golang.org,host.docker.internal,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,.svc.cluster.local,*.svc.cluster.local",
+      "NO_PROXY": "localhost,127.0.0.1,::1,127.0.0.0/8,0.0.0.0/8,::,169.254.0.0/16,api.anthropic.com,api-staging.anthropic.com,api-pr-preview.anthropic.com,mcp-proxy.anthropic.com,mcp-proxy-staging.anthropic.com,registry.npmjs.org,jsr.io,npm.jsr.io,pypi.org,files.pythonhosted.org,index.crates.io,proxy.golang.org,host.docker.internal,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,.svc.cluster.local,*.svc.cluster.local",
       "http_proxy": "",
-      "https_proxy": "http://127.0.0.1:41493"
+      "https_proxy": "http://127.0.0.1:45645"
     }
   },
   "external_findings": [
@@ -186,16 +186,18 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "availability_and_coverage: documents that the freely accessible history is about two years of month-end values, far short of the 360 required",
       "frequency": "monthly",
       "licence_status": "LICENCE_REQUIRED",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:21+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:18+00:00",
       "return_convention": "total_return",
       "series_key": "CORE",
       "sha256": "",
-      "source_provider": "FTSE Russell / LSEG",
+      "source_provider": "FTSE Russell / LSEG (historic index values)",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.lseg.com/en/ftse-russell/index-resources/historic-index-values",
       "transformations": "FTSE All-World NR USD -> monthly log returns, then an EXPLICIT USD->EUR conversion for the EUR investor. That conversion is a required transformation, not an optional one, and it collides with the B.5 decision fx=EXCLUDED_BY_DESIGN - see SPECIFICATION_CONFLICTS below."
@@ -203,16 +205,37 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms: documents that use and distribution of LSEG index data require a licence, and that longer history is a subscription product",
+      "frequency": "monthly",
+      "licence_status": "LICENCE_REQUIRED",
+      "n_observations": 0,
+      "period_end": "",
+      "period_start": "",
+      "retrieval_date_utc": "2026-08-24T08:21:18+00:00",
+      "return_convention": "total_return",
+      "series_key": "CORE",
+      "sha256": "",
+      "source_provider": "FTSE Russell / LSEG (licence terms)",
+      "source_role": "EVIDENCE",
+      "source_tier": 1,
+      "source_url": "https://www.lseg.com/en/ftse-russell/index-resources",
+      "transformations": "FTSE All-World NR USD -> monthly log returns, then an EXPLICIT USD->EUR conversion for the EUR investor. That conversion is a required transformation, not an optional one, and it collides with the B.5 decision fx=EXCLUDED_BY_DESIGN - see SPECIFICATION_CONFLICTS below."
+    },
+    {
+      "currency": "USD",
+      "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "availability: documents share class inception 2019-07-23, establishing INSUFFICIENT_HISTORY",
       "frequency": "monthly",
       "licence_status": "LICENCE_UNKNOWN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:22+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:18+00:00",
       "return_convention": "total_return",
       "series_key": "CORE",
       "sha256": "",
       "source_provider": "Vanguard (fund NAV)",
+      "source_role": "EVIDENCE",
       "source_tier": 5,
       "source_url": "https://www.vanguard.co.uk/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
       "transformations": "FTSE All-World NR USD -> monthly log returns, then an EXPLICIT USD->EUR conversion for the EUR investor. That conversion is a required transformation, not an optional one, and it collides with the B.5 decision fx=EXCLUDED_BY_DESIGN - see SPECIFICATION_CONFLICTS below."
@@ -220,16 +243,18 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms (different index; retained for the record only)",
       "frequency": "monthly",
       "licence_status": "LICENCE_REQUIRED",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:22+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:19+00:00",
       "return_convention": "total_return",
       "series_key": "CORE",
       "sha256": "",
       "source_provider": "MSCI",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.msci.com/end-of-day-data-search",
       "transformations": "FTSE All-World NR USD -> monthly log returns, then an EXPLICIT USD->EUR conversion for the EUR investor. That conversion is a required transformation, not an optional one, and it collides with the B.5 decision fx=EXCLUDED_BY_DESIGN - see SPECIFICATION_CONFLICTS below."
@@ -237,16 +262,18 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "LICENCE_UNKNOWN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:23+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:19+00:00",
       "return_convention": "total_return",
       "series_key": "CORE",
       "sha256": "",
       "source_provider": "Kenneth R. French Data Library (Dartmouth)",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 4,
       "source_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Developed_3_Factors_CSV.zip",
       "transformations": "FTSE All-World NR USD -> monthly log returns, then an EXPLICIT USD->EUR conversion for the EUR investor. That conversion is a required transformation, not an optional one, and it collides with the B.5 decision fx=EXCLUDED_BY_DESIGN - see SPECIFICATION_CONFLICTS below."
@@ -254,16 +281,18 @@
     {
       "currency": "EUR",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms: documents that historical prices moved into MyLBMA and require an IBA licence",
       "frequency": "monthly",
       "licence_status": "LICENCE_REQUIRED",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:23+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:20+00:00",
       "return_convention": "price_only",
       "series_key": "GOLD",
       "sha256": "",
       "source_provider": "LBMA / ICE Benchmark Administration",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices",
       "transformations": "LBMA PM auction price, month-end; EUR series or USD with a documented FX treatment (currently out of scope per B.5)"
@@ -271,16 +300,18 @@
     {
       "currency": "EUR",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "OPEN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:23+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:20+00:00",
       "return_convention": "price_only",
       "series_key": "GOLD",
       "sha256": "",
       "source_provider": "World Bank (Pink Sheet)",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 5,
       "source_url": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx",
       "transformations": "LBMA PM auction price, month-end; EUR series or USD with a documented FX treatment (currently out of scope per B.5)"
@@ -288,16 +319,18 @@
     {
       "currency": "EUR",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "OPEN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:24+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:20+00:00",
       "return_convention": "price_only",
       "series_key": "GOLD",
       "sha256": "",
       "source_provider": "Deutsche Bundesbank",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 2,
       "source_url": "https://api.statistiken.bundesbank.de/rest/download/BBEX3/D.USD.EUR.BB.AC.000",
       "transformations": "LBMA PM auction price, month-end; EUR series or USD with a documented FX treatment (currently out of scope per B.5)"
@@ -305,16 +338,18 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms",
       "frequency": "monthly",
       "licence_status": "LICENCE_REQUIRED",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:24+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:21+00:00",
       "return_convention": "total_return",
       "series_key": "SP500",
       "sha256": "",
       "source_provider": "S&P Dow Jones Indices",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.spglobal.com/spdji/",
       "transformations": "total return index -> monthly log returns"
@@ -322,16 +357,18 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "OPEN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:24+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:21+00:00",
       "return_convention": "total_return",
       "series_key": "SP500",
       "sha256": "",
       "source_provider": "Robert Shiller (Yale) online data",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 4,
       "source_url": "http://www.econ.yale.edu/~shiller/data/ie_data.xls",
       "transformations": "total return index -> monthly log returns"
@@ -339,16 +376,18 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms",
       "frequency": "monthly",
       "licence_status": "LICENCE_UNKNOWN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:25+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:21+00:00",
       "return_convention": "price_only",
       "series_key": "NASDAQ",
       "sha256": "",
       "source_provider": "Nasdaq",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.nasdaq.com/market-activity/index/ndx",
       "transformations": "index level -> monthly log returns"
@@ -356,16 +395,18 @@
     {
       "currency": "EUR",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms",
       "frequency": "monthly",
       "licence_status": "LICENCE_REQUIRED",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:25+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:21+00:00",
       "return_convention": "total_return",
       "series_key": "DAX",
       "sha256": "",
       "source_provider": "Deutsche Boerse / STOXX",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.stoxx.com/index-details?symbol=DAX",
       "transformations": "performance index level -> monthly log returns"
@@ -373,16 +414,18 @@
     {
       "currency": "EUR",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms",
       "frequency": "monthly",
       "licence_status": "LICENCE_REQUIRED",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:25+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:22+00:00",
       "return_convention": "total_return",
       "series_key": "EUROPE",
       "sha256": "",
       "source_provider": "STOXX",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.stoxx.com/",
       "transformations": "net total return index -> monthly log returns"
@@ -390,16 +433,18 @@
     {
       "currency": "JPY",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "availability_and_licence_terms",
       "frequency": "monthly",
       "licence_status": "LICENCE_UNKNOWN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:26+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:22+00:00",
       "return_convention": "total_return",
       "series_key": "JAPAN",
       "sha256": "",
       "source_provider": "Japan Exchange Group",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.jpx.co.jp/english/markets/indices/topix/",
       "transformations": "TOPIX total return -> monthly log returns"
@@ -407,16 +452,18 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms",
       "frequency": "monthly",
       "licence_status": "LICENCE_REQUIRED",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:26+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:22+00:00",
       "return_convention": "total_return",
       "series_key": "EM",
       "sha256": "",
       "source_provider": "MSCI",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.msci.com/",
       "transformations": "net total return index -> monthly log returns"
@@ -424,16 +471,18 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "OPEN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:26+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:22+00:00",
       "return_convention": "total_return",
       "series_key": "EM",
       "sha256": "",
       "source_provider": "Kenneth R. French Data Library",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 4,
       "source_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Emerging_5_Factors_CSV.zip",
       "transformations": "net total return index -> monthly log returns"
@@ -441,16 +490,18 @@
     {
       "currency": "EUR",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms",
       "frequency": "monthly",
       "licence_status": "LICENCE_REQUIRED",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:27+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:23+00:00",
       "return_convention": "total_return",
       "series_key": "DIVIDEND",
       "sha256": "",
       "source_provider": "MSCI",
+      "source_role": "EVIDENCE",
       "source_tier": 1,
       "source_url": "https://www.msci.com/",
       "transformations": "net total return index -> monthly log returns"
@@ -458,16 +509,18 @@
     {
       "currency": "USD",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "licence_terms",
       "frequency": "monthly",
       "licence_status": "LICENCE_REQUIRED",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:27+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:23+00:00",
       "return_convention": "total_return",
       "series_key": "COMMOD",
       "sha256": "",
       "source_provider": "Bloomberg",
+      "source_role": "EVIDENCE",
       "source_tier": 5,
       "source_url": "https://www.bloomberg.com/professional/product/indices/bloomberg-commodity-index-family/",
       "transformations": "index level -> monthly log returns"
@@ -475,16 +528,18 @@
     {
       "currency": "index",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "OPEN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:28+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:23+00:00",
       "return_convention": "rate",
       "series_key": "HICP_EA",
       "sha256": "",
       "source_provider": "European Central Bank Data Portal (source: Eurostat)",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 2,
       "source_url": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata",
       "transformations": "annual rate of change -> monthly inflation for the OU calibration"
@@ -492,16 +547,18 @@
     {
       "currency": "index",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "OPEN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:28+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:24+00:00",
       "return_convention": "rate",
       "series_key": "HICP_EA",
       "sha256": "",
       "source_provider": "Eurostat",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 3,
       "source_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr",
       "transformations": "annual rate of change -> monthly inflation for the OU calibration"
@@ -509,16 +566,18 @@
     {
       "currency": "index",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "OPEN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:29+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:24+00:00",
       "return_convention": "rate",
       "series_key": "CPI_DE",
       "sha256": "",
       "source_provider": "Statistisches Bundesamt (Destatis)",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 3,
       "source_url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/table?name=61111-0001",
       "transformations": "index -> monthly inflation"
@@ -526,16 +585,18 @@
     {
       "currency": "rate",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "OPEN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:29+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:24+00:00",
       "return_convention": "rate",
       "series_key": "SHORT_RATE_EA",
       "sha256": "",
       "source_provider": "Deutsche Bundesbank",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 2,
       "source_url": "https://api.statistiken.bundesbank.de/rest/data/BBMMB/M.EU000A2X2A25.WT?format=csv&lang=de",
       "transformations": "Native \u20acSTR from 2019-10 requires NO transformation. Extending backwards with EONIA is a SPLICE: EONIA ran under its own methodology to 2019-09-30, then was mechanically \u20acSTR + 8.5 bp from 2019-10-02 until discontinuation on 2022-01-03. The splice must carry its own documented rule and data_status and must never be applied silently."
@@ -543,16 +604,18 @@
     {
       "currency": "rate",
       "data_status": "NETWORK_BLOCKED",
+      "evidence_purpose": "",
       "frequency": "monthly",
       "licence_status": "OPEN",
       "n_observations": 0,
       "period_end": "",
       "period_start": "",
-      "retrieval_date_utc": "2026-08-21T15:17:30+00:00",
+      "retrieval_date_utc": "2026-08-24T08:21:25+00:00",
       "return_convention": "rate",
       "series_key": "BUND_LONG_YIELD",
       "sha256": "",
       "source_provider": "Deutsche Bundesbank",
+      "source_role": "DATA_ARTIFACT",
       "source_tier": 2,
       "source_url": "https://api.statistiken.bundesbank.de/rest/data/BBSIS/M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A?format=csv&lang=de",
       "transformations": "monthly average yield; compare against the published BMF Basiszins values to validate the B.2 coupling"
@@ -566,341 +629,428 @@
     ],
     "rule": "Environment-level outcomes are NEVER research findings. A source-level outcome may only be recorded when egress is confirmed.",
     "source_level": [
-      "ACQUIRED",
+      "DATA_ACQUIRED",
       "DATA_INVALID",
+      "DATA_NOT_PARSED",
+      "EVIDENCE_CAPTURED",
+      "HTTP_OK",
       "LICENCE_OR_AUTH_REQUIRED",
       "SOURCE_NOT_FOUND"
     ]
   },
   "per_series": {
     "BUND_LONG_YIELD": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "",
           "http_status": null,
           "licence_status": "OPEN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Deutsche Bundesbank",
+          "role": "DATA_ARTIFACT",
           "tier": 2,
           "url": "https://api.statistiken.bundesbank.de/rest/data/BBSIS/M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A?format=csv&lang=de"
         }
       ],
       "blocker": "BBK01.WT3230 has no entry in the official migration catalogue: SPECIFICATION_ERROR_SUSPECTED. The candidate succeeds WU9555/WU0115, not WT3230, and may not be mapped until the intended economic concept is decided.",
-      "required_for": "B.2 Basiszins, currently legal_status TO_BE_VERIFIED"
+      "required_for": "B.2 Basiszins, currently legal_status TO_BE_VERIFIED",
+      "unavailability_evidence": false
     },
     "COMMOD": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms",
           "http_status": null,
           "licence_status": "LICENCE_REQUIRED",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Bloomberg",
+          "role": "EVIDENCE",
           "tier": 5,
           "url": "https://www.bloomberg.com/professional/product/indices/bloomberg-commodity-index-family/"
         }
       ],
       "blocker": "No confirmed source mapping (known blocker); tax class also unresolved.",
-      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "unavailability_evidence": false
     },
     "CORE": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "availability_and_coverage: documents that the freely accessible history is about two years of month-end values, far short of the 360 required",
           "http_status": null,
           "licence_status": "LICENCE_REQUIRED",
           "outcome": "NETWORK_BLOCKED",
-          "provider": "FTSE Russell / LSEG",
+          "provider": "FTSE Russell / LSEG (historic index values)",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.lseg.com/en/ftse-russell/index-resources/historic-index-values"
         },
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms: documents that use and distribution of LSEG index data require a licence, and that longer history is a subscription product",
+          "http_status": null,
+          "licence_status": "LICENCE_REQUIRED",
+          "outcome": "NETWORK_BLOCKED",
+          "provider": "FTSE Russell / LSEG (licence terms)",
+          "role": "EVIDENCE",
+          "tier": 1,
+          "url": "https://www.lseg.com/en/ftse-russell/index-resources"
+        },
+        {
+          "endpoint_status": "UNVERIFIED",
+          "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "availability: documents share class inception 2019-07-23, establishing INSUFFICIENT_HISTORY",
           "http_status": null,
           "licence_status": "LICENCE_UNKNOWN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Vanguard (fund NAV)",
+          "role": "EVIDENCE",
           "tier": 5,
           "url": "https://www.vanguard.co.uk/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating"
         },
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms (different index; retained for the record only)",
           "http_status": null,
           "licence_status": "LICENCE_REQUIRED",
           "outcome": "NETWORK_BLOCKED",
           "provider": "MSCI",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.msci.com/end-of-day-data-search"
         },
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "",
           "http_status": null,
           "licence_status": "LICENCE_UNKNOWN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Kenneth R. French Data Library (Dartmouth)",
+          "role": "DATA_ARTIFACT",
           "tier": 4,
           "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Developed_3_Factors_CSV.zip"
         }
       ],
       "blocker": "CONFIRMED LICENCE_REQUIRED for the correct index. FTSE All-World long history is a licensed LSEG product and is not redistributable in a public repository. The data exists commercially; what is unavailable is a version this project may redistribute.",
-      "required_for": "PHASE_5, PHASE_6, and every calibrated statement. CORE missing is the one condition that forces STOP."
+      "required_for": "PHASE_5, PHASE_6, and every calibrated statement. CORE missing is the one condition that forces STOP.",
+      "unavailability_evidence": false
     },
     "CPI_DE": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "",
           "http_status": null,
           "licence_status": "OPEN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Statistisches Bundesamt (Destatis)",
+          "role": "DATA_ARTIFACT",
           "tier": 3,
           "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/table?name=61111-0001"
         }
       ],
       "blocker": "",
-      "required_for": "real-terms reporting sensitivity"
+      "required_for": "real-terms reporting sensitivity",
+      "unavailability_evidence": false
     },
     "DAX": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms",
           "http_status": null,
           "licence_status": "LICENCE_REQUIRED",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Deutsche Boerse / STOXX",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.stoxx.com/index-details?symbol=DAX"
         }
       ],
       "blocker": "",
-      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "unavailability_evidence": false
     },
     "DIVIDEND": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms",
           "http_status": null,
           "licence_status": "LICENCE_REQUIRED",
           "outcome": "NETWORK_BLOCKED",
           "provider": "MSCI",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.msci.com/"
         }
       ],
       "blocker": "No confirmed source mapping (known blocker).",
-      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "unavailability_evidence": false
     },
     "EM": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms",
           "http_status": null,
           "licence_status": "LICENCE_REQUIRED",
           "outcome": "NETWORK_BLOCKED",
           "provider": "MSCI",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.msci.com/"
         },
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "",
           "http_status": null,
           "licence_status": "OPEN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Kenneth R. French Data Library",
+          "role": "DATA_ARTIFACT",
           "tier": 4,
           "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Emerging_5_Factors_CSV.zip"
         }
       ],
       "blocker": "No confirmed source mapping (known blocker).",
-      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "unavailability_evidence": false
     },
     "EUROPE": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms",
           "http_status": null,
           "licence_status": "LICENCE_REQUIRED",
           "outcome": "NETWORK_BLOCKED",
           "provider": "STOXX",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.stoxx.com/"
         }
       ],
       "blocker": "",
-      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "unavailability_evidence": false
     },
     "GOLD": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms: documents that historical prices moved into MyLBMA and require an IBA licence",
           "http_status": null,
           "licence_status": "LICENCE_REQUIRED",
           "outcome": "NETWORK_BLOCKED",
           "provider": "LBMA / ICE Benchmark Administration",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices"
         },
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "",
           "http_status": null,
           "licence_status": "OPEN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "World Bank (Pink Sheet)",
+          "role": "DATA_ARTIFACT",
           "tier": 5,
           "url": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
         },
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "",
           "http_status": null,
           "licence_status": "OPEN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Deutsche Bundesbank",
+          "role": "DATA_ARTIFACT",
           "tier": 2,
           "url": "https://api.statistiken.bundesbank.de/rest/download/BBEX3/D.USD.EUR.BB.AC.000"
         }
       ],
       "blocker": "",
-      "required_for": "PHASE_6 gold downside claim"
+      "required_for": "PHASE_6 gold downside claim",
+      "unavailability_evidence": false
     },
     "HICP_EA": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "",
           "http_status": null,
           "licence_status": "OPEN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "European Central Bank Data Portal (source: Eurostat)",
+          "role": "DATA_ARTIFACT",
           "tier": 2,
           "url": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata"
         },
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "",
           "http_status": null,
           "licence_status": "OPEN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Eurostat",
+          "role": "DATA_ARTIFACT",
           "tier": 3,
           "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr"
         }
       ],
       "blocker": "",
-      "required_for": "every real-terms number in every phase"
+      "required_for": "every real-terms number in every phase",
+      "unavailability_evidence": false
     },
     "JAPAN": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "availability_and_licence_terms",
           "http_status": null,
           "licence_status": "LICENCE_UNKNOWN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Japan Exchange Group",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.jpx.co.jp/english/markets/indices/topix/"
         }
       ],
       "blocker": "No confirmed source mapping (known blocker in PROJECT_META Phase 4).",
-      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "unavailability_evidence": false
     },
     "NASDAQ": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms",
           "http_status": null,
           "licence_status": "LICENCE_UNKNOWN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Nasdaq",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.nasdaq.com/market-activity/index/ndx"
         }
       ],
       "blocker": "",
-      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1"
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1",
+      "unavailability_evidence": false
     },
     "SHORT_RATE_EA": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "",
           "http_status": null,
           "licence_status": "OPEN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Deutsche Bundesbank",
+          "role": "DATA_ARTIFACT",
           "tier": 2,
           "url": "https://api.statistiken.bundesbank.de/rest/data/BBMMB/M.EU000A2X2A25.WT?format=csv&lang=de"
         }
       ],
       "blocker": "",
-      "required_for": "B.2 - the Basiszins is a function of the modelled short rate"
+      "required_for": "B.2 - the Basiszins is a function of the modelled short rate",
+      "unavailability_evidence": false
     },
     "SP500": {
+      "access_evidence": false,
       "acquired": false,
       "attempts": [
         {
           "endpoint_status": "UNVERIFIED",
           "error": "Tunnel connection failed: 403 Forbidden",
+          "evidence_purpose": "licence_terms",
           "http_status": null,
           "licence_status": "LICENCE_REQUIRED",
           "outcome": "NETWORK_BLOCKED",
           "provider": "S&P Dow Jones Indices",
+          "role": "EVIDENCE",
           "tier": 1,
           "url": "https://www.spglobal.com/spdji/"
         },
         {
           "endpoint_status": "UNVERIFIED",
           "error": "HTTPError 403: Forbidden",
+          "evidence_purpose": "",
           "http_status": 403,
           "licence_status": "OPEN",
           "outcome": "NETWORK_BLOCKED",
           "provider": "Robert Shiller (Yale) online data",
+          "role": "DATA_ARTIFACT",
           "tier": 4,
           "url": "http://www.econ.yale.edu/~shiller/data/ie_data.xls"
         }
       ],
       "blocker": "",
-      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1 - not required for any tested claim"
+      "required_for": "INDETERMINATE_BY_CONSTRUCTION under G1 - not required for any tested claim",
+      "unavailability_evidence": false
     }
   },
   "registry": {
     "cost_sources": [
       {
-        "authority": "issuer (State Street / SPDR)",
+        "authority": "issuer (Vanguard)",
         "document_type": "PRIIPs KID + factsheet",
         "endpoint_status": "UNVERIFIED",
         "instrument": "CORE",
         "isin": "IE00BK5BQT80",
-        "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+        "url": "https://fund-docs.vanguard.com/ie00bk5bqt80_priipskid_de.pdf"
       },
       {
         "authority": "issuer (BlackRock / iShares)",
@@ -919,12 +1069,12 @@
         "url": "https://www.ishares.com/de"
       },
       {
-        "authority": "issuer (State Street / SPDR)",
+        "authority": "issuer (Vanguard)",
         "document_type": "PRIIPs KID + factsheet",
         "endpoint_status": "UNVERIFIED",
         "instrument": "DIVIDEND",
         "isin": "IE00BK5BR626",
-        "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+        "url": "https://fund-docs.vanguard.com/"
       },
       {
         "authority": "issuer (DWS / Xtrackers)",
@@ -959,12 +1109,12 @@
         "url": "https://www.ishares.com/de"
       },
       {
-        "authority": "issuer (Invesco)",
+        "authority": "issuer (BlackRock / iShares)",
         "document_type": "PRIIPs KID + prospectus",
         "endpoint_status": "UNVERIFIED",
         "instrument": "GOLD",
         "isin": "IE00B4ND3602",
-        "url": "https://www.invesco.com/"
+        "url": "https://www.blackrock.com/de/privatanleger/literature/kiid/"
       },
       {
         "authority": "issuer (BlackRock / iShares)",
@@ -998,33 +1148,51 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "availability_and_coverage: documents that the freely accessible history is about two years of month-end values, far short of the 360 required",
             "licence_status": "LICENCE_REQUIRED",
             "note": "THE CORRECT TARGET INDEX. Externally reported 2026-08-21 (round 2): LSEG's freely accessible Historic Index Values typically give only about TWO YEARS of month-end values; longer history is a licensed subscription product and LSEG requires a licence for use and distribution. A >=360-month redistributable series could NOT be verified.",
-            "provider": "FTSE Russell / LSEG",
+            "provider": "FTSE Russell / LSEG (historic index values)",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.lseg.com/en/ftse-russell/index-resources/historic-index-values"
           },
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms: documents that use and distribution of LSEG index data require a licence, and that longer history is a subscription product",
+            "licence_status": "LICENCE_REQUIRED",
+            "note": "Fetching this page successfully establishes the LICENCE position. It does NOT obtain any data and must never contribute to acquisition.",
+            "provider": "FTSE Russell / LSEG (licence terms)",
+            "role": "EVIDENCE",
+            "tier": 1,
+            "url": "https://www.lseg.com/en/ftse-russell/index-resources"
+          },
+          {
+            "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "availability: documents share class inception 2019-07-23, establishing INSUFFICIENT_HISTORY",
             "licence_status": "LICENCE_UNKNOWN",
             "note": "INSUFFICIENT_HISTORY and a proxy in any case. Share class inception 2019-07-23, so at most ~7 years exist against the 360 required. Fund NAV is also net of fund fees and tracking difference, so it is not the benchmark series.",
             "provider": "Vanguard (fund NAV)",
+            "role": "EVIDENCE",
             "tier": 5,
             "url": "https://www.vanguard.co.uk/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating"
           },
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms (different index; retained for the record only)",
             "licence_status": "LICENCE_REQUIRED",
             "note": "MSCI ACWI - NOT the index the CORE instrument tracks. Retained only because round 1 assessed it. Reported LICENCE_REQUIRED; does not settle CORE.",
             "provider": "MSCI",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.msci.com/end-of-day-data-search"
           },
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "LICENCE_UNKNOWN",
             "note": "CANDIDATE PROXY ONLY - REJECTED. NOT ACWI and not FTSE All-World: developed markets only, USD not EUR, no net-of-withholding-tax concept, no explicit open-redistribution licence, and its international portfolios use MSCI raw data to 2006 and Bloomberg thereafter, so the licence problem is inherited rather than avoided. Would require an explicit SPLICE rule and its own data_status.",
             "provider": "Kenneth R. French Data Library (Dartmouth)",
+            "role": "DATA_ARTIFACT",
             "tier": 4,
             "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Developed_3_Factors_CSV.zip"
           }
@@ -1042,25 +1210,31 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms: documents that historical prices moved into MyLBMA and require an IBA licence",
             "licence_status": "LICENCE_REQUIRED",
             "note": "Externally reported 2026-08-21: LBMA moved historical tabular precious-metal prices into the MyLBMA portal; access requires an IBA licence, otherwise LBMA directs users to purchase from ICE. The former open JSON endpoint (prices.lbma.org.uk/json/gold_pm.json) is superseded.",
             "provider": "LBMA / ICE Benchmark Administration",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices"
           },
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "OPEN",
             "note": "ADMISSIBLE OPEN PROXY CANDIDATE, CC BY 4.0, redistribution permitted with attribution. Monthly from 1960. Definition: Gold (UK), 99.5% fine, London afternoon fixing, AVERAGE OF DAILY RATES. DIFFERS FROM TARGET: the target is the LBMA PM MONTH-END fixing; averaging suppresses month-end volatility, which matters directly for a claim resting on second moments (G2). Requires a documented substitution rule and its own data_status before use - it may not stand in silently.",
             "provider": "World Bank (Pink Sheet)",
+            "role": "DATA_ARTIFACT",
             "tier": 5,
             "url": "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
           },
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "OPEN",
             "note": "For the EUR/USD leg if a USD gold series is used.",
             "provider": "Deutsche Bundesbank",
+            "role": "DATA_ARTIFACT",
             "tier": 2,
             "url": "https://api.statistiken.bundesbank.de/rest/download/BBEX3/D.USD.EUR.BB.AC.000"
           }
@@ -1078,17 +1252,21 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms",
             "licence_status": "LICENCE_REQUIRED",
             "note": "Total return history is a licensed product.",
             "provider": "S&P Dow Jones Indices",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.spglobal.com/spdji/"
           },
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "OPEN",
             "note": "Monthly S&P with dividends since 1871; academic dataset.",
             "provider": "Robert Shiller (Yale) online data",
+            "role": "DATA_ARTIFACT",
             "tier": 4,
             "url": "http://www.econ.yale.edu/~shiller/data/ie_data.xls"
           }
@@ -1106,9 +1284,11 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms",
             "licence_status": "LICENCE_UNKNOWN",
             "note": "",
             "provider": "Nasdaq",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.nasdaq.com/market-activity/index/ndx"
           }
@@ -1126,9 +1306,11 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms",
             "licence_status": "LICENCE_REQUIRED",
             "note": "",
             "provider": "Deutsche Boerse / STOXX",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.stoxx.com/index-details?symbol=DAX"
           }
@@ -1146,9 +1328,11 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms",
             "licence_status": "LICENCE_REQUIRED",
             "note": "",
             "provider": "STOXX",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.stoxx.com/"
           }
@@ -1166,9 +1350,11 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "availability_and_licence_terms",
             "licence_status": "LICENCE_UNKNOWN",
             "note": "",
             "provider": "Japan Exchange Group",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.jpx.co.jp/english/markets/indices/topix/"
           }
@@ -1186,17 +1372,21 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms",
             "licence_status": "LICENCE_REQUIRED",
             "note": "",
             "provider": "MSCI",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.msci.com/"
           },
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "OPEN",
             "note": "Shorter history than the developed set.",
             "provider": "Kenneth R. French Data Library",
+            "role": "DATA_ARTIFACT",
             "tier": 4,
             "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Emerging_5_Factors_CSV.zip"
           }
@@ -1214,9 +1404,11 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms",
             "licence_status": "LICENCE_REQUIRED",
             "note": "",
             "provider": "MSCI",
+            "role": "EVIDENCE",
             "tier": 1,
             "url": "https://www.msci.com/"
           }
@@ -1234,9 +1426,11 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "licence_terms",
             "licence_status": "LICENCE_REQUIRED",
             "note": "",
             "provider": "Bloomberg",
+            "role": "EVIDENCE",
             "tier": 5,
             "url": "https://www.bloomberg.com/professional/product/indices/bloomberg-commodity-index-family/"
           }
@@ -1254,17 +1448,21 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "OPEN",
             "note": "KEY MIGRATED. The previous key ICP.M.U2.N.000000.4.ANR was discontinued 2026-02-04 after a methodological change and replaced by HICP.M.U2.N.000000.4D0.ANR. Externally reported coverage 1996-12 to 2026-05. Eurostat reuse permitted with attribution.",
             "provider": "European Central Bank Data Portal (source: Eurostat)",
+            "role": "DATA_ARTIFACT",
             "tier": 2,
             "url": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata"
           },
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "OPEN",
             "note": "",
             "provider": "Eurostat",
+            "role": "DATA_ARTIFACT",
             "tier": 3,
             "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr"
           }
@@ -1282,9 +1480,11 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "OPEN",
             "note": "GENESIS REST API requires free registration.",
             "provider": "Statistisches Bundesamt (Destatis)",
+            "role": "DATA_ARTIFACT",
             "tier": 3,
             "url": "https://www-genesis.destatis.de/genesisWS/rest/2020/data/table?name=61111-0001"
           }
@@ -1302,9 +1502,11 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "OPEN",
             "note": "Euro Short-Term Rate, monthly average. Externally reported as the official monthly series with CSV download; native coverage begins 2019-10. Reuse permitted with attribution, statistics and metadata not to be altered.",
             "provider": "Deutsche Bundesbank",
+            "role": "DATA_ARTIFACT",
             "tier": 2,
             "url": "https://api.statistiken.bundesbank.de/rest/data/BBMMB/M.EU000A2X2A25.WT?format=csv&lang=de"
           }
@@ -1322,9 +1524,11 @@
         "sources": [
           {
             "endpoint_status": "UNVERIFIED",
+            "evidence_purpose": "",
             "licence_status": "OPEN",
             "note": "CANDIDATE ONLY - MAPPING FROM WT3230 NOT SUPPORTED. Umlaufsrenditen inl\u00e4ndischer Inhaberschuldverschreibungen / b\u00f6rsennotierte Bundeswertpapiere, monthly. The legacy Externally reported 2026-08-21 (round 2): the official Bundesbank migration catalogue contains NO entry for BBK01.WT3230, so that key is almost certainly a SPECIFICATION ERROR in this registry rather than a renamed series. This candidate is documented as the successor of WU9555 / WU0115, NOT of WT3230. Concept: Umlaufsrenditen inlaendischer Inhaberschuldverschreibungen / boersennotierte Bundeswertpapiere / monthly. The same Bundesbank table also carries maturity-band series (3-5, 5-8, 8-15, 15-30 years), and which one is correct depends on the Basiszins concept, not on the label.",
             "provider": "Deutsche Bundesbank",
+            "role": "DATA_ARTIFACT",
             "tier": 2,
             "url": "https://api.statistiken.bundesbank.de/rest/data/BBSIS/M.I.UMR.RD.EUR.S1311.B.A604.A.R.A.A._Z._Z.A?format=csv&lang=de"
           }
@@ -1337,26 +1541,24 @@
     ],
     "tracking_difference_note": "Tracking difference is not disclosed in a PRIIPs KID. It must be derived from published fund NAV history against the licensed index series, or taken from an issuer TD disclosure. Deriving it requires the index history, which is the same licence blocker as CORE."
   },
-  "report_hash": "66fe4aeadfc97893d04e1aad60b1f57fb98e8126b7a4f118ad3217c9abf8a104",
+  "report_hash": "d310f74d4dda8ee89ec8daafb7355dca930bf5bd7c0e1111d3d982a9d5fa4720",
   "research_verdict_admissible": false,
   "specification_conflicts": [
     {
-      "conflict": "B.5 was decided as option_b, fx=EXCLUDED_BY_DESIGN. The rationale recorded in config/fx.json is that asset processes are 'interpreted as EUR-denominated total returns with the FX component folded into their volatility'. Round 2 establishes that the CORE benchmark is FTSE All-World NET RETURN in USD, and that the fund's base currency is USD. A EUR-denominated CORE series is therefore not what would be calibrated from.",
-      "decision_owner": "human operator - this is a B.5 first-class assumption, not an implementation detail",
-      "id": "B5_FX_VS_USD_BENCHMARK",
-      "resolution": "option_b retained but redefined as EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR. No separate stochastic FX factor is simulated, preserving the original motivation. But every non-EUR calibration series MUST be converted to EUR before return estimation - data preprocessing, not a modelled process. Supported claims are limited to EUR-investor total-return behaviour; isolated FX risk, hedging decisions, FX forecasts and asset/currency decomposition are explicitly unsupported. See config/fx.json.",
-      "resolution_options": [
-        "Switch B.5 to option_a and model an explicit EUR/USD process (adds the parameter uncertainty option_b was chosen to avoid).",
-        "Keep option_b but rewrite the rationale honestly: FX risk is OMITTED, not absorbed, and every CORE-derived number is a USD-investor number relabelled.",
-        "Source a natively EUR-denominated net-return series, which would make the original rationale true - but round 2 could not verify one exists openly."
+      "authoritative_record": [
+        "config/fx.json",
+        "docs/DECISIONS_20260821.md"
       ],
+      "id": "B5_FX_VS_USD_BENCHMARK",
+      "raised_at": "2026-08-21",
+      "resolution": "option_b retained but redefined as EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR. No separate stochastic FX factor is simulated, preserving the original motivation. Every non-EUR calibration series MUST be converted to EUR before return estimation - data preprocessing, not a modelled process. Supported claims are limited to EUR-investor total-return behaviour.",
       "resolved_at": "2026-08-21",
       "resolved_by": "human_operator",
-      "scope_of_damage": "Phases 1-3 are NOT invalidated: they run on an assumed prior, not on calibrated data, and the conflict bites only at calibration. But B.5 must be revisited BEFORE any calibrated run, and the rationale text in config/fx.json is inaccurate as written once a USD benchmark is in play.",
       "severity": "DECISION_RELEVANT",
       "status": "RESOLVED",
-      "why_it_matters": "Calibrating CORE from a USD series leaves two options and both break the recorded B.5 rationale. (a) Convert USD->EUR with an FX series: that IS an FX process, which option_b excludes. (b) Treat USD returns as if they were EUR returns: that does not 'fold FX into volatility', it OMITS FX entirely, misstating both the mean and the variance faced by a EUR investor. The recorded rationale would only have been accurate for a natively EUR-denominated series."
+      "summary": "The CORE benchmark is FTSE All-World NET RETURN in USD, but B.5 had been recorded as fx=EXCLUDED_BY_DESIGN with a rationale asserting that non-EUR returns could be read as EUR returns with FX absorbed into volatility.",
+      "verification": "Phases 1-3 were re-run end to end after the revision and every frozen comparator hash was bit-identical, demonstrating the change moved no number."
     }
   ],
-  "verdict_detail": "No canary host was reachable, so this environment has no egress. No source-level conclusion is admissible: nothing observed here is evidence about whether CORE, GOLD or any other series is obtainable. This is NOT FAIL_DATA_UNAVAILABLE and NOT FAIL_ACCESS_CONSTRAINT - both are findings about the world and require evidence."
+  "verdict_detail": "No canary host was reachable, so this environment has no egress. No source-level conclusion is admissible. This is NOT FAIL_DATA_UNAVAILABLE and NOT FAIL_ACCESS_CONSTRAINT - both are findings about the world and require evidence."
 }

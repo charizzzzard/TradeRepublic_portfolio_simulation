@@ -14,7 +14,7 @@
     ]
   },
   "baseline_id": "r0_baseline_20260821_v3",
-  "code_hash": "27e5f4d94157a686612cf955656a8adb4f1a5b95181634d7bcf3f26ba8bfd0d5",
+  "code_hash": "9efff2daa0fdb9815274f5e1360f32389698927e2d5797dc67fb132243ded5e0",
   "costs_config": {
     "_spec_ref": "PROJECT_META v3, Teil B.4 - own parameter class. Rationale: a 0.20 pp TER delta runs directly against a 0.124 pp portfolio-CAGR materiality gate (G1).",
     "blocking_note": "Every value above is an UNSOURCED PLACEHOLDER of the right order of magnitude. It exists so the cost machinery is exercised and hash-tracked, NOT so cost numbers can be quoted. Because a 0.20 pp TER delta alone exceeds the 0.124 pp G1 gate, no cost-sensitive claim may be promoted until these are replaced with sourced values (KIID/PRIIPs for TER, provider factsheets for tracking difference, venue data for spreads). Phase 3 (R2E) must therefore treat TER as a SWEPT DIMENSION (0/10/20/30 bp) rather than reading these point values.",
@@ -150,7 +150,7 @@
       30
     ]
   },
-  "data_hash": "07a6a3e6ce5669a97f64cef5062aecaa110844a1d4120cfb76b0b5b20a8716ff",
+  "data_hash": "e09f96b0566fdc5894613d4e4579decc0a74914edadeaf2519bd82e74de6310e",
   "data_policy": {
     "_spec_ref": "Operator decisions of 2026-08-21, refining Teil D. Separates three properties that PROJECT_META and the earlier implementation conflated.",
     "approved_proxies": {
@@ -305,6 +305,16 @@
         "result": "PASS"
       },
       {
+        "check": "http_success_is_not_data_acquisition",
+        "detail": "a series is ACQUIRED only via a DATA_ARTIFACT that parsed to >0 observations; EVIDENCE pages and bare HTTP 200 never set acquired",
+        "result": "PASS"
+      },
+      {
+        "check": "access_constraint_derived_from_positive_evidence",
+        "detail": "CORE access_evidence=False, unavailability_evidence=False; FAIL_ACCESS_CONSTRAINT requires positive licence/access evidence, never the absence of a licence error",
+        "result": "PASS"
+      },
+      {
         "check": "verdict_is_specific_not_a_generic_fail",
         "detail": "acceptance=BLOCKED_NETWORK; the taxonomy distinguishes FAIL_ACCESS_CONSTRAINT (data exists, not acquired) from FAIL_DATA_UNAVAILABLE (data does not exist in usable form)",
         "result": "PASS"
@@ -336,7 +346,7 @@
       },
       {
         "check": "specification_conflicts_surfaced_not_silently_resolved",
-        "detail": "B5_FX_VS_USD_BENCHMARK (RESOLVED, owner: human operator - thi…)",
+        "detail": "B5_FX_VS_USD_BENCHMARK (RESOLVED, resolved by human_operator)",
         "result": "PASS"
       },
       {
@@ -428,13 +438,13 @@
     "cost_sourcing": {
       "attempts": [
         {
-          "authority": "issuer (State Street / SPDR)",
+          "authority": "issuer (Vanguard)",
           "document_type": "PRIIPs KID + factsheet",
           "http_status": null,
           "instrument": "CORE",
           "isin": "IE00BK5BQT80",
           "outcome": "NETWORK_BLOCKED",
-          "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+          "url": "https://fund-docs.vanguard.com/ie00bk5bqt80_priipskid_de.pdf"
         },
         {
           "authority": "issuer (BlackRock / iShares)",
@@ -455,13 +465,13 @@
           "url": "https://www.ishares.com/de"
         },
         {
-          "authority": "issuer (State Street / SPDR)",
+          "authority": "issuer (Vanguard)",
           "document_type": "PRIIPs KID + factsheet",
           "http_status": null,
           "instrument": "DIVIDEND",
           "isin": "IE00BK5BR626",
           "outcome": "NETWORK_BLOCKED",
-          "url": "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs"
+          "url": "https://fund-docs.vanguard.com/"
         },
         {
           "authority": "issuer (DWS / Xtrackers)",
@@ -500,13 +510,13 @@
           "url": "https://www.ishares.com/de"
         },
         {
-          "authority": "issuer (Invesco)",
+          "authority": "issuer (BlackRock / iShares)",
           "document_type": "PRIIPs KID + prospectus",
           "http_status": null,
           "instrument": "GOLD",
           "isin": "IE00B4ND3602",
           "outcome": "NETWORK_BLOCKED",
-          "url": "https://www.invesco.com/"
+          "url": "https://www.blackrock.com/de/privatanleger/literature/kiid/"
         },
         {
           "authority": "issuer (BlackRock / iShares)",
@@ -552,7 +562,7 @@
           "error": "Tunnel connection failed: 403 Forbidden",
           "http_status": null,
           "outcome": "NETWORK_BLOCKED",
-          "retrieved_at_utc": "2026-08-21T15:17:21+00:00",
+          "retrieved_at_utc": "2026-08-24T08:21:17+00:00",
           "url": "https://example.com/"
         },
         {
@@ -561,18 +571,18 @@
           "error": "Tunnel connection failed: 403 Forbidden",
           "http_status": null,
           "outcome": "NETWORK_BLOCKED",
-          "retrieved_at_utc": "2026-08-21T15:17:21+00:00",
+          "retrieved_at_utc": "2026-08-24T08:21:17+00:00",
           "url": "https://www.iana.org/domains/reserved"
         }
       ],
       "detail": "no canary host reachable; egress is blocked at the environment level, so NO source-level conclusion about data availability is admissible",
       "egress_available": false,
       "proxy_env": {
-        "HTTPS_PROXY": "http://127.0.0.1:41493",
+        "HTTPS_PROXY": "http://127.0.0.1:45645",
         "HTTP_PROXY": "",
-        "NO_PROXY": "localhost,127.0.0.1,::1,127.0.0.0/8,0.0.0.0/8,::,169.254.0.0/16,anthropic.com,.anthropic.com,*.anthropic.com,registry.npmjs.org,jsr.io,npm.jsr.io,pypi.org,files.pythonhosted.org,index.crates.io,proxy.golang.org,host.docker.internal,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,.svc.cluster.local,*.svc.cluster.local",
+        "NO_PROXY": "localhost,127.0.0.1,::1,127.0.0.0/8,0.0.0.0/8,::,169.254.0.0/16,api.anthropic.com,api-staging.anthropic.com,api-pr-preview.anthropic.com,mcp-proxy.anthropic.com,mcp-proxy-staging.anthropic.com,registry.npmjs.org,jsr.io,npm.jsr.io,pypi.org,files.pythonhosted.org,index.crates.io,proxy.golang.org,host.docker.internal,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,.svc.cluster.local,*.svc.cluster.local",
         "http_proxy": "",
-        "https_proxy": "http://127.0.0.1:41493"
+        "https_proxy": "http://127.0.0.1:45645"
       }
     },
     "external_findings": [
@@ -610,6 +620,7 @@
       "CORE": {
         "acquired": false,
         "outcomes": [
+          "NETWORK_BLOCKED",
           "NETWORK_BLOCKED",
           "NETWORK_BLOCKED",
           "NETWORK_BLOCKED",
@@ -709,7 +720,7 @@
       "parameter_hash_stable": true,
       "predecessor_acceptance": "PASS",
       "predecessor_code_hash": "27e5f4d94157a686612cf955656a8adb4f1a5b95181634d7bcf3f26ba8bfd0d5",
-      "predecessor_git_sha": "25de47f0c9a378b1c89ad1a8ad8ba4789c7b8a88",
+      "predecessor_git_sha": "b6b42d3dd2da78b6d94839dd8a8fa3c691931cf5",
       "predecessor_manifest": "results/phase3/run_manifest.json",
       "predecessor_parameter_hash": "415182bc2abe7da2bc3abfc4e8c054a238d82616b5356d32b7b860fb4252e432",
       "predecessor_phase": "PHASE_3_R2E_CONVENTION_AND_COST_SENSITIVITY",
@@ -725,24 +736,22 @@
     },
     "specification_conflicts": [
       {
-        "conflict": "B.5 was decided as option_b, fx=EXCLUDED_BY_DESIGN. The rationale recorded in config/fx.json is that asset processes are 'interpreted as EUR-denominated total returns with the FX component folded into their volatility'. Round 2 establishes that the CORE benchmark is FTSE All-World NET RETURN in USD, and that the fund's base currency is USD. A EUR-denominated CORE series is therefore not what would be calibrated from.",
-        "decision_owner": "human operator - this is a B.5 first-class assumption, not an implementation detail",
-        "id": "B5_FX_VS_USD_BENCHMARK",
-        "resolution": "option_b retained but redefined as EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR. No separate stochastic FX factor is simulated, preserving the original motivation. But every non-EUR calibration series MUST be converted to EUR before return estimation - data preprocessing, not a modelled process. Supported claims are limited to EUR-investor total-return behaviour; isolated FX risk, hedging decisions, FX forecasts and asset/currency decomposition are explicitly unsupported. See config/fx.json.",
-        "resolution_options": [
-          "Switch B.5 to option_a and model an explicit EUR/USD process (adds the parameter uncertainty option_b was chosen to avoid).",
-          "Keep option_b but rewrite the rationale honestly: FX risk is OMITTED, not absorbed, and every CORE-derived number is a USD-investor number relabelled.",
-          "Source a natively EUR-denominated net-return series, which would make the original rationale true - but round 2 could not verify one exists openly."
+        "authoritative_record": [
+          "config/fx.json",
+          "docs/DECISIONS_20260821.md"
         ],
+        "id": "B5_FX_VS_USD_BENCHMARK",
+        "raised_at": "2026-08-21",
+        "resolution": "option_b retained but redefined as EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR. No separate stochastic FX factor is simulated, preserving the original motivation. Every non-EUR calibration series MUST be converted to EUR before return estimation - data preprocessing, not a modelled process. Supported claims are limited to EUR-investor total-return behaviour.",
         "resolved_at": "2026-08-21",
         "resolved_by": "human_operator",
-        "scope_of_damage": "Phases 1-3 are NOT invalidated: they run on an assumed prior, not on calibrated data, and the conflict bites only at calibration. But B.5 must be revisited BEFORE any calibrated run, and the rationale text in config/fx.json is inaccurate as written once a USD benchmark is in play.",
         "severity": "DECISION_RELEVANT",
         "status": "RESOLVED",
-        "why_it_matters": "Calibrating CORE from a USD series leaves two options and both break the recorded B.5 rationale. (a) Convert USD->EUR with an FX series: that IS an FX process, which option_b excludes. (b) Treat USD returns as if they were EUR returns: that does not 'fold FX into volatility', it OMITS FX entirely, misstating both the mean and the variance faced by a EUR investor. The recorded rationale would only have been accurate for a natively EUR-denominated series."
+        "summary": "The CORE benchmark is FTSE All-World NET RETURN in USD, but B.5 had been recorded as fx=EXCLUDED_BY_DESIGN with a rationale asserting that non-EUR returns could be read as EUR returns with FX absorbed into volatility.",
+        "verification": "Phases 1-3 were re-run end to end after the revision and every frozen comparator hash was bit-identical, demonstrating the change moved no number."
       }
     ],
-    "verdict_detail": "No canary host was reachable, so this environment has no egress. No source-level conclusion is admissible: nothing observed here is evidence about whether CORE, GOLD or any other series is obtainable. This is NOT FAIL_DATA_UNAVAILABLE and NOT FAIL_ACCESS_CONSTRAINT - both are findings about the world and require evidence.",
+    "verdict_detail": "No canary host was reachable, so this environment has no egress. No source-level conclusion is admissible. This is NOT FAIL_DATA_UNAVAILABLE and NOT FAIL_ACCESS_CONSTRAINT - both are findings about the world and require evidence.",
     "verdict_taxonomy": {
       "BLOCKED_NETWORK": "Environment-level. No egress. Not a research finding of any kind.",
       "FAIL_ACCESS_CONSTRAINT": "LICENCE_REQUIRED and the licence or file has not been obtained. NOT an epistemic finding: the data exists and is commercially available; the project has not acquired it. STOP for calibrated phases all the same.",
@@ -799,7 +808,7 @@
       "rule": "BLOCKED_NETWORK is not FAIL and must never be read as one"
     }
   },
-  "git_sha": "b6b42d3dd2da78b6d94839dd8a8fa3c691931cf5",
+  "git_sha": "f7cb8c414756cdbc38eeeb042589b2937df877f3",
   "human_final_decision": true,
   "inflation_config": {
     "model": "Ornstein-Uhlenbeck, monthly, coupled to the short rate",
@@ -944,6 +953,6 @@
       "status": "NOT_IN_DECISION_PATH"
     }
   },
-  "timestamp_utc": "2026-08-21T15:17:35+00:00",
+  "timestamp_utc": "2026-08-24T08:21:29+00:00",
   "unmodelled_boundary_conditions": "Emergency fund, human capital, statutory/occupational pension, liquidity events and interim withdrawals are NOT modelled (B.6). This is a partial analysis of portfolio allocation, not financial planning."
 }

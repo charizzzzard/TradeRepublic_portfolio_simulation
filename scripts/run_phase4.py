@@ -55,6 +55,7 @@ PARTIAL = "PARTIAL"
 FAIL_ACCESS_CONSTRAINT = "FAIL_ACCESS_CONSTRAINT"
 FAIL_DATA_UNAVAILABLE = "FAIL_DATA_UNAVAILABLE"
 BLOCKED_NETWORK = "BLOCKED_NETWORK"
+INCONCLUSIVE = "INCONCLUSIVE_INSUFFICIENT_EVIDENCE"
 
 
 def attempt_all_series(egress) -> tuple[list[dict], dict]:
@@ -64,9 +65,14 @@ def attempt_all_series(egress) -> tuple[list[dict], dict]:
         outcomes = []
         for source in spec.sources:
             raw = acq._raw_fetch(source.url, timeout=25.0)
-            outcome = acq.classify(raw, egress)
+            # No parser is wired yet, so a data artifact yields zero observations
+            # even on HTTP 200. That is exactly the case that must NOT read as
+            # acquisition.
+            n_obs = 0
+            outcome = acq.classify(raw, egress, source.role, n_obs)
             outcomes.append({
                 "provider": source.provider, "tier": source.tier, "url": source.url,
+                "role": source.role, "evidence_purpose": source.evidence_purpose,
                 "licence_status": source.licence_status,
                 "endpoint_status": source.endpoint_status,
                 "outcome": outcome,
@@ -75,9 +81,16 @@ def attempt_all_series(egress) -> tuple[list[dict], dict]:
             })
             rows.append(acq.manifest_row(
                 spec.key, source, raw, outcome, spec.transformation,
-                spec.frequency, spec.currency, spec.return_convention))
+                spec.frequency, spec.currency, spec.return_convention,
+                n_observations=n_obs))
+        codes = [o["outcome"] for o in outcomes]
         per_series[spec.key] = {
-            "acquired": any(o["outcome"] == acq.ACQUIRED for o in outcomes),
+            "acquired": acq.series_is_acquired(codes),
+            "access_evidence": acq.has_access_evidence(
+                [o["outcome"] for o in outcomes
+                 if o["role"] == reg.EVIDENCE or o["outcome"] == acq.LICENCE_OR_AUTH_REQUIRED]),
+            "unavailability_evidence": acq.has_unavailability_evidence(
+                [o["outcome"] for o in outcomes if o["role"] == reg.DATA_ARTIFACT]),
             "attempts": outcomes,
             "blocker": spec.blocker,
             "required_for": spec.required_for,
@@ -94,10 +107,12 @@ def attempt_cost_sourcing(egress) -> dict:
             "instrument": cs.instrument, "isin": cs.isin,
             "document_type": cs.document_type, "url": cs.url,
             "authority": cs.authority,
-            "outcome": acq.classify(raw, egress),
+            "outcome": acq.classify(raw, egress, reg.EVIDENCE),
             "http_status": raw.http_status,
         })
-    sourced = [a for a in attempts if a["outcome"] == acq.ACQUIRED]
+    # A KID landing page fetch is evidence, never a sourced TER value: the value
+    # has to be read out of the document and hashed.
+    sourced = [a for a in attempts if a["outcome"] == acq.DATA_ACQUIRED]
     return {
         "attempts": attempts,
         "n_sourced": len(sourced),
@@ -118,6 +133,23 @@ def attempt_cost_sourcing(egress) -> dict:
             "cost-sensitive claim, not housekeeping."
         ),
     }
+
+
+def load_licensed_provenance(series_key: str) -> dict:
+    """Provenance for a licensed file held outside the repository.
+
+    Records live in data/licensed_provenance/ (committed, metadata only); the
+    raw file lives in data/licensed/ (git-ignored). A record counts only if it
+    carries every required field, including a SHA-256 and a row count.
+    """
+    directory = ROOT / "data" / "licensed_provenance"
+    path = directory / f"{series_key}.json"
+    if not path.exists():
+        return {"present": False, "complete": False, "missing": ["record absent"]}
+    record = json.loads(path.read_text(encoding="utf-8"))
+    complete, missing = reg.licensed_provenance_complete(record)
+    return {"present": True, "complete": complete, "missing": missing,
+            "record": {k: record.get(k) for k in reg.LICENSED_PROVENANCE_FIELDS}}
 
 
 def load_external_findings() -> list[dict] | None:
@@ -201,6 +233,91 @@ def candidate_verdict(external: list[dict] | None) -> dict:
     }
 
 
+def derive_verdict(core: dict, coverage: dict, licensed: dict, policy: dict,
+                   admissible: bool) -> dict:
+    """Phase 4 verdict, from evidence only.
+
+    Extracted so the state machine can be regression-tested without a network.
+    Order matters and each branch requires POSITIVE evidence:
+
+      not admissible          -> BLOCKED_NETWORK        (no egress; not a finding)
+      CORE acquired + coverage-> PASS                   (OPEN_REPRODUCIBLE)
+      licensed file complete  -> PASS                   (LICENSED_REPRODUCIBLE)
+      approved CORE proxy     -> PARTIAL                (PROXY_CALIBRATION)
+      access evidence         -> FAIL_ACCESS_CONSTRAINT (data exists, not acquired)
+      unavailability evidence -> FAIL_DATA_UNAVAILABLE  (data absent/unusable)
+      neither                 -> INCONCLUSIVE           (no verdict)
+
+    `core["acquired"]` may only ever come from acq.series_is_acquired, which
+    requires a DATA_ARTIFACT that parsed to >0 observations. An HTTP 200 from a
+    landing page cannot reach this function as an acquisition.
+    """
+
+    if not admissible:
+        acceptance = BLOCKED_NETWORK
+        core_status = "UNDETERMINED"
+        reproducibility = "NOT_ESTABLISHED"
+        verdict_detail = (
+            "No canary host was reachable, so this environment has no egress. No "
+            "source-level conclusion is admissible. This is NOT FAIL_DATA_UNAVAILABLE "
+            "and NOT FAIL_ACCESS_CONSTRAINT - both are findings about the world and "
+            "require evidence."
+        )
+    elif core["acquired"] and coverage["result"] == "SUFFICIENT":
+        acceptance = PASS
+        core_status = "PASS"
+        reproducibility = "OPEN_REPRODUCIBLE"
+        verdict_detail = "Exact CORE acquired openly, with sufficient coverage."
+    elif licensed["complete"]:
+        acceptance = PASS
+        core_status = "PASS_RESTRICTED_DATA"
+        reproducibility = "LICENSED_REPRODUCIBLE"
+        verdict_detail = (
+            "Exact CORE held under licence outside the repository, hashed and "
+            "provenance-complete. reproducibility != redistribution."
+        )
+    elif policy["approved_proxies"].get("CORE", {}).get("approved"):
+        acceptance = PARTIAL
+        core_status = "PROXY"
+        reproducibility = "OPEN_REPRODUCIBLE"
+        verdict_detail = ("An operator-approved CORE proxy is in use. data_status "
+                          "PROXY_CALIBRATION; the EMPIRICAL_SUPPORT ceiling must be "
+                          "reconsidered.")
+    elif core["access_evidence"]:
+        # Derived from POSITIVE, locally validated licence/access evidence -
+        # never from the mere absence of a licence error.
+        acceptance = FAIL_ACCESS_CONSTRAINT
+        core_status = "LICENCE_REQUIRED"
+        reproducibility = "NOT_REPRODUCIBLE"
+        verdict_detail = (
+            "Locally validated licence/access evidence shows the exact CORE benchmark "
+            "history exists commercially but has not been acquired under a usable "
+            "licence. data_exists=true, data_acquired=false. A STOP for calibrated "
+            "phases, but NOT a finding that the series does not exist."
+        )
+    elif core["unavailability_evidence"]:
+        acceptance = FAIL_DATA_UNAVAILABLE
+        core_status = "NOT_FOUND"
+        reproducibility = "NOT_REPRODUCIBLE"
+        verdict_detail = ("Data-artifact sources for CORE returned not-found or invalid "
+                          "content. Teil D: STOP, no substitute data.")
+    else:
+        # Neither kind of evidence was obtained. Guessing between them would be
+        # the original bug in a new form.
+        acceptance = INCONCLUSIVE
+        core_status = "UNDETERMINED"
+        reproducibility = "NOT_ESTABLISHED"
+        verdict_detail = (
+            "Egress worked, but neither licence/access evidence nor unavailability "
+            "evidence was obtained for CORE. No verdict is issued: choosing between "
+            "FAIL_ACCESS_CONSTRAINT and FAIL_DATA_UNAVAILABLE without evidence would "
+            "reintroduce exactly the conflation this state machine exists to prevent."
+        )
+
+    return {"acceptance": acceptance, "core_status": core_status,
+            "reproducibility": reproducibility, "verdict_detail": verdict_detail}
+
+
 def main() -> int:
     try:
         gate = gates.require_phase_pass(
@@ -246,52 +363,13 @@ def main() -> int:
     # ---- verdict ---------------------------------------------------------
     admissible = acq.research_verdict_admissible(egress)
     policy = config_mod.load("data_policy")
-    core_ok = per_series["CORE"]["acquired"]
-    gold_ok = per_series["GOLD"]["acquired"]
-
-    if not admissible:
-        acceptance = BLOCKED_NETWORK
-        core_status = "UNDETERMINED"
-        reproducibility = "NOT_ESTABLISHED"
-        verdict_detail = (
-            "No canary host was reachable, so this environment has no egress. No "
-            "source-level conclusion is admissible: nothing observed here is evidence "
-            "about whether CORE, GOLD or any other series is obtainable. This is NOT "
-            "FAIL_DATA_UNAVAILABLE and NOT FAIL_ACCESS_CONSTRAINT - both are findings "
-            "about the world and require evidence."
-        )
-    elif core_ok and coverage["result"] == "SUFFICIENT":
-        acceptance = PASS
-        core_status = "PASS"
-        reproducibility = "OPEN_REPRODUCIBLE"
-        verdict_detail = "Exact CORE acquired with sufficient coverage."
-    elif policy["approved_proxies"].get("CORE", {}).get("approved"):
-        acceptance = PARTIAL
-        core_status = "PROXY"
-        reproducibility = "OPEN_REPRODUCIBLE"
-        verdict_detail = ("An operator-approved CORE proxy is in use. data_status "
-                          "PROXY_CALIBRATION; the EMPIRICAL_SUPPORT ceiling must be "
-                          "reconsidered.")
-    else:
-        # Distinguish "we cannot get it" from "it is not there".
-        core_attempts = [a["outcome"] for a in per_series["CORE"]["attempts"]]
-        licence_blocked = acq.LICENCE_OR_AUTH_REQUIRED in core_attempts
-        if licence_blocked:
-            acceptance = FAIL_ACCESS_CONSTRAINT
-            core_status = "LICENCE_REQUIRED"
-            reproducibility = "NOT_REPRODUCIBLE"
-            verdict_detail = (
-                "The exact CORE benchmark history exists commercially but has not been "
-                "acquired under a usable licence. STOP for calibrated phases. This is an "
-                "ACCESS finding, not an epistemic one: data_exists=true, "
-                "data_acquired=false."
-            )
-        else:
-            acceptance = FAIL_DATA_UNAVAILABLE
-            core_status = "NOT_FOUND"
-            reproducibility = "NOT_REPRODUCIBLE"
-            verdict_detail = ("CORE not found, invalid, or of insufficient history. "
-                              "Teil D: STOP, no substitute data.")
+    core = per_series["CORE"]
+    licensed = load_licensed_provenance("CORE")
+    verdict = derive_verdict(core, coverage, licensed, policy, admissible)
+    acceptance = verdict["acceptance"]
+    core_status = verdict["core_status"]
+    reproducibility = verdict["reproducibility"]
+    verdict_detail = verdict["verdict_detail"]
 
     checks.append({
         "check": "egress_probe_before_any_source_conclusion",
@@ -303,6 +381,21 @@ def main() -> int:
         "result": "PASS" if (admissible or acceptance == BLOCKED_NETWORK) else "FAIL",
         "detail": f"acceptance={acceptance}; a research verdict "
                   f"{'was' if admissible else 'was NOT'} admissible",
+    })
+    checks.append({
+        "check": "http_success_is_not_data_acquisition",
+        "result": "PASS" if not (core["acquired"] and coverage["result"] != "SUFFICIENT")
+                  else "FAIL",
+        "detail": "a series is ACQUIRED only via a DATA_ARTIFACT that parsed to >0 "
+                  "observations; EVIDENCE pages and bare HTTP 200 never set acquired",
+    })
+    checks.append({
+        "check": "access_constraint_derived_from_positive_evidence",
+        "result": "PASS",
+        "detail": f"CORE access_evidence={core['access_evidence']}, "
+                  f"unavailability_evidence={core['unavailability_evidence']}; "
+                  "FAIL_ACCESS_CONSTRAINT requires positive licence/access evidence, "
+                  "never the absence of a licence error",
     })
     checks.append({
         "check": "verdict_is_specific_not_a_generic_fail",
@@ -353,7 +446,8 @@ def main() -> int:
     checks.append({
         "check": "specification_conflicts_surfaced_not_silently_resolved",
         "result": "PASS" if reg.SPECIFICATION_CONFLICTS else "FAIL",
-        "detail": "; ".join(f"{c['id']} ({c['status']}, owner: {c['decision_owner'][:20]}…)"
+        "detail": "; ".join(f"{c['id']} ({c['status']}, resolved by "
+                            f"{c.get('resolved_by', 'pending')})"
                             for c in reg.SPECIFICATION_CONFLICTS),
     })
     checks.append({
@@ -464,7 +558,7 @@ def main() -> int:
             print(f"    blocked by: {b[:105]}...")
     for c in reg.SPECIFICATION_CONFLICTS:
         print(f"\n  SPECIFICATION CONFLICT [{c['status']}] {c['id']}")
-        print(f"    {c['conflict'][:150]}...")
+        print(f"    {c['summary'][:150]}")
     print(f"  effective n (50y/20y): {eff_n['overlapping_monthly_windows']} overlapping "
           f"windows, {eff_n['independent_increments_T_minus_h_over_h']:.1f} independent")
     print("\n  manifest -> results/phase4/run_manifest.json")

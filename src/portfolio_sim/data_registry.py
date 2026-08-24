@@ -29,15 +29,32 @@ from dataclasses import asdict, dataclass, field
 REQUIRED_COMMON_MONTHS = 360  # 30 years of overlapping coverage
 
 
+DATA_ARTIFACT = "DATA_ARTIFACT"
+EVIDENCE = "EVIDENCE"
+
+
 @dataclass(frozen=True)
 class SourceSpec:
-    """One candidate source for one series."""
+    """One candidate source for one series.
+
+    `role` is the distinction that stops an HTTP 200 from being read as an
+    acquisition:
+
+      DATA_ARTIFACT  a downloadable series file. Only this role, and only when
+                     it parses to at least one observation, can make a series
+                     ACQUIRED.
+      EVIDENCE       a page documenting availability, coverage or licence terms.
+                     Fetching it successfully establishes what the terms ARE -
+                     never that the data was obtained.
+    """
     provider: str
     tier: int
     url: str
     licence_status: str          # OPEN | LICENCE_REQUIRED | LICENCE_UNKNOWN
     endpoint_status: str = "UNVERIFIED"
     note: str = ""
+    role: str = DATA_ARTIFACT
+    evidence_purpose: str = ""
 
 
 @dataclass(frozen=True)
@@ -81,24 +98,44 @@ SERIES: tuple[SeriesSpec, ...] = (
                        "with the B.5 decision fx=EXCLUDED_BY_DESIGN - see "
                        "SPECIFICATION_CONFLICTS below.",
         sources=(
-            SourceSpec("FTSE Russell / LSEG", 1,
+            SourceSpec("FTSE Russell / LSEG (historic index values)", 1,
                        "https://www.lseg.com/en/ftse-russell/index-resources/"
                        "historic-index-values", "LICENCE_REQUIRED",
+                       role=EVIDENCE,
+                       evidence_purpose="availability_and_coverage: documents that the "
+                                        "freely accessible history is about two years of "
+                                        "month-end values, far short of the 360 required",
                        note="THE CORRECT TARGET INDEX. Externally reported 2026-08-21 "
                             "(round 2): LSEG's freely accessible Historic Index Values "
                             "typically give only about TWO YEARS of month-end values; "
                             "longer history is a licensed subscription product and LSEG "
                             "requires a licence for use and distribution. A >=360-month "
                             "redistributable series could NOT be verified."),
+            SourceSpec("FTSE Russell / LSEG (licence terms)", 1,
+                       "https://www.lseg.com/en/ftse-russell/index-resources",
+                       "LICENCE_REQUIRED",
+                       role=EVIDENCE,
+                       evidence_purpose="licence_terms: documents that use and "
+                                        "distribution of LSEG index data require a "
+                                        "licence, and that longer history is a "
+                                        "subscription product",
+                       note="Fetching this page successfully establishes the LICENCE "
+                            "position. It does NOT obtain any data and must never "
+                            "contribute to acquisition."),
             SourceSpec("Vanguard (fund NAV)", 5,
                        "https://www.vanguard.co.uk/professional/product/etf/equity/9679/"
                        "ftse-all-world-ucits-etf-usd-accumulating", "LICENCE_UNKNOWN",
+                       role=EVIDENCE,
+                       evidence_purpose="availability: documents share class inception "
+                                        "2019-07-23, establishing INSUFFICIENT_HISTORY",
                        note="INSUFFICIENT_HISTORY and a proxy in any case. Share class "
                             "inception 2019-07-23, so at most ~7 years exist against the "
                             "360 required. Fund NAV is also net of fund fees and tracking "
                             "difference, so it is not the benchmark series."),
             SourceSpec("MSCI", 1, "https://www.msci.com/end-of-day-data-search",
-                       "LICENCE_REQUIRED",
+                       "LICENCE_REQUIRED", role=EVIDENCE,
+                       evidence_purpose="licence_terms (different index; retained for "
+                                        "the record only)",
                        note="MSCI ACWI - NOT the index the CORE instrument tracks. "
                             "Retained only because round 1 assessed it. Reported "
                             "LICENCE_REQUIRED; does not settle CORE."),
@@ -128,7 +165,9 @@ SERIES: tuple[SeriesSpec, ...] = (
         sources=(
             SourceSpec("LBMA / ICE Benchmark Administration", 1,
                        "https://www.lbma.org.uk/prices-and-data/lbma-precious-metal-prices",
-                       "LICENCE_REQUIRED",
+                       "LICENCE_REQUIRED", role=EVIDENCE,
+                       evidence_purpose="licence_terms: documents that historical prices "
+                                        "moved into MyLBMA and require an IBA licence",
                        note="Externally reported 2026-08-21: LBMA moved historical tabular "
                             "precious-metal prices into the MyLBMA portal; access requires "
                             "an IBA licence, otherwise LBMA directs users to purchase from "
@@ -160,7 +199,8 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="total return index -> monthly log returns",
         sources=(
             SourceSpec("S&P Dow Jones Indices", 1, "https://www.spglobal.com/spdji/",
-                       "LICENCE_REQUIRED",
+                       "LICENCE_REQUIRED", role=EVIDENCE,
+                            evidence_purpose="licence_terms",
                        note="Total return history is a licensed product."),
             SourceSpec("Robert Shiller (Yale) online data", 4,
                        "http://www.econ.yale.edu/~shiller/data/ie_data.xls", "OPEN",
@@ -173,7 +213,8 @@ SERIES: tuple[SeriesSpec, ...] = (
         frequency="monthly", currency="USD", return_convention="price_only",
         transformation="index level -> monthly log returns",
         sources=(SourceSpec("Nasdaq", 1, "https://www.nasdaq.com/market-activity/index/ndx",
-                            "LICENCE_UNKNOWN"),),
+                            "LICENCE_UNKNOWN", role=EVIDENCE,
+                            evidence_purpose="licence_terms"),),
     ),
     SeriesSpec(
         key="DAX", description="German large cap performance index (total return by "
@@ -183,14 +224,16 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="performance index level -> monthly log returns",
         sources=(SourceSpec("Deutsche Boerse / STOXX", 1,
                             "https://www.stoxx.com/index-details?symbol=DAX",
-                            "LICENCE_REQUIRED"),),
+                            "LICENCE_REQUIRED", role=EVIDENCE,
+                            evidence_purpose="licence_terms"),),
     ),
     SeriesSpec(
         key="EUROPE", description="Developed Europe equity.",
         required_for="INDETERMINATE_BY_CONSTRUCTION under G1",
         frequency="monthly", currency="EUR", return_convention="total_return",
         transformation="net total return index -> monthly log returns",
-        sources=(SourceSpec("STOXX", 1, "https://www.stoxx.com/", "LICENCE_REQUIRED"),),
+        sources=(SourceSpec("STOXX", 1, "https://www.stoxx.com/", "LICENCE_REQUIRED", role=EVIDENCE,
+                            evidence_purpose="licence_terms"),),
     ),
     SeriesSpec(
         key="JAPAN", description="Japanese equity.",
@@ -199,7 +242,8 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="TOPIX total return -> monthly log returns",
         sources=(SourceSpec("Japan Exchange Group", 1,
                             "https://www.jpx.co.jp/english/markets/indices/topix/",
-                            "LICENCE_UNKNOWN"),),
+                            "LICENCE_UNKNOWN", role=EVIDENCE,
+                            evidence_purpose="availability_and_licence_terms"),),
         blocker="No confirmed source mapping (known blocker in PROJECT_META Phase 4).",
     ),
     SeriesSpec(
@@ -208,7 +252,8 @@ SERIES: tuple[SeriesSpec, ...] = (
         frequency="monthly", currency="USD", return_convention="total_return",
         transformation="net total return index -> monthly log returns",
         sources=(
-            SourceSpec("MSCI", 1, "https://www.msci.com/", "LICENCE_REQUIRED"),
+            SourceSpec("MSCI", 1, "https://www.msci.com/", "LICENCE_REQUIRED",
+                       role=EVIDENCE, evidence_purpose="licence_terms"),
             SourceSpec("Kenneth R. French Data Library", 4,
                        "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/"
                        "Emerging_5_Factors_CSV.zip", "OPEN",
@@ -221,7 +266,8 @@ SERIES: tuple[SeriesSpec, ...] = (
         required_for="INDETERMINATE_BY_CONSTRUCTION under G1",
         frequency="monthly", currency="EUR", return_convention="total_return",
         transformation="net total return index -> monthly log returns",
-        sources=(SourceSpec("MSCI", 1, "https://www.msci.com/", "LICENCE_REQUIRED"),),
+        sources=(SourceSpec("MSCI", 1, "https://www.msci.com/", "LICENCE_REQUIRED",
+                            role=EVIDENCE, evidence_purpose="licence_terms"),),
         blocker="No confirmed source mapping (known blocker).",
     ),
     SeriesSpec(
@@ -231,7 +277,8 @@ SERIES: tuple[SeriesSpec, ...] = (
         transformation="index level -> monthly log returns",
         sources=(SourceSpec("Bloomberg", 5, "https://www.bloomberg.com/professional/"
                             "product/indices/bloomberg-commodity-index-family/",
-                            "LICENCE_REQUIRED"),),
+                            "LICENCE_REQUIRED", role=EVIDENCE,
+                            evidence_purpose="licence_terms"),),
         blocker="No confirmed source mapping (known blocker); tax class also unresolved.",
     ),
 
@@ -346,16 +393,17 @@ class CostSourceSpec:
 
 
 COST_SOURCES: tuple[CostSourceSpec, ...] = (
+    # CORRECTED 2026-08-21: IE00BK5BQT80 is a VANGUARD fund, not State Street.
     CostSourceSpec("CORE", "IE00BK5BQT80", "PRIIPs KID + factsheet",
-                   "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs",
-                   "issuer (State Street / SPDR)"),
+                   "https://fund-docs.vanguard.com/ie00bk5bqt80_priipskid_de.pdf",
+                   "issuer (Vanguard)"),
     CostSourceSpec("SP500", "IE00B5BMR087", "PRIIPs KID + factsheet",
                    "https://www.ishares.com/de", "issuer (BlackRock / iShares)"),
     CostSourceSpec("NASDAQ", "IE00B53SZB19", "PRIIPs KID + factsheet",
                    "https://www.ishares.com/de", "issuer (BlackRock / iShares)"),
+    # CORRECTED 2026-08-21: IE00BK5BR626 is a VANGUARD fund, not State Street.
     CostSourceSpec("DIVIDEND", "IE00BK5BR626", "PRIIPs KID + factsheet",
-                   "https://www.ssga.com/de/en_gb/institutional/capabilities/etfs",
-                   "issuer (State Street / SPDR)"),
+                   "https://fund-docs.vanguard.com/", "issuer (Vanguard)"),
     CostSourceSpec("EUROPE", "LU0328475792", "PRIIPs KID + factsheet",
                    "https://etf.dws.com/", "issuer (DWS / Xtrackers)"),
     CostSourceSpec("DAX", "DE0005933931", "PRIIPs KID + factsheet",
@@ -364,11 +412,53 @@ COST_SOURCES: tuple[CostSourceSpec, ...] = (
                    "https://www.ishares.com/de", "issuer (BlackRock / iShares)"),
     CostSourceSpec("EM", "IE00BKM4GZ66", "PRIIPs KID + factsheet",
                    "https://www.ishares.com/de", "issuer (BlackRock / iShares)"),
+    # CORRECTED 2026-08-21: IE00B4ND3602 is iShares Physical Gold ETC
+    # (BlackRock), not an Invesco product.
     CostSourceSpec("GOLD", "IE00B4ND3602", "PRIIPs KID + prospectus",
-                   "https://www.invesco.com/", "issuer (Invesco)"),
+                   "https://www.blackrock.com/de/privatanleger/literature/kiid/",
+                   "issuer (BlackRock / iShares)"),
     CostSourceSpec("COMMOD", "IE00BDFL4P12", "PRIIPs KID + factsheet",
                    "https://www.ishares.com/de", "issuer (BlackRock / iShares)"),
 )
+
+# ISIN -> issuer and product identity.
+#
+# Three entries in COST_SOURCES were wrong before 2026-08-21 (CORE and DIVIDEND
+# attributed to State Street, GOLD to Invesco). Those errors were possible
+# because nothing tied an ISIN to a named product. This table closes that gap
+# and is asserted by tests.
+#
+# STATUS: EXTERNALLY_REPORTED. These identities come from the round 1/2 data
+# reports and have NOT been verified locally - no KID has been fetched or
+# hashed here. They are recorded so a mismatch is detectable, not as verified
+# fact.
+PRODUCT_IDENTITY: dict[str, dict] = {
+    "CORE":     {"isin": "IE00BK5BQT80", "issuer": "Vanguard",
+                 "product": "Vanguard FTSE All-World UCITS ETF (Acc)",
+                 "benchmark": "FTSE All-World NR USD", "base_currency": "USD",
+                 "inception": "2019-07-23"},
+    "SP500":    {"isin": "IE00B5BMR087", "issuer": "BlackRock / iShares",
+                 "product": "iShares Core S&P 500 UCITS ETF (Acc)"},
+    "NASDAQ":   {"isin": "IE00B53SZB19", "issuer": "BlackRock / iShares",
+                 "product": "iShares NASDAQ 100 UCITS ETF (Acc)"},
+    "DIVIDEND": {"isin": "IE00BK5BR626", "issuer": "Vanguard",
+                 "product": "Vanguard FTSE All-World High Dividend Yield UCITS ETF (Acc)"},
+    "EUROPE":   {"isin": "LU0328475792", "issuer": "DWS / Xtrackers",
+                 "product": "Xtrackers STOXX Europe 600 UCITS ETF 1C"},
+    "DAX":      {"isin": "DE0005933931", "issuer": "BlackRock / iShares",
+                 "product": "iShares Core DAX UCITS ETF (DE) (Acc)"},
+    "JAPAN":    {"isin": "IE00B4L5YX21", "issuer": "BlackRock / iShares",
+                 "product": "iShares Core MSCI Japan IMI UCITS ETF (Acc)"},
+    "EM":       {"isin": "IE00BKM4GZ66", "issuer": "BlackRock / iShares",
+                 "product": "iShares Core MSCI EM IMI UCITS ETF (Acc)"},
+    "GOLD":     {"isin": "IE00B4ND3602", "issuer": "BlackRock / iShares",
+                 "product": "iShares Physical Gold ETC"},
+    "COMMOD":   {"isin": "IE00BDFL4P12", "issuer": "BlackRock / iShares",
+                 "product": "iShares Diversified Commodity Swap UCITS ETF (Acc)"},
+}
+
+PRODUCT_IDENTITY_STATUS = "EXTERNALLY_REPORTED_NOT_VERIFIED_LOCALLY"
+
 
 # Tracking difference is NOT in a KID. It has to be derived from published NAV
 # history against the index, or taken from the issuer's own annual TD
@@ -406,50 +496,26 @@ SPECIFICATION_CONFLICTS: tuple[dict, ...] = (
         "id": "B5_FX_VS_USD_BENCHMARK",
         "severity": "DECISION_RELEVANT",
         "status": "RESOLVED",
+        "raised_at": "2026-08-21",
         "resolved_at": "2026-08-21",
         "resolved_by": "human_operator",
+        "summary": (
+            "The CORE benchmark is FTSE All-World NET RETURN in USD, but B.5 had been "
+            "recorded as fx=EXCLUDED_BY_DESIGN with a rationale asserting that non-EUR "
+            "returns could be read as EUR returns with FX absorbed into volatility."
+        ),
         "resolution": (
             "option_b retained but redefined as EXCLUDED_AS_SEPARATE_STOCHASTIC_FACTOR. "
             "No separate stochastic FX factor is simulated, preserving the original "
-            "motivation. But every non-EUR calibration series MUST be converted to EUR "
+            "motivation. Every non-EUR calibration series MUST be converted to EUR "
             "before return estimation - data preprocessing, not a modelled process. "
-            "Supported claims are limited to EUR-investor total-return behaviour; "
-            "isolated FX risk, hedging decisions, FX forecasts and asset/currency "
-            "decomposition are explicitly unsupported. See config/fx.json."
+            "Supported claims are limited to EUR-investor total-return behaviour."
         ),
-        "conflict": (
-            "B.5 was decided as option_b, fx=EXCLUDED_BY_DESIGN. The rationale recorded "
-            "in config/fx.json is that asset processes are 'interpreted as EUR-denominated "
-            "total returns with the FX component folded into their volatility'. Round 2 "
-            "establishes that the CORE benchmark is FTSE All-World NET RETURN in USD, and "
-            "that the fund's base currency is USD. A EUR-denominated CORE series is "
-            "therefore not what would be calibrated from."
+        "authoritative_record": ["config/fx.json", "docs/DECISIONS_20260821.md"],
+        "verification": (
+            "Phases 1-3 were re-run end to end after the revision and every frozen "
+            "comparator hash was bit-identical, demonstrating the change moved no number."
         ),
-        "why_it_matters": (
-            "Calibrating CORE from a USD series leaves two options and both break the "
-            "recorded B.5 rationale. (a) Convert USD->EUR with an FX series: that IS an FX "
-            "process, which option_b excludes. (b) Treat USD returns as if they were EUR "
-            "returns: that does not 'fold FX into volatility', it OMITS FX entirely, "
-            "misstating both the mean and the variance faced by a EUR investor. The "
-            "recorded rationale would only have been accurate for a natively "
-            "EUR-denominated series."
-        ),
-        "scope_of_damage": (
-            "Phases 1-3 are NOT invalidated: they run on an assumed prior, not on "
-            "calibrated data, and the conflict bites only at calibration. But B.5 must be "
-            "revisited BEFORE any calibrated run, and the rationale text in config/fx.json "
-            "is inaccurate as written once a USD benchmark is in play."
-        ),
-        "resolution_options": [
-            "Switch B.5 to option_a and model an explicit EUR/USD process (adds the "
-            "parameter uncertainty option_b was chosen to avoid).",
-            "Keep option_b but rewrite the rationale honestly: FX risk is OMITTED, not "
-            "absorbed, and every CORE-derived number is a USD-investor number relabelled.",
-            "Source a natively EUR-denominated net-return series, which would make the "
-            "original rationale true - but round 2 could not verify one exists openly.",
-        ],
-        "decision_owner": "human operator - this is a B.5 first-class assumption, not an "
-                          "implementation detail",
     },
 )
 

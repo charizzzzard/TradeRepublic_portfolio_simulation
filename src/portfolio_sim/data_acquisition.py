@@ -43,12 +43,32 @@ ENVIRONMENT_OUTCOMES = frozenset({NETWORK_BLOCKED, NETWORK_TIMEOUT, NETWORK_DNS_
 
 # Source-level outcomes. These ARE statements about the data, and may only be
 # produced when egress is confirmed working.
-ACQUIRED = "ACQUIRED"
+#
+# HTTP_OK is deliberately NOT an acquisition. Fetching a landing page, a licence
+# page or a marketing page returns 200 and tells you nothing about whether the
+# series behind it was obtained. Conflating the two is how a successful network
+# request turns into a false "data unavailable" verdict.
+HTTP_OK = "HTTP_OK"                      # transport succeeded; content unclassified
+EVIDENCE_CAPTURED = "EVIDENCE_CAPTURED"  # an EVIDENCE source fetched successfully
+DATA_ACQUIRED = "DATA_ACQUIRED"          # a DATA_ARTIFACT parsed to >0 observations
+DATA_NOT_PARSED = "DATA_NOT_PARSED"      # 200 from a data artifact, but no series parsed
 SOURCE_NOT_FOUND = "SOURCE_NOT_FOUND"
 LICENCE_OR_AUTH_REQUIRED = "LICENCE_OR_AUTH_REQUIRED"
 DATA_INVALID = "DATA_INVALID"
-SOURCE_OUTCOMES = frozenset({ACQUIRED, SOURCE_NOT_FOUND, LICENCE_OR_AUTH_REQUIRED,
-                             DATA_INVALID})
+SOURCE_OUTCOMES = frozenset({HTTP_OK, EVIDENCE_CAPTURED, DATA_ACQUIRED, DATA_NOT_PARSED,
+                             SOURCE_NOT_FOUND, LICENCE_OR_AUTH_REQUIRED, DATA_INVALID})
+
+# The only outcome that may ever set `acquired` on a series.
+ACQUISITION_OUTCOMES = frozenset({DATA_ACQUIRED})
+
+# Outcomes that constitute locally validated evidence of a licence/access wall.
+ACCESS_EVIDENCE_OUTCOMES = frozenset({LICENCE_OR_AUTH_REQUIRED, EVIDENCE_CAPTURED})
+
+# Outcomes that constitute evidence the data itself is not there.
+UNAVAILABILITY_EVIDENCE_OUTCOMES = frozenset({SOURCE_NOT_FOUND, DATA_INVALID})
+
+# Retained for backward compatibility with older manifests. Never emitted.
+ACQUIRED = DATA_ACQUIRED
 
 CANARY_HOSTS = ("https://example.com/", "https://www.iana.org/domains/reserved")
 
@@ -75,7 +95,7 @@ def _raw_fetch(url: str, timeout: float = 30.0) -> AttemptResult:
         req = urllib.request.Request(url, headers={"User-Agent": "portfolio-sim-r3/3.0"})
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             body = resp.read()
-            return AttemptResult(url=url, outcome=ACQUIRED, http_status=resp.status,
+            return AttemptResult(url=url, outcome=HTTP_OK, http_status=resp.status,
                                  bytes_received=len(body),
                                  content_sha256=sha256_bytes(body))
     except urllib.error.HTTPError as exc:
@@ -122,7 +142,7 @@ def probe_egress(hosts: tuple[str, ...] = CANARY_HOSTS, timeout: float = 20.0) -
     can be concluded about whether MSCI or the ECB would have served us data.
     """
     attempts = [asdict(_raw_fetch(h, timeout)) for h in hosts]
-    ok = any(a["outcome"] == ACQUIRED for a in attempts)
+    ok = any(a["outcome"] == HTTP_OK for a in attempts)
     proxy_env = {k: os.environ.get(k, "") for k in
                  ("HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "https_proxy", "http_proxy")}
     detail = ("egress confirmed against at least one canary host"
@@ -133,16 +153,49 @@ def probe_egress(hosts: tuple[str, ...] = CANARY_HOSTS, timeout: float = 20.0) -
                        detail=detail)
 
 
-def classify(attempt: AttemptResult, egress: EgressProbe) -> str:
-    """Final outcome for one attempt, given the environment's egress state.
+def classify(attempt: AttemptResult, egress: EgressProbe,
+             source_role: str = "DATA_ARTIFACT", n_observations: int = 0) -> str:
+    """Final outcome for one attempt, given egress state, source role and content.
 
-    This is the guard. With egress blocked, a per-source failure carries no
-    information about the source, so it is reported as NETWORK_BLOCKED even if
-    the raw attempt produced something that looks source-specific.
+    Two guards, both load-bearing:
+
+    1. With egress blocked, a per-source failure carries no information about the
+       source, so everything collapses to NETWORK_BLOCKED even if the raw attempt
+       produced something that looks source-specific.
+
+    2. HTTP 200 IS NOT ACQUISITION. A landing page, a licence page or a product
+       page returns 200 and contains no series. Only a DATA_ARTIFACT that parsed
+       to at least one observation may become DATA_ACQUIRED; everything else that
+       merely fetched is EVIDENCE_CAPTURED or DATA_NOT_PARSED. Without this, a
+       successful fetch of an index provider's marketing page would be recorded
+       as having obtained the index.
     """
     if not egress.egress_available:
         return NETWORK_BLOCKED
-    return attempt.outcome
+    if attempt.outcome != HTTP_OK:
+        return attempt.outcome
+    if source_role == "EVIDENCE":
+        return EVIDENCE_CAPTURED
+    return DATA_ACQUIRED if n_observations > 0 else DATA_NOT_PARSED
+
+
+def series_is_acquired(outcomes) -> bool:
+    """A series counts as acquired ONLY on a parsed data artifact.
+
+    Never on an HTTP 200, never on captured evidence. This is the single
+    predicate the phase verdict may use.
+    """
+    return any(o in ACQUISITION_OUTCOMES for o in outcomes)
+
+
+def has_access_evidence(outcomes) -> bool:
+    """Locally validated evidence that a licence or authorisation wall exists."""
+    return any(o in ACCESS_EVIDENCE_OUTCOMES for o in outcomes)
+
+
+def has_unavailability_evidence(outcomes) -> bool:
+    """Locally validated evidence that the data itself is absent or unusable."""
+    return any(o in UNAVAILABILITY_EVIDENCE_OUTCOMES for o in outcomes)
 
 
 def research_verdict_admissible(egress: EgressProbe) -> bool:
@@ -159,7 +212,8 @@ def research_verdict_admissible(egress: EgressProbe) -> bool:
 # data_manifest.csv
 # --------------------------------------------------------------------------
 MANIFEST_COLUMNS = (
-    "series_key", "source_provider", "source_tier", "source_url", "retrieval_date_utc",
+    "series_key", "source_provider", "source_tier", "source_role", "evidence_purpose",
+    "source_url", "retrieval_date_utc",
     "frequency", "currency", "return_convention", "period_start", "period_end",
     "n_observations", "sha256", "transformations", "licence_status", "data_status",
 )
@@ -167,30 +221,36 @@ MANIFEST_COLUMNS = (
 
 def manifest_row(series_key: str, source, attempt: AttemptResult, outcome: str,
                  transformation: str, frequency: str, currency: str,
-                 return_convention: str) -> dict:
+                 return_convention: str, n_observations: int = 0,
+                 period_start: str = "", period_end: str = "") -> dict:
     """One data_manifest.csv row.
 
-    Fields that are unknown because acquisition did not happen are left EMPTY,
-    never filled with a placeholder. An empty period_start is honest; a guessed
-    one is fabricated provenance.
+    Fields unknown because acquisition did not happen are left EMPTY, never
+    filled with a placeholder. An empty period_start is honest; a guessed one is
+    fabricated provenance.
+
+    n_observations is only ever non-zero for a DATA_ACQUIRED artifact. An
+    EVIDENCE row records that a page was read, not that a series was obtained.
     """
-    acquired = outcome == ACQUIRED
+    acquired = outcome == DATA_ACQUIRED
     return {
         "series_key": series_key,
         "source_provider": source.provider,
         "source_tier": source.tier,
+        "source_role": getattr(source, "role", "DATA_ARTIFACT"),
+        "evidence_purpose": getattr(source, "evidence_purpose", ""),
         "source_url": source.url,
         "retrieval_date_utc": attempt.retrieved_at_utc,
         "frequency": frequency,
         "currency": currency,
         "return_convention": return_convention,
-        "period_start": "",
-        "period_end": "",
-        "n_observations": 0,
+        "period_start": period_start if acquired else "",
+        "period_end": period_end if acquired else "",
+        "n_observations": n_observations if acquired else 0,
         "sha256": attempt.content_sha256 or "",
         "transformations": transformation,
         "licence_status": source.licence_status,
-        "data_status": outcome if not acquired else "ACQUIRED",
+        "data_status": outcome,
     }
 
 
@@ -212,7 +272,10 @@ def write_manifest_csv(rows: list[dict], path: Path) -> Path:
 def validate_coverage(rows: list[dict], required_months: int,
                       required_keys: tuple[str, ...]) -> dict:
     """Check the common-month coverage requirement across required series."""
-    acquired = {r["series_key"]: r for r in rows if r.get("data_status") == "ACQUIRED"}
+    # Only a parsed data artifact counts. An EVIDENCE row or an HTTP_OK row
+    # contributes nothing to coverage regardless of its HTTP status.
+    acquired = {r["series_key"]: r for r in rows
+                if r.get("data_status") == DATA_ACQUIRED and int(r.get("n_observations", 0)) > 0}
     missing = [k for k in required_keys if k not in acquired]
     if missing:
         return {"result": "INSUFFICIENT", "missing_series": missing,

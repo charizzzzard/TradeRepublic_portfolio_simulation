@@ -89,23 +89,23 @@ def test_manifest_csv_has_every_required_provenance_column(tmp_path):
 
 # --- coverage ------------------------------------------------------------
 def test_coverage_insufficient_when_a_required_series_is_missing():
-    rows = [{"series_key": "GOLD", "data_status": "ACQUIRED", "n_observations": 500}]
+    rows = [{"series_key": "GOLD", "data_status": acq.DATA_ACQUIRED, "n_observations": 500}]
     r = acq.validate_coverage(rows, 360, ("CORE", "GOLD"))
     assert r["result"] == "INSUFFICIENT"
     assert r["missing_series"] == ["CORE"]
 
 
 def test_coverage_uses_the_shortest_series_not_the_longest():
-    rows = [{"series_key": "CORE", "data_status": "ACQUIRED", "n_observations": 600},
-            {"series_key": "GOLD", "data_status": "ACQUIRED", "n_observations": 300}]
+    rows = [{"series_key": "CORE", "data_status": acq.DATA_ACQUIRED, "n_observations": 600},
+            {"series_key": "GOLD", "data_status": acq.DATA_ACQUIRED, "n_observations": 300}]
     r = acq.validate_coverage(rows, 360, ("CORE", "GOLD"))
     assert r["common_months"] == 300
     assert r["result"] == "INSUFFICIENT"
 
 
 def test_coverage_sufficient_when_all_series_clear_the_requirement():
-    rows = [{"series_key": "CORE", "data_status": "ACQUIRED", "n_observations": 400},
-            {"series_key": "GOLD", "data_status": "ACQUIRED", "n_observations": 360}]
+    rows = [{"series_key": "CORE", "data_status": acq.DATA_ACQUIRED, "n_observations": 400},
+            {"series_key": "GOLD", "data_status": acq.DATA_ACQUIRED, "n_observations": 360}]
     assert acq.validate_coverage(rows, 360, ("CORE", "GOLD"))["result"] == "SUFFICIENT"
 
 
@@ -299,9 +299,10 @@ def test_fx_specification_conflict_was_surfaced_then_resolved_by_the_operator():
     assert conflict["severity"] == "DECISION_RELEVANT"
     assert conflict["resolved_by"] == "human_operator"
     assert "MUST be converted to EUR" in conflict["resolution"]
-    # The original conflict statement and damage scope stay on the record.
-    assert "Phases 1-3 are NOT invalidated" in conflict["scope_of_damage"]
-    assert len(conflict["resolution_options"]) >= 2
+    # The stale open-state prose is gone; the record now points at the
+    # authoritative files. See test_stale_b5_conflict_text_is_gone.
+    assert "config/fx.json" in conflict["authoritative_record"]
+    assert "bit-identical" in conflict["verification"]
 
 
 def test_fx_conflict_was_resolved_by_the_operator_not_silently():
